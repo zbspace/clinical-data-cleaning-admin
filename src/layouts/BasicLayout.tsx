@@ -36,14 +36,38 @@ const BasicLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Aside style={{ borderRight: '1px solid var(--td-component-border)' }}>
+      <Aside style={{ borderRight: '1px solid var(--td-border-level-1-color)', backgroundColor: '#fff', boxShadow: '1px 0 10px rgba(0,0,0,0.02)' }}>
         <Menu
           value={activeValue}
           collapsed={collapsed}
           onChange={(value) => navigate(value as string)}
           logo={
-            <div style={{ padding: '16px', fontSize: '18px', fontWeight: 'bold', color: 'var(--td-brand-color)' }}>
-              {collapsed ? '数据' : '临床数据清洗系统'}
+            <div style={{ 
+              padding: '20px 16px', 
+              fontSize: '18px', 
+              fontFamily: 'var(--td-font-family-medium)',
+              fontWeight: 700, 
+              color: 'var(--td-brand-color)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              letterSpacing: '-0.02em'
+            }}>
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
+                background: 'linear-gradient(135deg, var(--td-brand-color-5), var(--td-brand-color-8))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: '14px',
+                flexShrink: 0
+              }}>
+                <CheckCircleIcon />
+              </div>
+              {!collapsed && <span>临床数据系统</span>}
             </div>
           }
         >
@@ -82,25 +106,32 @@ const BasicLayout: React.FC = () => {
         {/* #region Header */}
         <Header
           style={{
-            background: '#fff',
-            borderBottom: '1px solid var(--td-component-border)',
-            padding: '0 24px',
+            background: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)',
+            borderBottom: '1px solid var(--td-border-level-1-color)',
+            padding: '0 32px',
             display: 'flex',
             alignItems: 'center',
+            height: '64px'
           }}
         >
-          <div style={{ flex: 1 }}></div>
+          <div style={{ flex: 1 }}>
+             <span style={{ fontFamily: 'var(--td-font-family-medium)', fontSize: '15px', color: 'var(--td-text-color-secondary)' }}>
+                {activeValue === '/overview' ? '系统总览' : '数据清洗与管理'}
+             </span>
+          </div>
           <Dropdown options={[{ content: '退出登录', value: 'logout', onClick: handleLogout }]}>
-            <Button variant="text" style={{ cursor: 'pointer' }}>
-              管理员
-            </Button>
+            <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '20px', background: '#f1f5f9', transition: 'all 0.2s' }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--td-brand-color-2)', color: 'var(--td-brand-color-8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 12 }}>A</div>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--td-text-color-primary)' }}>管理员</span>
+            </div>
           </Dropdown>
         </Header>
         {/* #endregion */}
 
         {/* #region Content */}
-        <Content style={{ padding: '24px', overflow: 'auto', backgroundColor: '#f3f4f5' }}>
-          <div style={{ backgroundColor: '#fff', minHeight: '100%', padding: '24px', borderRadius: '4px' }}>
+        <Content style={{ padding: '10px', overflow: 'auto', backgroundColor: 'var(--td-bg-color-page)' }}>
+          <div style={{ minHeight: '100%', borderRadius: 'var(--td-radius-large)' }}>
             <Outlet />
           </div>
         </Content>

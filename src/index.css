@@ -1,3 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Brand Colors - Deep Medical Cyan/Blue */
+  --td-brand-color-1: #e0f2fe;
+  --td-brand-color-2: #bae6fd;
+  --td-brand-color-3: #7dd3fc;
+  --td-brand-color-4: #38bdf8;
+  --td-brand-color-5: #0ea5e9;
+  --td-brand-color-6: #0284c7;
+  --td-brand-color-7: #0369a1; /* Primary */
+  --td-brand-color-8: #075985;
+  --td-brand-color-9: #0c4a6e;
+  --td-brand-color: var(--td-brand-color-7);
+  --td-brand-color-hover: var(--td-brand-color-6);
+  --td-brand-color-active: var(--td-brand-color-8);
+
+  /* Layout & Background */
+  --td-bg-color-page: #f0f4f8; /* Soft sophisticated gray-blue */
+  --td-bg-color-container: #ffffff;
+
+  /* Borders and Shadows */
+  --td-radius-default: 8px;
+  --td-radius-medium: 12px;
+  --td-radius-large: 16px;
+  --td-shadow-1: 0 4px 16px rgba(15, 23, 42, 0.04);
+  --td-shadow-2: 0 10px 24px rgba(15, 23, 42, 0.06);
+
+  /* Typography */
+  --td-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --td-font-family-medium: 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+  /* Text colors */
+  --td-text-color-primary: #0f172a;
+  --td-text-color-secondary: #475569;
+  --td-text-color-placeholder: #94a3b8;
+
+  --td-border-level-1-color: #e2e8f0;
+}
+
 html,
 body,
 #root {
@@ -5,5 +45,152 @@ body,
   padding: 0;
   height: 100vh;
   width: 100vw;
-  background-color: #f3f4f5;
+  background-color: var(--td-bg-color-page);
+  color: var(--td-text-color-primary);
+  font-family: var(--td-font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--td-font-family-medium);
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Card Overrides */
+.t-card {
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: var(--td-shadow-1) !important;
+  border-radius: var(--td-radius-medium) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.t-card:hover {
+  box-shadow: var(--td-shadow-2) !important;
+  border-color: #e2e8f0 !important;
+}
+.t-card__title {
+  font-family: var(--td-font-family-medium) !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+}
+
+/* Table Overrides for a clean Editorial Data look */
+.t-table {
+  font-size: 13px;
+}
+.t-table th {
+  font-family: var(--td-font-family-medium);
+  font-weight: 600 !important;
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 12px;
+}
+.t-table td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  color: #334155;
+}
+
+/* Input & Form Overrides */
+.t-input {
+  border-radius: var(--td-radius-default) !important;
+  transition: all 0.2s ease;
+}
+.t-input:focus-within {
+  box-shadow: 0 0 0 2px rgba(3, 105, 161, 0.1) !important;
+}
+.t-form__item {
+  margin-right: 32px !important;
+}
+.t-form__label {
+  padding-right: 12px !important;
+  color: var(--td-text-color-secondary) !important;
+}
+
+/* Button Overrides */
+.t-button {
+  font-family: var(--td-font-family-medium);
+  border-radius: var(--td-radius-default) !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+.t-button--theme-primary {
+  box-shadow: 0 2px 4px rgba(3, 105, 161, 0.2);
+}
+.t-button--theme-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(3, 105, 161, 0.3);
+}
+
+/* Sidebar Menu Tweaks */
+.t-menu {
+  background-color: #ffffff !important;
+}
+.t-menu__item {
+  border-radius: 6px;
+  margin: 4px 8px;
+  transition: all 0.2s ease;
+}
+.t-menu__item.t-is-active {
+  background: linear-gradient(90deg, rgba(3, 105, 161, 0.06) 0%, transparent 100%) !important;
+  color: var(--td-brand-color) !important;
+  font-weight: 600;
+}
+.t-menu__item.t-is-active::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background-color: var(--td-brand-color);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Layout adjustments */
+.t-layout__header {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  z-index: 10;
+}
+
+/* Special Auth/Login specific overrides */
+.auth-page-wrapper {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(3, 105, 161, 0.05), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(3, 105, 161, 0.08), transparent 25%);
+  background-color: #f8fafc;
+}
+
+/* Dialog refinements */
+.t-dialog {
+  border-radius: var(--td-radius-medium) !important;
+  box-shadow: var(--td-shadow-3) !important;
+}
+.t-dialog__header {
+  font-family: var(--td-font-family-medium);
+  font-weight: 600;
 }

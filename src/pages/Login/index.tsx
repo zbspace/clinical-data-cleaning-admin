@@ -39,29 +39,80 @@ const Login: React.FC = () => {
 
   return (
     <div
+      className="auth-page-wrapper"
       style={{
         height: '100vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f3f4f5',
       }}
     >
-      <Card title="临床数据清洗后台系统" style={{ width: 400, boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-        <Form onSubmit={onSubmit} labelWidth={0}>
-          <Form.FormItem name="username" rules={[{ required: true, message: '请输入账号' }]}>
-            <Input size="large" prefixIcon={<DesktopIcon />} placeholder="请输入账号 (admin)" />
-          </Form.FormItem>
-          <Form.FormItem name="password" rules={[{ required: true, message: '请输入密码' }]}>
-            <Input size="large" type="password" prefixIcon={<LockOnIcon />} placeholder="请输入密码 (123456)" />
-          </Form.FormItem>
-          <Form.FormItem style={{ marginTop: 24 }}>
-            <Button size="large" theme="primary" type="submit" block loading={loading}>
-              登录
-            </Button>
-          </Form.FormItem>
-        </Form>
-      </Card>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '10vh'
+      }}>
+        {/* Logo/Brand Icon */}
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '16px',
+          background: 'linear-gradient(135deg, var(--td-brand-color-4), var(--td-brand-color-7))',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          marginBottom: '24px',
+          boxShadow: '0 8px 24px rgba(3, 105, 161, 0.25)'
+        }}>
+          <DesktopIcon size="32px" />
+        </div>
+
+        <Card 
+          bordered={false}
+          style={{ 
+            width: 420, 
+            padding: '24px',
+            background: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05)'
+          }}
+        >
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <h1 style={{ 
+              margin: 0, 
+              fontSize: '24px', 
+              color: 'var(--td-text-color-primary)',
+              letterSpacing: '-0.02em'
+            }}>
+              临床数据清洗系统
+            </h1>
+            <p style={{ margin: '8px 0 0 0', color: 'var(--td-text-color-secondary)', fontSize: '14px' }}>
+              欢迎回来，请输入您的管理员账号
+            </p>
+          </div>
+
+          <Form onSubmit={onSubmit} labelWidth={0}>
+            <Form.FormItem name="username" rules={[{ required: true, message: '请输入账号' }]}>
+              <Input size="large" prefixIcon={<DesktopIcon />} placeholder="请输入账号" clearable />
+            </Form.FormItem>
+            <Form.FormItem name="password" rules={[{ required: true, message: '请输入密码' }]} style={{ marginTop: 24 }}>
+              <Input size="large" type="password" prefixIcon={<LockOnIcon />} placeholder="请输入密码" clearable />
+            </Form.FormItem>
+            <Form.FormItem style={{ marginTop: 32 }}>
+              <Button size="large" theme="primary" type="submit" block loading={loading} style={{ height: '48px', fontSize: '16px' }}>
+                登录
+              </Button>
+            </Form.FormItem>
+          </Form>
+        </Card>
+
+        <div style={{ marginTop: 40, color: 'var(--td-text-color-placeholder)', fontSize: '13px' }}>
+          &copy; {new Date().getFullYear()} Clinical Data Intelligence
+        </div>
+      </div>
     </div>
   );
 };

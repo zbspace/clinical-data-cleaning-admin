@@ -218,27 +218,37 @@ const CompanyClean: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false}>
-      <Form form={form} layout="inline" style={{ marginBottom: 16 }}>
-        <Form.FormItem label="公司名(标准名称)" name="companyName">
-          <Input placeholder="请输入" clearable />
-        </Form.FormItem>
-        <Form.FormItem label="母公司简称" name="parentCompanyShortName">
-          <Input placeholder="请输入" clearable />
-        </Form.FormItem>
-        <Form.FormItem label="公司类型" name="companyType">
-          <Select options={companyTypeOptions} placeholder="请选择" clearable />
-        </Form.FormItem>
-        <Form.FormItem label="清洗状态" name="status" initialData={0}>
-          <Select options={statusOptions} placeholder="请选择" clearable />
-        </Form.FormItem>
-        <Form.FormItem>
-          <Space>
-            <Button theme="primary" onClick={onSearch}>搜索</Button>
-            <Button theme="default" onClick={onReset}>重置</Button>
-          </Space>
-        </Form.FormItem>
-      </Form>
+    <Card bordered={false} style={{ padding: '10px' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>公司名清洗</h2>
+        <div style={{ 
+          background: '#f8fafc', 
+          padding: '16px', 
+          borderRadius: '12px',
+          border: '1px solid var(--td-border-level-1-color)'
+        }}>
+          <Form form={form} layout="inline" labelWidth={120} style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}>
+            <Form.FormItem label="公司名(标准名)" name="companyName" style={{ marginBottom: 0 }}>
+              <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
+            </Form.FormItem>
+            <Form.FormItem label="母公司简称" name="parentCompanyShortName" style={{ marginBottom: 0 }}>
+              <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
+            </Form.FormItem>
+            <Form.FormItem label="公司类型" name="companyType" style={{ marginBottom: 0 }}>
+              <Select options={companyTypeOptions} placeholder="请选择公司类型" clearable style={{ width: 220 }} />
+            </Form.FormItem>
+            <Form.FormItem label="清洗状态" name="status" initialData={0} style={{ marginBottom: 0 }}>
+              <Select options={statusOptions} placeholder="请选择状态" clearable style={{ width: 220 }} />
+            </Form.FormItem>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+              <Space>
+                <Button theme="default" onClick={onReset} style={{ background: '#fff' }}>重置条件</Button>
+                <Button theme="primary" onClick={onSearch}>立即查询</Button>
+              </Space>
+            </div>
+          </Form>
+        </div>
+      </div>
 
       <Table
         data={data}
