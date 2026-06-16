@@ -1,21 +1,6 @@
 //#region Imports
 import request from '../utils/request';
-//#endregion
-
-//#region Types
-export interface LoginRequest {
-  username?: string;
-  password?: string;
-  captcha?: string;
-  captchaKey?: string;
-}
-
-export interface UserDto {
-  userId?: number;
-  username?: string;
-  nickName?: string;
-  roles?: string[];
-}
+import type { LoginRequest, UserDto } from './types/auth';
 //#endregion
 
 //#region API Methods

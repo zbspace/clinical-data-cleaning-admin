@@ -1,21 +1,7 @@
 //#region Imports
 import request from '../utils/request';
-import { BaseQueryParam, BasePageVo } from './company';
-//#endregion
-
-//#region Types
-export interface CdeTrialStagesMapping {
-  cleanedTrialStages?: string;
-  cleanedTrialStagesList?: string[];
-  createTime?: string;
-  createUser?: string;
-  id?: number;
-  isDeleted?: number;
-  status?: number;
-  trialStages?: string;
-  updateTime?: string;
-  updateUser?: string;
-}
+import type { BaseQueryParam, BasePageVo } from './types/company';
+import type { CdeTrialStagesMapping } from './types/trialStage';
 //#endregion
 
 //#region API Methods

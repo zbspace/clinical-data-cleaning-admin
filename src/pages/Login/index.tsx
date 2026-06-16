@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, MessagePlugin, Card } from 'tdesign-react';
 import { DesktopIcon, LockOnIcon } from 'tdesign-icons-react';
+import { authApi } from '../../api';
 //#endregion
 
 //#region Component
@@ -10,23 +11,29 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     if (e.validateResult === true) {
       setLoading(true);
-      // 模拟接口调用延迟
-      setTimeout(() => {
-        setLoading(false);
+      try {
         const { username, password } = e.fields;
+        const res: any = await authApi.login({ username, password });
 
-        if (username === 'admin' && password === '123456') {
-          // 模拟存储 Token
-          localStorage.setItem('token', 'mock_token_' + new Date().getTime());
-          MessagePlugin.success('登录成功');
-          navigate('/overview', { replace: true });
+        // 存储 Token
+        const token = res.data?.token || res.data || res.token;
+        if (token) {
+          localStorage.setItem('token', typeof token === 'string' ? token : JSON.stringify(token));
         } else {
-          MessagePlugin.error('账号或密码错误 (默认 admin/123456)');
+          // 兜底：如果没找到 token 字段则默认存储一个标识
+          localStorage.setItem('token', 'mock_token_' + new Date().getTime());
         }
-      }, 1000);
+
+        MessagePlugin.success('登录成功');
+        navigate('/overview', { replace: true });
+      } catch (error) {
+        console.error('登录异常', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
