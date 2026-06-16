@@ -1,6 +1,8 @@
 //#region Types
 export interface CompanyQueryParam {
   companyName?: string;
+  parentCompanyShortName?: string;
+  companyType?: string;
   pageNum?: number;
   pageSize?: number;
   queryId?: number;
