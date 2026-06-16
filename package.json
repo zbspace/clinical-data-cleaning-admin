@@ -1,0 +1,33 @@
+{
+  "name": "clinical-data-cleaning-admin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.18.0",
+    "less": "^4.6.6",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.17.0",
+    "tdesign-icons-react": "^0.6.4",
+    "tdesign-react": "^1.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "prettier": "^3.8.4",
+    "typescript": "^6.0.3",
+    "vite": "^5.4.21"
+  }
+}

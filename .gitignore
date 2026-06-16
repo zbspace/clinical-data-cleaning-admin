@@ -1,0 +1,14 @@
+dist/
+dist.zip
+dist-electron/
+node_modules/
+.trae/
+release/
+package-lock.json
+*.exe
+*.log
+*.lock
+.DS_Store
+.idea/
+.vscode/
+.git/
