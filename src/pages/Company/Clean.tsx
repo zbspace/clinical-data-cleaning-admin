@@ -227,7 +227,7 @@ const CompanyClean: React.FC = () => {
           borderRadius: '12px',
           border: '1px solid var(--td-border-level-1-color)'
         }}>
-          <Form form={form} layout="inline" labelWidth={120} style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}>
+          <Form form={form} layout="inline" labelWidth={140} style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}>
             <Form.FormItem label="公司名(标准名)" name="companyName" style={{ marginBottom: 0 }}>
               <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
             </Form.FormItem>

@@ -115,7 +115,7 @@ const BasicLayout: React.FC = () => {
             height: '64px'
           }}
         >
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
              <span style={{ fontFamily: 'var(--td-font-family-medium)', fontSize: '15px', color: 'var(--td-text-color-secondary)' }}>
                 {activeValue === '/overview' ? '系统总览' : '数据清洗与管理'}
              </span>

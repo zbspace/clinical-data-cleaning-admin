@@ -1,7 +1,12 @@
 import React from 'react';
-import { Table, Button, Space, Input } from 'tdesign-react';
+import { Table, Button, Space, Input, Card, Form, Select } from 'tdesign-react';
+
+const { FormItem } = Form;
+const { Option } = Select;
 
 const CenterClean: React.FC = () => {
+  const [filterForm] = Form.useForm();
+  
   const columns = [
     { colKey: 'id', title: 'ID', width: 100 },
     { colKey: 'originalName', title: '原始研究中心名称', width: 200 },
@@ -30,16 +35,38 @@ const CenterClean: React.FC = () => {
   ];
 
   return (
-    <div>
-      <h2>研究中心名称清洗</h2>
-      <div style={{ marginBottom: 16 }}>
-        <Space>
-          <Input placeholder="搜索原始名称" />
-          <Button theme="primary">搜索</Button>
-        </Space>
+    <Card bordered={false} style={{ padding: '10px' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>研究中心名称清洗</h2>
+        <div style={{ 
+          background: '#f8fafc', 
+          padding: '16px', 
+          borderRadius: '12px',
+          border: '1px solid var(--td-border-level-1-color)'
+        }}>
+          <Form form={filterForm} layout="inline" labelWidth={140} style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}>
+            <FormItem label="原始研究中心名称" name="originalName" style={{ marginBottom: 0 }}>
+              <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
+            </FormItem>
+            <FormItem label="建议标准名称" name="suggestedName" style={{ marginBottom: 0 }}>
+              <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
+            </FormItem>
+            <FormItem label="清洗状态" name="status" initialData="all" style={{ marginBottom: 0 }}>
+              <Select style={{ width: 220 }}>
+                <Option key="all" value="all" label="全部" />
+                <Option key="pending" value="pending" label="待处理" />
+                <Option key="done" value="done" label="已处理" />
+              </Select>
+            </FormItem>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
+              <Button theme="default" onClick={() => filterForm.reset()} style={{ background: '#fff', marginRight: 8 }}>重置条件</Button>
+              <Button theme="primary">立即查询</Button>
+            </div>
+          </Form>
+        </div>
       </div>
-      <Table data={data} columns={columns} rowKey="id" />
-    </div>
+      <Table data={data} columns={columns} rowKey="id" bordered stripe tableLayout="auto" />
+    </Card>
   );
 };
 
