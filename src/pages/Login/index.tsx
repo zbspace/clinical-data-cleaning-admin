@@ -1,8 +1,8 @@
 //#region Imports
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, MessagePlugin, Card } from 'tdesign-react';
-import { DesktopIcon, LockOnIcon } from 'tdesign-icons-react';
+import { DesktopIcon, LockOnIcon, RefreshIcon } from 'tdesign-icons-react';
 import { authApi } from '../../api';
 //#endregion
 
@@ -10,13 +10,37 @@ import { authApi } from '../../api';
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [captcha, setCaptcha] = useState({ img: '', key: '' });
+
+  const fetchCaptcha = async () => {
+    try {
+      const res: any = await authApi.getCaptcha();
+      if (res.code === 0 || res.code === 200) {
+        setCaptcha({
+          img: res.data.img,
+          key: res.data.key || res.data.captchaKey,
+        });
+      }
+    } catch (error) {
+      console.error('获取验证码失败', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
 
   const onSubmit = async (e: any) => {
     if (e.validateResult === true) {
       setLoading(true);
       try {
-        const { username, password } = e.fields;
-        const res: any = await authApi.login({ username, password });
+        const { username, password, captchaCode } = e.fields;
+        const res: any = await authApi.login({
+          username,
+          password,
+          captcha: captchaCode,
+          captchaKey: captcha.key,
+        });
 
         // 存储 Token
         const token = res.data?.token || res.data || res.token;
@@ -31,6 +55,8 @@ const Login: React.FC = () => {
         navigate('/overview', { replace: true });
       } catch (error) {
         console.error('登录异常', error);
+        // 登录失败刷新验证码
+        fetchCaptcha();
       } finally {
         setLoading(false);
       }
@@ -47,46 +73,52 @@ const Login: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: '10vh'
-      }}>
-        {/* Logo/Brand Icon */}
-        <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, var(--td-brand-color-4), var(--td-brand-color-7))',
+      <div
+        style={{
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          color: '#fff',
-          marginBottom: '24px',
-          boxShadow: '0 8px 24px rgba(3, 105, 161, 0.25)'
-        }}>
+          marginBottom: '10vh',
+        }}
+      >
+        {/* Logo/Brand Icon */}
+        <div
+          style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, var(--td-brand-color-4), var(--td-brand-color-7))',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            marginBottom: '24px',
+            boxShadow: '0 8px 24px rgba(3, 105, 161, 0.25)',
+          }}
+        >
           <DesktopIcon size="32px" />
         </div>
 
-        <Card 
+        <Card
           bordered={false}
-          style={{ 
-            width: 420, 
+          style={{
+            width: 420,
             padding: '24px',
             background: 'rgba(255, 255, 255, 0.9)',
             backdropFilter: 'blur(20px)',
             borderRadius: '24px',
-            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05)'
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05)',
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
-            <h1 style={{ 
-              margin: 0, 
-              fontSize: '24px', 
-              color: 'var(--td-text-color-primary)',
-              letterSpacing: '-0.02em'
-            }}>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: '24px',
+                color: 'var(--td-text-color-primary)',
+                letterSpacing: '-0.02em',
+              }}
+            >
               临床数据清洗系统
             </h1>
             <p style={{ margin: '8px 0 0 0', color: 'var(--td-text-color-secondary)', fontSize: '14px' }}>
@@ -98,11 +130,58 @@ const Login: React.FC = () => {
             <Form.FormItem name="username" rules={[{ required: true, message: '请输入账号' }]}>
               <Input size="large" prefixIcon={<DesktopIcon />} placeholder="请输入账号" clearable />
             </Form.FormItem>
-            <Form.FormItem name="password" rules={[{ required: true, message: '请输入密码' }]} style={{ marginTop: 24 }}>
+            <Form.FormItem
+              name="password"
+              rules={[{ required: true, message: '请输入密码' }]}
+              style={{ marginTop: 24 }}
+            >
               <Input size="large" type="password" prefixIcon={<LockOnIcon />} placeholder="请输入密码" clearable />
             </Form.FormItem>
+            <Form.FormItem
+              name="captchaCode"
+              rules={[{ required: true, message: '请输入验证码' }]}
+              style={{ marginTop: 24 }}
+            >
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <Input size="large" placeholder="请输入验证码" clearable />
+                <div
+                  onClick={fetchCaptcha}
+                  title="点击刷新验证码"
+                  style={{
+                    cursor: 'pointer',
+                    height: '48px',
+                    width: '120px',
+                    flexShrink: 0,
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    border: '1px solid var(--td-component-border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'var(--td-bg-color-container)',
+                  }}
+                >
+                  {captcha.img ? (
+                    <img
+                      src={captcha.img}
+                      alt="验证码"
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <RefreshIcon />
+                  )}
+                </div>
+              </div>
+            </Form.FormItem>
             <Form.FormItem style={{ marginTop: 32 }}>
-              <Button size="large" theme="primary" type="submit" block loading={loading} style={{ height: '48px', fontSize: '16px' }}>
+              <Button
+                size="large"
+                theme="primary"
+                type="submit"
+                block
+                loading={loading}
+                style={{ height: '48px', fontSize: '16px' }}
+              >
                 登录
               </Button>
             </Form.FormItem>
