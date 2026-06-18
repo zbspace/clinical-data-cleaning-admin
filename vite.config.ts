@@ -10,6 +10,24 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // #region Build Optimization
+  build: {
+    // 禁用 gzip 压缩大小报告，减少内存占用
+    reportCompressedSize: false,
+    // 确保禁用 sourcemap
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        // 分块优化，避免单个文件过大
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+      },
+    },
+  },
+  // #endregion
   server: {
     port: 5180,
     proxy: {

@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "NODE_OPTIONS=--max-old-space-size=1024 tsc --incremental && vite build",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\""
   },
