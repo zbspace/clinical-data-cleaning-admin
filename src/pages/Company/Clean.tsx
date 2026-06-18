@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Space, Input, Select, Form, Dialog, MessagePlugin, Card, Textarea } from 'tdesign-react';
 import { companyApi } from '../../api';
 import type { CleanCompanyDto, CompanyQueryParam, CompanyShortDto } from '../../api';
@@ -19,7 +19,8 @@ const companyTypeOptions = [
 
 const CompanyClean: React.FC = () => {
   const [form] = Form.useForm();
-  
+  const isFirstRender = useRef(true);
+
   // Table state
   const [data, setData] = useState<CleanCompanyDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,10 @@ const CompanyClean: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchData();
+    }
   }, []);
 
   const onSearch = () => fetchData(1);
@@ -90,9 +94,9 @@ const CompanyClean: React.FC = () => {
   const [editForm] = Form.useForm();
   const [editLoading, setEditLoading] = useState(false);
   const [currentEditRecord, setCurrentEditRecord] = useState<CleanCompanyDto | null>(null);
-  
+
   // 关联搜索
-  const [relationOptions, setRelationOptions] = useState<{label: string, value: number, item: CompanyShortDto}[]>([]);
+  const [relationOptions, setRelationOptions] = useState<{ label: string; value: number; item: CompanyShortDto }[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const onSearchRelation = async (keyword: string) => {
@@ -100,10 +104,10 @@ const CompanyClean: React.FC = () => {
     setSearchLoading(true);
     try {
       const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50 });
-      const opts = (res.data?.list || []).map(item => ({
+      const opts = (res.data?.list || []).map((item) => ({
         label: item.companyStandardName || item.companyShortName || '',
         value: item.id as number,
-        item
+        item,
       }));
       setRelationOptions(opts);
     } catch (e) {
@@ -129,7 +133,7 @@ const CompanyClean: React.FC = () => {
   };
 
   const onRelationChange = (val: any) => {
-    const opt = relationOptions.find(o => o.value === val);
+    const opt = relationOptions.find((o) => o.value === val);
     if (opt && opt.item) {
       editForm.setFieldsValue({
         companyStandardName: opt.item.companyStandardName,
@@ -169,29 +173,36 @@ const CompanyClean: React.FC = () => {
     }
   };
 
-
   const columns = [
-    { colKey: 'rowIndex', title: '序号', width: 80, cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize },
+    {
+      colKey: 'rowIndex',
+      title: '序号',
+      width: 80,
+      cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
+    },
     { colKey: 'companyOriginName', title: '公司名(源数据)', width: 220 },
-    { 
-      colKey: 'cnt', 
-      title: '相关备案/登记号', 
-      width: 150, 
+    {
+      colKey: 'cnt',
+      title: '相关备案/登记号',
+      width: 150,
       align: 'center' as const,
       cell: ({ row }: any) => (
-        <span style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => openAccModal(row.id!)}>
+        <span
+          style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => openAccModal(row.id!)}
+        >
           {row.cnt || 0}
         </span>
-      )
+      ),
     },
-    { 
-      colKey: 'status', 
-      title: '清洗状态', 
+    {
+      colKey: 'status',
+      title: '清洗状态',
       width: 120,
       cell: ({ row }: any) => {
-        const statusItem = statusOptions.find(opt => opt.value === row.status);
+        const statusItem = statusOptions.find((opt) => opt.value === row.status);
         return statusItem ? statusItem.label : '-';
-      }
+      },
     },
     { colKey: 'companyStandardName', title: '清洗后公司名称(标准名)', width: 250 },
     { colKey: 'companyType', title: '公司类型', width: 100 },
@@ -213,21 +224,35 @@ const CompanyClean: React.FC = () => {
   ];
 
   const accColumns = [
-    { colKey: 'rowIndex', title: '序号', width: 80, cell: ({ rowIndex }: any) => rowIndex + 1 + (accPagination.current - 1) * accPagination.pageSize },
+    {
+      colKey: 'rowIndex',
+      title: '序号',
+      width: 80,
+      cell: ({ rowIndex }: any) => rowIndex + 1 + (accPagination.current - 1) * accPagination.pageSize,
+    },
     { colKey: 'acceptanceNo', title: '相关登记号/备案号' },
   ];
 
   return (
     <Card bordered={false} style={{ padding: '10px' }}>
       <div style={{ marginBottom: 24 }}>
-        <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>公司名清洗</h2>
-        <div style={{ 
-          background: '#f8fafc', 
-          padding: '16px', 
-          borderRadius: '12px',
-          border: '1px solid var(--td-border-level-1-color)'
-        }}>
-          <Form form={form} layout="inline" labelWidth={140} style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}>
+        <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
+          公司名清洗
+        </h2>
+        <div
+          style={{
+            background: '#f8fafc',
+            padding: '16px',
+            borderRadius: '12px',
+            border: '1px solid var(--td-border-level-1-color)',
+          }}
+        >
+          <Form
+            form={form}
+            layout="inline"
+            labelWidth={140}
+            style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}
+          >
             <Form.FormItem label="公司名(标准名)" name="companyName" style={{ marginBottom: 0 }}>
               <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
             </Form.FormItem>
@@ -242,8 +267,12 @@ const CompanyClean: React.FC = () => {
             </Form.FormItem>
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
               <Space>
-                <Button theme="default" onClick={onReset} style={{ background: '#fff' }}>重置条件</Button>
-                <Button theme="primary" onClick={onSearch}>立即查询</Button>
+                <Button theme="default" onClick={onReset} style={{ background: '#fff' }}>
+                  重置条件
+                </Button>
+                <Button theme="primary" onClick={onSearch}>
+                  立即查询
+                </Button>
               </Space>
             </div>
           </Form>
@@ -260,7 +289,7 @@ const CompanyClean: React.FC = () => {
           pageSize: pagination.pageSize,
           total: pagination.total,
           showJumper: true,
-          onChange: (pageInfo) => fetchData(pageInfo.current, pageInfo.pageSize)
+          onChange: (pageInfo) => fetchData(pageInfo.current, pageInfo.pageSize),
         }}
         bordered
         stripe
@@ -284,7 +313,7 @@ const CompanyClean: React.FC = () => {
             current: accPagination.current,
             pageSize: accPagination.pageSize,
             total: accPagination.total,
-            onChange: (pageInfo) => fetchAcceptanceNos(currentCompanyId!, pageInfo.current, pageInfo.pageSize)
+            onChange: (pageInfo) => fetchAcceptanceNos(currentCompanyId!, pageInfo.current, pageInfo.pageSize),
           }}
           bordered
           stripe
@@ -303,7 +332,7 @@ const CompanyClean: React.FC = () => {
         <Form form={editForm} labelWidth={140} labelAlign="left">
           <div style={{ backgroundColor: '#e6f7ff', padding: '16px', borderRadius: 4, marginBottom: 16 }}>
             <Form.FormItem label="关联：" name="relationId" style={{ marginBottom: 0 }}>
-              <Select 
+              <Select
                 filterable
                 onSearch={onSearchRelation}
                 loading={searchLoading}

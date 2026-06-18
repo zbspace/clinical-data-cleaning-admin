@@ -7,7 +7,7 @@ import type { LoginRequest, UserDto } from './types/auth';
 export const authApi = {
   /** 获取验证码 */
   getCaptcha() {
-    return request.get('/adminLogin/captcha');
+    return request.get('/adminLogin/captcha', { responseType: 'blob' });
   },
 
   /** 登录以后返回token */

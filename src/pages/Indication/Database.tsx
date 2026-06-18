@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Input, Card, Form, Select, Dialog, MessagePlugin } from 'tdesign-react';
 import { indicationApi } from '../../api';
 import type { IndicationDictDto, IndicationDictParam, IndicationCategory } from '../../api/types/indication';
@@ -8,6 +8,7 @@ const { Option } = Select;
 
 const IndicationDatabase: React.FC = () => {
   const [filterForm] = Form.useForm();
+  const isFirstRender = useRef(true);
   
   // Table state
   const [data, setData] = useState<IndicationDictDto[]>([]);
@@ -18,6 +19,9 @@ const IndicationDatabase: React.FC = () => {
   const [categoryOptions, setCategoryOptions] = useState<IndicationCategory[]>([]);
 
   useEffect(() => {
+    if (!isFirstRender.current) return;
+    isFirstRender.current = false;
+
     // 页面加载时获取下拉分类
     indicationApi.categoryPageData({ pageNum: 1, pageSize: 1000 }).then(res => {
       if (res.code === 0) {

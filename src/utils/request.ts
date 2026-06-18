@@ -16,7 +16,7 @@ request.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer_${token}`;
     }
     return config;
   },
@@ -28,6 +28,11 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {
+    // 如果是流或者二进制数据，直接返回整个响应对象，以便获取响应头
+    if (response.config.responseType === 'blob' || response.config.responseType === 'arraybuffer') {
+      return response as any;
+    }
+
     const res = response.data;
 
     // 假设正常业务响应的 code 是 200 或 0
@@ -43,7 +48,7 @@ request.interceptors.response.use(
     if (error.response?.status === 401) {
       MessagePlugin.error('登录状态已过期，请重新登录');
       localStorage.removeItem('token');
-      // window.location.href = '/login';
+      window.location.href = '/login';
     } else {
       MessagePlugin.error(error.message || '网络请求失败，请稍后重试');
     }

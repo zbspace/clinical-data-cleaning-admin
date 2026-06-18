@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Input, Card, Form, Select, Dialog, MessagePlugin, Tag } from 'tdesign-react';
 import { indicationApi } from '../../api';
 import type { IndicationDto, IndicationParam, IndicationDetailDto, IndicationTagDto } from '../../api';
@@ -8,6 +8,7 @@ const { Option } = Select;
 
 const IndicationClean: React.FC = () => {
   const [filterForm] = Form.useForm();
+  const isFirstRender = useRef(true);
   
   const [data, setData] = useState<IndicationDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,10 @@ const IndicationClean: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchData();
+    }
   }, []);
 
   const onSearch = () => fetchData(1);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Input, Form, Dialog, MessagePlugin, Card } from 'tdesign-react';
 import { drugApi } from '../../api/drug';
 import type { DrugStandardDto, DrugStandardInfo, DrugStandardParam } from '../../api/types/drug';
@@ -7,6 +7,7 @@ const { FormItem } = Form;
 
 const DrugDatabase: React.FC = () => {
   const [filterForm] = Form.useForm();
+  const isFirstRender = useRef(true);
   
   // Table state
   const [data, setData] = useState<DrugStandardDto[]>([]);
@@ -44,7 +45,10 @@ const DrugDatabase: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchData();
+    }
   }, []);
 
   const onSearch = () => fetchData(1);

@@ -15,10 +15,15 @@ const Login: React.FC = () => {
   const fetchCaptcha = async () => {
     try {
       const res: any = await authApi.getCaptcha();
-      if (res.code === 0 || res.code === 200) {
+      // res 现在是完整的 axios 响应对象
+      const blob = res.data;
+      const key = res.headers['captcha-key'] || res.headers['Captcha-Key'];
+
+      if (blob) {
+        const imageUrl = URL.createObjectURL(blob);
         setCaptcha({
-          img: res.data.img,
-          key: res.data.key || res.data.captchaKey,
+          img: imageUrl,
+          key: key,
         });
       }
     } catch (error) {
@@ -29,6 +34,14 @@ const Login: React.FC = () => {
   useEffect(() => {
     fetchCaptcha();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (captcha.img) {
+        URL.revokeObjectURL(captcha.img);
+      }
+    };
+  }, [captcha.img]);
 
   const onSubmit = async (e: any) => {
     if (e.validateResult === true) {
@@ -137,42 +150,33 @@ const Login: React.FC = () => {
             >
               <Input size="large" type="password" prefixIcon={<LockOnIcon />} placeholder="请输入密码" clearable />
             </Form.FormItem>
-            <Form.FormItem
-              name="captchaCode"
-              rules={[{ required: true, message: '请输入验证码' }]}
-              style={{ marginTop: 24 }}
-            >
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <Input size="large" placeholder="请输入验证码" clearable />
-                <div
-                  onClick={fetchCaptcha}
-                  title="点击刷新验证码"
-                  style={{
-                    cursor: 'pointer',
-                    height: '48px',
-                    width: '120px',
-                    flexShrink: 0,
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    border: '1px solid var(--td-component-border)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'var(--td-bg-color-container)',
-                  }}
-                >
-                  {captcha.img ? (
-                    <img
-                      src={captcha.img}
-                      alt="验证码"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                  ) : (
-                    <RefreshIcon />
-                  )}
-                </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ width: '200px' }}>
+                <Form.FormItem name="captchaCode" rules={[{ required: true, message: '请输入验证码' }]}>
+                  <Input size="large" placeholder="请输入验证码" clearable />
+                </Form.FormItem>
               </div>
-            </Form.FormItem>
+              <div
+                onClick={fetchCaptcha}
+                title="点击刷新验证码"
+                style={{
+                  cursor: 'pointer',
+                  height: '40px',
+                  width: '120px',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {captcha.img ? (
+                  <img src={captcha.img} alt="验证码" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                ) : (
+                  <RefreshIcon />
+                )}
+              </div>
+            </div>
             <Form.FormItem style={{ marginTop: 32 }}>
               <Button
                 size="large"

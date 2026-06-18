@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Space, Input, Select, Form, Dialog, MessagePlugin, Card, Textarea } from 'tdesign-react';
 import { companyApi } from '../../api';
 import type { StandardCompanyDto, CompanyQueryParam } from '../../api';
@@ -12,6 +12,7 @@ const companyTypeOptions = [
 
 const CompanyDatabase: React.FC = () => {
   const [form] = Form.useForm();
+  const isFirstRender = useRef(true);
 
   // ----- Table State -----
   const [data, setData] = useState<StandardCompanyDto[]>([]);
@@ -39,7 +40,10 @@ const CompanyDatabase: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchData();
+    }
   }, []);
 
   const onSearch = () => fetchData(1);
