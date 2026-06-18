@@ -12,10 +12,10 @@ const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
   const token = localStorage.getItem('token');
   const location = useLocation();
 
-  // if (!token) {
-  //   // 如果没有 Token，重定向到登录页，并记录来源地址
-  //   return <Navigate to="/login" state={{ from: location }} replace />;
-  // }
+  if (!token) {
+    // 如果没有 Token，重定向到登录页，并记录来源地址
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
   return <>{children}</>;
 };

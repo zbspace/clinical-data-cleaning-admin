@@ -1,6 +1,7 @@
 {
   "name": "clinical-data-cleaning-admin",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -13,6 +14,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@vitejs/plugin-react-swc": "^4.3.1",
     "axios": "^1.18.0",
     "less": "^4.6.6",
     "react": "^18.3.1",
