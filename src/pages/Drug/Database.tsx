@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Input, Form, Dialog, MessagePlugin, Card } from 'tdesign-react';
+import moment from 'moment';
 import { drugApi } from '../../api/drug';
 import type { DrugStandardDto, DrugStandardInfo, DrugStandardParam } from '../../api/types/drug';
 
@@ -183,7 +184,12 @@ const DrugDatabase: React.FC = () => {
       ),
     },
     { colKey: 'updateUser', title: '操作人', width: 100 },
-    { colKey: 'updateTime', title: '更新时间', width: 170 },
+    {
+      colKey: 'updateTime',
+      title: '更新时间',
+      width: 170,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
   ];
 
   return (

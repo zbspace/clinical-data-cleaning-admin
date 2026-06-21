@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Select, Dialog, Form, Input, Tag, Card } from 'tdesign-react';
+import moment from 'moment';
 import { drugApi } from '../../api/drug';
 
 const { FormItem } = Form;
@@ -107,7 +108,12 @@ const DrugClean: React.FC = () => {
       ),
     },
     { colKey: 'operator', title: '操作人', width: 100, cell: ({ row }: any) => row.updateUser || row.operator },
-    { colKey: 'updateTime', title: '更新时间', width: 150 },
+    {
+      colKey: 'updateTime',
+      title: '更新时间',
+      width: 170,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
   ];
 
   const fetchData = async () => {

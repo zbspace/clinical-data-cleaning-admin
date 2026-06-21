@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Input, Card, Form, Select, Dialog, MessagePlugin } from 'tdesign-react';
+import moment from 'moment';
 import { indicationApi } from '../../api';
 import type { IndicationDictDto, IndicationDictParam, IndicationCategory } from '../../api/types/indication';
 
@@ -123,7 +124,12 @@ const IndicationDatabase: React.FC = () => {
       ),
     },
     { colKey: 'updateUser', title: '操作人', width: 120 },
-    { colKey: 'updateTime', title: '操作时间', width: 170 },
+    {
+      colKey: 'updateTime',
+      title: '操作时间',
+      width: 170,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
   ];
 
   return (

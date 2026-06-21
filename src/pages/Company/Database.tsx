@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Space, Input, Select, Form, Dialog, MessagePlugin, Card, Textarea } from 'tdesign-react';
+import moment from 'moment';
 import { companyApi } from '../../api';
 import type { StandardCompanyDto, CompanyQueryParam } from '../../api';
 
@@ -183,7 +184,13 @@ const CompanyDatabase: React.FC = () => {
         </div>
       ),
     },
-    { colKey: 'updateTime', title: '更新时间', width: 150 },
+    { colKey: 'updateUser', title: '操作人', width: 100 },
+    {
+      colKey: 'updateTime',
+      title: '更新时间',
+      width: 170,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
   ];
 
   const sourceColumns = [

@@ -194,3 +194,8 @@ h6 {
   font-family: var(--td-font-family-medium);
   font-weight: 600;
 }
+.t-card {
+  .t-card__body {
+    padding: 16px;
+  }
+}

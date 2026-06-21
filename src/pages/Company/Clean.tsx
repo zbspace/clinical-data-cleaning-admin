@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Table, Button, Space, Input, Select, Form, Dialog, MessagePlugin, Card, Textarea } from 'tdesign-react';
+import moment from 'moment';
 import { companyApi } from '../../api';
 import type { CleanCompanyDto, CompanyQueryParam, CompanyShortDto } from '../../api';
 
@@ -184,7 +185,7 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'cnt',
       title: '相关备案/登记号',
-      width: 150,
+      width: 160,
       align: 'center' as const,
       cell: ({ row }: any) => (
         <span
@@ -220,7 +221,12 @@ const CompanyClean: React.FC = () => {
       ),
     },
     { colKey: 'updater', title: '操作人', width: 100 },
-    { colKey: 'updateTime', title: '更新时间', width: 180 },
+    {
+      colKey: 'updateTime',
+      title: '更新时间',
+      width: 180,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
   ];
 
   const accColumns = [
@@ -234,8 +240,8 @@ const CompanyClean: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false} style={{ padding: '10px' }}>
-      <div style={{ marginBottom: 24 }}>
+    <Card bordered={false} style={{  height: 'calc(100vh - 86px)' }}>
+      <div style={{ marginBottom: 16 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
           公司名清洗
         </h2>
