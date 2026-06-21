@@ -224,7 +224,7 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'updateTime',
       title: '更新时间',
-      width: 180,
+      width: 220,
       cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
     },
   ];
