@@ -181,7 +181,7 @@ const CompanyClean: React.FC = () => {
       width: 80,
       cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
     },
-    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 220 },
+    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 120 , ellipsis: true },
     {
       colKey: 'cnt',
       title: '相关备案/登记号',

@@ -153,6 +153,7 @@ h6 {
   border-radius: 6px;
   margin: 4px 8px;
   transition: all 0.2s ease;
+  margin-left: 0;
 }
 .t-menu__item.t-is-active {
   background: linear-gradient(90deg, rgba(3, 105, 161, 0.06) 0%, transparent 100%) !important;
@@ -163,9 +164,9 @@ h6 {
   content: '';
   position: absolute;
   left: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 4px !important;
   height: 20px;
   background-color: var(--td-brand-color);
   border-radius: 0 4px 4px 0;

@@ -10,6 +10,7 @@ import {
   LocationIcon,
   TimeIcon,
   LogoutIcon,
+  ViewListIcon,
 } from 'tdesign-icons-react';
 //#endregion
 
@@ -36,38 +37,65 @@ const BasicLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Aside style={{ borderRight: '1px solid var(--td-border-level-1-color)', backgroundColor: '#fff', boxShadow: '1px 0 10px rgba(0,0,0,0.02)' }}>
+      <Aside
+        width={collapsed ? '64px' : '232px'}
+        style={{
+          borderRight: '1px solid var(--td-border-level-1-color)',
+          backgroundColor: '#fff',
+          boxShadow: '1px 0 10px rgba(0,0,0,0.02)',
+          transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)',
+          zIndex: 101,
+          overflow: 'hidden',
+        }}
+      >
         <Menu
           value={activeValue}
           collapsed={collapsed}
+          style={{ height: '100%', borderRight: 'none' }}
           onChange={(value) => navigate(value as string)}
           logo={
-            <div style={{ 
-              padding: '20px 16px', 
-              fontSize: '18px', 
-              fontFamily: 'var(--td-font-family-medium)',
-              fontWeight: 700, 
-              color: 'var(--td-brand-color)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              letterSpacing: '-0.02em'
-            }}>
-              <div style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
-                background: 'linear-gradient(135deg, var(--td-brand-color-5), var(--td-brand-color-8))',
+            <div
+              style={{
+                height: '56px',
+                padding: collapsed ? '0' : '0 20px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '14px',
-                flexShrink: 0
-              }}>
-                <CheckCircleIcon />
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                overflow: 'hidden',
+                transition: 'all 0.3s',
+              }}
+            >
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, var(--td-brand-color-5), var(--td-brand-color-8))',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  flexShrink: 0,
+                  boxShadow: '0 4px 10px rgba(0, 82, 217, 0.2)',
+                }}
+              >
+                <CheckCircleIcon size="18px" />
               </div>
-              {!collapsed && <span>临床数据系统</span>}
+              {!collapsed && (
+                <span
+                  style={{
+                    marginLeft: '12px',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: 'var(--td-brand-color)',
+                    whiteSpace: 'nowrap',
+                    opacity: 1,
+                    transition: 'opacity 0.3s',
+                  }}
+                >
+                  临床数据系统
+                </span>
+              )}
             </div>
           }
         >
@@ -102,23 +130,41 @@ const BasicLayout: React.FC = () => {
           {/* #endregion */}
         </Menu>
       </Aside>
-      <Layout>
+      <Layout style={{ transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)' }}>
         {/* #region Header */}
         <Header
           style={{
             background: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(10px)',
             borderBottom: '1px solid var(--td-border-level-1-color)',
-            padding: '0 32px',
+            padding: '0 24px',
             display: 'flex',
             alignItems: 'center',
-            height: '64px'
+            height: '56px',
           }}
         >
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
-             <span style={{ fontFamily: 'var(--td-font-family-medium)', fontSize: '15px', color: 'var(--td-text-color-secondary)' }}>
-                {activeValue === '/overview' ? '系统总览' : '数据清洗与管理'}
-             </span>
+            <Button
+              variant="text"
+              shape="square"
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ 
+                color: 'var(--td-text-color-secondary)',
+                transition: 'transform 0.3s',
+                transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)'
+              }}
+            >
+              <ViewListIcon size="20px" />
+            </Button>
+            <span
+              style={{
+                fontFamily: 'var(--td-font-family-medium)',
+                fontSize: '15px',
+                color: 'var(--td-text-color-secondary)',
+              }}
+            >
+              {activeValue === '/overview' ? '系统总览' : '数据清洗与管理'}
+            </span>
           </div>
           <Dropdown options={[{ content: '退出登录', value: 'logout', onClick: handleLogout }]}>
             <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '20px', background: '#f1f5f9', transition: 'all 0.2s' }}>
