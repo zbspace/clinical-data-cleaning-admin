@@ -83,23 +83,36 @@ const CompanyDatabase: React.FC = () => {
   const [editLoading, setEditLoading] = useState(false);
   const [currentEditRecord, setCurrentEditRecord] = useState<StandardCompanyDto | null>(null);
 
+  // 监听编辑状态和数据，处理表单回显
+  useEffect(() => {
+    if (editModalVisible) {
+      if (currentEditRecord) {
+        // 编辑模式：填充数据，使用 setTimeout 确保表单项已注册
+        const timer = setTimeout(() => {
+          editForm.setFieldsValue({
+            companyStandardName: currentEditRecord.companyStandardName,
+            companyShortName: currentEditRecord.companyShortName,
+            companyType: currentEditRecord.companyType,
+            parentCompanyShortName: currentEditRecord.parentCompanName,
+            remark: currentEditRecord.remark,
+          });
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+      // 新增模式：重置表单
+      editForm.reset();
+    }
+    return undefined;
+  }, [editModalVisible, currentEditRecord, editForm]);
+
   const openEditModal = async (record?: StandardCompanyDto) => {
-    editForm.reset();
     if (record && record.id) {
       // Edit mode
-      setEditLoading(true);
       setEditModalVisible(true);
+      setEditLoading(true);
       try {
         const res = await companyApi.getStandardCompany(record.id);
-        const detail = res.data;
-        setCurrentEditRecord(detail);
-        editForm.setFieldsValue({
-          companyStandardName: detail.companyStandardName,
-          companyShortName: detail.companyShortName,
-          companyType: detail.companyType,
-          parentCompanyShortName: detail.parentCompanName, // API typo workaround if any
-          remark: detail.remark,
-        });
+        setCurrentEditRecord(res.data);
       } catch (e) {
         console.error(e);
         setEditModalVisible(false);
@@ -286,9 +299,12 @@ const CompanyDatabase: React.FC = () => {
 
       {/* 编辑弹窗 */}
       <Dialog
-        header="编辑"
+        header={currentEditRecord ? '编辑' : '新增'}
         visible={editModalVisible}
-        onClose={() => setEditModalVisible(false)}
+        onClose={() => {
+          setEditModalVisible(false);
+          setCurrentEditRecord(null);
+        }}
         onConfirm={submitEdit}
         confirmBtn={{ content: '保存', theme: 'primary', loading: editLoading }}
         width={500}
