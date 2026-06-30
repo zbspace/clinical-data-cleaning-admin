@@ -118,18 +118,28 @@ const CompanyClean: React.FC = () => {
     }
   };
 
+  // 监听编辑状态和数据，处理表单回显
+  useEffect(() => {
+    if (editModalVisible && currentEditRecord) {
+      // 使用 setTimeout 确保表单项已注册
+      const timer = setTimeout(() => {
+        editForm.setFieldsValue({
+          relationId: currentEditRecord.standardId,
+          companyStandardName: currentEditRecord.companyStandardName,
+          companyShortName: currentEditRecord.companyShortName,
+          companyType: currentEditRecord.companyType,
+          parentCompanyShortName: currentEditRecord.parentCompanyShortName,
+          remark: currentEditRecord.remark,
+        });
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [editModalVisible, currentEditRecord, editForm]);
+
   const openEditModal = (record: CleanCompanyDto) => {
     setCurrentEditRecord(record);
-    editForm.reset();
     setRelationOptions([]);
-    editForm.setFieldsValue({
-      relationId: record.standardId,
-      companyStandardName: record.companyStandardName,
-      companyShortName: record.companyShortName,
-      companyType: record.companyType,
-      parentCompanyShortName: record.parentCompanyShortName,
-      remark: record.remark,
-    });
     setEditModalVisible(true);
   };
 
@@ -331,7 +341,11 @@ const CompanyClean: React.FC = () => {
       <Dialog
         header="编辑"
         visible={editModalVisible}
-        onClose={() => setEditModalVisible(false)}
+        onClose={() => {
+          setEditModalVisible(false);
+          setCurrentEditRecord(null);
+          editForm.reset();
+        }}
         onConfirm={submitEdit}
         confirmBtn={{ content: '提交', theme: 'primary', loading: editLoading }}
         width={600}

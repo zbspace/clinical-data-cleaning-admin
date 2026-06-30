@@ -98,9 +98,10 @@ const CompanyDatabase: React.FC = () => {
           });
         }, 0);
         return () => clearTimeout(timer);
+      } else {
+        // 新增模式：重置表单
+        editForm.reset();
       }
-      // 新增模式：重置表单
-      editForm.reset();
     }
     return undefined;
   }, [editModalVisible, currentEditRecord, editForm]);
@@ -108,6 +109,7 @@ const CompanyDatabase: React.FC = () => {
   const openEditModal = async (record?: StandardCompanyDto) => {
     if (record && record.id) {
       // Edit mode
+      setCurrentEditRecord(record);
       setEditModalVisible(true);
       setEditLoading(true);
       try {
@@ -163,7 +165,7 @@ const CompanyDatabase: React.FC = () => {
     { colKey: 'companyStandardName', title: '公司名(标准名称)', width: 280 },
     {
       colKey: 'cnt',
-      title: '源数据公司名(别名)',
+      title: '统计次数',
       width: 180,
       align: 'center' as const,
       cell: ({ row }: any) => (
