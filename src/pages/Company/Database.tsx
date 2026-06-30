@@ -7,7 +7,8 @@ import type { StandardCompanyDto, CompanyQueryParam } from '../../api';
 const companyTypeOptions = [
   { label: '药企', value: '药企' },
   { label: 'CRO', value: 'CRO' },
-  { label: '机构', value: '机构' },
+  { label: '申办方', value: '申办方' },
+  { label: '第三方实验室', value: '第三方实验室' },
   { label: '其他', value: '其他' },
 ];
 
@@ -156,7 +157,6 @@ const CompanyDatabase: React.FC = () => {
         <div
           style={{
             padding: '4px',
-            border: '1px dashed #d54941',
             color: '#0052d9',
             cursor: 'pointer',
             display: 'inline-block',
@@ -177,7 +177,7 @@ const CompanyDatabase: React.FC = () => {
       width: 120,
       fixed: 'right' as const,
       cell: ({ row }: any) => (
-        <div style={{ border: '1px dashed #d54941', padding: '2px 8px', display: 'inline-block' }}>
+        <div style={{  padding: '2px 8px', display: 'inline-block' }}>
           <Button theme="primary" variant="text" onClick={() => openEditModal(row)}>
             编辑
           </Button>
@@ -204,15 +204,15 @@ const CompanyDatabase: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false} style={{ padding: '10px' }}>
-      <div style={{ marginBottom: 24 }}>
+    <Card bordered={false} style={{ padding: '10px' ,width: '100%'}}>
+      <div style={{ marginBottom: 10 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
           公司名库
         </h2>
         <div
           style={{
             background: '#f8fafc',
-            padding: '16px',
+            padding: '10px',
             borderRadius: '12px',
             border: '1px solid var(--td-border-level-1-color)',
           }}

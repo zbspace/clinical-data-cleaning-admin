@@ -36,7 +36,7 @@ const BasicLayout: React.FC = () => {
   //#endregion
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh',display: 'flex' }}>
       <Aside
         width={collapsed ? '64px' : '232px'}
         style={{
@@ -177,7 +177,7 @@ const BasicLayout: React.FC = () => {
 
         {/* #region Content */}
         <Content style={{ padding: '10px', overflow: 'auto', backgroundColor: 'var(--td-bg-color-page)' }}>
-          <div style={{ minHeight: '100%', borderRadius: 'var(--td-radius-large)' }}>
+          <div style={{ minHeight: '100%', borderRadius: 'var(--td-radius-large)' ,width: '100%'}}>
             <Outlet />
           </div>
         </Content>

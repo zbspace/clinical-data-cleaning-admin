@@ -52,16 +52,17 @@ const DrugClean: React.FC = () => {
       ),
     },
     {
-      colKey: 'status',
+      colKey: 'cleanStatus',
       title: '清洗状态',
       width: 120,
       cell: ({ row }: { row: any }) => {
         let theme = 'default';
-        let statusText = row.status;
-        if (row.status === 1) statusText = '自动清洗';
-        if (row.status === 2) statusText = '暂未匹配上';
+        let statusText = row.cleanStatus;
+        if (row.cleanStatus === 0) statusText = '未清洗';
+        if (row.cleanStatus === 1) statusText = '已清洗';
+        if (row.cleanStatus === 2) statusText = '不用清洗';
 
-        if (statusText === '自动清洗') theme = 'warning';
+        if (statusText === '未清洗') theme = 'warning';
         return (
           <Tag theme={theme as any} variant="light">
             {statusText}
@@ -171,7 +172,7 @@ const DrugClean: React.FC = () => {
 
   return (
     <Card bordered={false} style={{ padding: '10px' }}>
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 10 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
           药品名清洗
         </h2>
@@ -200,11 +201,9 @@ const DrugClean: React.FC = () => {
             </FormItem>
             <FormItem label="清洗状态" name="status" initialData="all" style={{ marginBottom: 0 }}>
               <Select style={{ width: 220 }}>
-                <Option key="all" value="all" label="全部" />
-                <Option key="auto" value="1" label="自动清洗" />
-                <Option key="unmatched" value="2" label="暂未匹配上" />
-                <Option key="manual" value="3" label="手动清洗" />
-                <Option key="not_needed" value="4" label="不需要清洗" />
+                <Option key="all" value="0" label="未清洗" />
+                <Option key="auto" value="1" label="已清洗" />
+                <Option key="unmatched" value="2" label="不用清洗" />
               </Select>
             </FormItem>
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>

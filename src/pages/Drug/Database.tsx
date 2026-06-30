@@ -194,7 +194,7 @@ const DrugDatabase: React.FC = () => {
 
   return (
     <Card bordered={false} style={{ padding: '10px' }}>
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 10 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>药品名库管理</h2>
         <div style={{ 
           background: '#f8fafc', 

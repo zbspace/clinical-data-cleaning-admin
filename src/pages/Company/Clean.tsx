@@ -5,17 +5,17 @@ import { companyApi } from '../../api';
 import type { CleanCompanyDto, CompanyQueryParam, CompanyShortDto } from '../../api';
 
 const statusOptions = [
-  { label: '全部', value: 0 },
-  { label: '自动清洗', value: 1 },
-  { label: '暂未匹配上', value: 2 },
-  { label: '手动清洗', value: 3 },
-  { label: '不需要清洗', value: 4 },
+  { label: '未清洗', value: 0 },
+  { label: '已清洗', value: 1 },
+  { label: '不用清洗', value: 2 },
 ];
 
 const companyTypeOptions = [
   { label: '药企', value: '药企' },
   { label: 'CRO', value: 'CRO' },
-  { label: '机构', value: '机构' },
+  { label: '申办方', value: '申办方' },
+  { label: '第三方实验室', value: '第三方实验室' },
+  { label: '其他', value: '其他' },
 ];
 
 const CompanyClean: React.FC = () => {
@@ -178,30 +178,30 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'rowIndex',
       title: '序号',
-      width: 80,
+      width: '180px',
       cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
     },
     { colKey: 'companyOriginName', title: '公司名(源数据)', width: 120 , ellipsis: true },
+    // {
+    //   colKey: 'cnt',
+    //   title: '相关备案/登记号',
+    //   width: 160,
+    //   align: 'center' as const,
+    //   cell: ({ row }: any) => (
+    //     <span
+    //       style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }}
+    //       onClick={() => openAccModal(row.id!)}
+    //     >
+    //       {row.cnt || 0}
+    //     </span>
+    //   ),
+    // },
     {
-      colKey: 'cnt',
-      title: '相关备案/登记号',
-      width: 160,
-      align: 'center' as const,
-      cell: ({ row }: any) => (
-        <span
-          style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }}
-          onClick={() => openAccModal(row.id!)}
-        >
-          {row.cnt || 0}
-        </span>
-      ),
-    },
-    {
-      colKey: 'status',
+      colKey: 'cleanStatus',
       title: '清洗状态',
       width: 120,
       cell: ({ row }: any) => {
-        const statusItem = statusOptions.find((opt) => opt.value === row.status);
+        const statusItem = statusOptions.find((opt) => opt.value === row.cleanStatus);
         return statusItem ? statusItem.label : '-';
       },
     },
@@ -209,6 +209,14 @@ const CompanyClean: React.FC = () => {
     { colKey: 'companyType', title: '公司类型', width: 100 },
     { colKey: 'companyShortName', title: '公司简称', width: 150 },
     { colKey: 'parentCompanyShortName', title: '母公司简称', width: 150 },
+    
+    { colKey: 'updater', title: '操作人', width: 100 },
+    {
+      colKey: 'updateTime',
+      title: '更新时间',
+      width: 220,
+      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
     {
       colKey: 'operation',
       title: '操作',
@@ -219,13 +227,6 @@ const CompanyClean: React.FC = () => {
           编辑
         </Button>
       ),
-    },
-    { colKey: 'updater', title: '操作人', width: 100 },
-    {
-      colKey: 'updateTime',
-      title: '更新时间',
-      width: 220,
-      cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
     },
   ];
 
@@ -268,7 +269,7 @@ const CompanyClean: React.FC = () => {
             <Form.FormItem label="公司类型" name="companyType" style={{ marginBottom: 0 }}>
               <Select options={companyTypeOptions} placeholder="请选择公司类型" clearable style={{ width: 220 }} />
             </Form.FormItem>
-            <Form.FormItem label="清洗状态" name="status" initialData={0} style={{ marginBottom: 0 }}>
+            <Form.FormItem label="清洗状态" name="cleanStatus" initialData={0} style={{ marginBottom: 0 }}>
               <Select options={statusOptions} placeholder="请选择状态" clearable style={{ width: 220 }} />
             </Form.FormItem>
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>

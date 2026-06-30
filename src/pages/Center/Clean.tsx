@@ -36,7 +36,7 @@ const CenterClean: React.FC = () => {
 
   return (
     <Card bordered={false} style={{ padding: '10px' }}>
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 10 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>研究中心名称清洗</h2>
         <div style={{ 
           background: '#f8fafc', 
@@ -51,11 +51,11 @@ const CenterClean: React.FC = () => {
             <FormItem label="建议标准名称" name="suggestedName" style={{ marginBottom: 0 }}>
               <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
             </FormItem>
-            <FormItem label="清洗状态" name="status" initialData="all" style={{ marginBottom: 0 }}>
+            <FormItem label="清洗状态" name="cleanStatus" initialData="all" style={{ marginBottom: 0 }}>
               <Select style={{ width: 220 }}>
-                <Option key="all" value="all" label="全部" />
-                <Option key="pending" value="pending" label="待处理" />
-                <Option key="done" value="done" label="已处理" />
+                <Option key="all" value="0" label="未清洗" />
+                <Option key="pending" value="1" label="已清洗" />
+                <Option key="done" value="2" label="不用清洗" />
               </Select>
             </FormItem>
             <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
