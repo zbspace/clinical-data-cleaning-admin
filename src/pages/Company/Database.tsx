@@ -93,7 +93,7 @@ const CompanyDatabase: React.FC = () => {
             companyStandardName: currentEditRecord.companyStandardName,
             companyShortName: currentEditRecord.companyShortName,
             companyType: currentEditRecord.companyType,
-            parentCompanyShortName: currentEditRecord.parentCompanName,
+            parentCompanyShortName: currentEditRecord.parentCompanyShortName,
             remark: currentEditRecord.remark,
           });
         }, 0);
@@ -139,7 +139,7 @@ const CompanyDatabase: React.FC = () => {
           companyStandardName: fields.companyStandardName,
           companyShortName: fields.companyShortName,
           companyType: fields.companyType,
-          parentCompanName: fields.parentCompanyShortName, // Mapping to API property
+          parentCompanyShortName: fields.parentCompanyShortName, // Mapping to API property
           remark: fields.remark,
         };
         await companyApi.saveStandardCompany(submitData);
@@ -185,7 +185,7 @@ const CompanyDatabase: React.FC = () => {
     },
     { colKey: 'companyType', title: '公司类型', width: 120 },
     { colKey: 'companyShortName', title: '公司简称', width: 180 },
-    { colKey: 'parentCompanName', title: '母公司简称', width: 180 }, // API has parentCompanName
+    { colKey: 'parentCompanyShortName', title: '母公司简称', width: 180 }, // API has parentCompanyShortName
     {
       colKey: 'operation',
       title: '编辑修正',
@@ -199,7 +199,7 @@ const CompanyDatabase: React.FC = () => {
         </div>
       ),
     },
-    { colKey: 'updateUser', title: '操作人', width: 100 },
+    { colKey: 'updater', title: '操作人', width: 100 },
     {
       colKey: 'updateTime',
       title: '更新时间',

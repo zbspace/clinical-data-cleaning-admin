@@ -1,16 +1,19 @@
 //#region Types
 export interface CompanyQueryParam {
+  cleanStatus?: number;
   companyName?: string;
-  parentCompanyShortName?: string;
+  companyOriginName?: string;
+  companyStandardName?: string;
   companyType?: string;
   pageNum?: number;
   pageSize?: number;
+  parentCompanyId?: number;
+  parentCompanyShortName?: string;
   queryId?: number;
-  status?: number;
 }
 
 export interface BaseQueryParam {
-  id?: number;
+  id?: number | null;
   pageNum?: number;
   pageSize?: number;
   searchKey?: string;
@@ -18,6 +21,7 @@ export interface BaseQueryParam {
 
 export interface CleanCompanyDto {
   acceptanceNo?: string;
+  cleanStatus?: number;
   cnt?: number;
   companyOriginName?: string;
   companyShortName?: string;
@@ -29,7 +33,6 @@ export interface CleanCompanyDto {
   remark?: string;
   sources?: string[];
   standardId?: number;
-  status?: number;
   updateTime?: string;
   updater?: string;
 }
@@ -40,7 +43,7 @@ export interface StandardCompanyDto {
   companyStandardName?: string;
   companyType?: string;
   id?: number;
-  parentCompanName?: number;
+  parentCompanyShortName?: number;
   parentCompanyId?: number;
   relation?: string;
   remark?: string;

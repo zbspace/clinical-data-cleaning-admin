@@ -37,7 +37,7 @@ const CompanyClean: React.FC = () => {
         pageNum: curr,
         pageSize: size,
       };
-      if (params.status === 0) delete params.status;
+      if (params.cleanStatus === 0) delete params.cleanStatus;
 
       const res = await companyApi.pageData(params);
       setData(res.data?.list || []);
@@ -99,17 +99,63 @@ const CompanyClean: React.FC = () => {
   // 关联搜索
   const [relationOptions, setRelationOptions] = useState<{ label: string; value: number; item: CompanyShortDto }[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [newCompanyLoading, setNewCompanyLoading] = useState(false);
+
+  const handleAddNewCompany = async () => {
+    if (!currentEditRecord) return;
+    try {
+      const fields = editForm.getFieldsValue(true);
+      if (!fields.companyStandardName) {
+        MessagePlugin.warning('请填写标准名');
+        return;
+      }
+      setNewCompanyLoading(true);
+      const submitData: CleanCompanyDto = {
+        ...currentEditRecord,
+        standardId: fields.relationId,
+        companyStandardName: fields.companyStandardName,
+        companyShortName: fields.companyShortName,
+        companyType: fields.companyType,
+        parentCompanyShortName: fields.parentCompanyShortName,
+        remark: fields.remark,
+        cleanStatus: 3,
+      };
+      await companyApi.saveClean(submitData);
+      MessagePlugin.success('新增成功');
+      // 刷新关联选项并选中新增的公司
+      const res = await companyApi.queryByName({ searchKey: fields.companyStandardName, pageNum: 1, pageSize: 50 });
+      const opts = (res.data?.list || [])
+        .filter((item) => item.parentCompanyId != null)
+        .map((item) => ({
+          label: item.parentCompanyShortName || '',
+          value: item.parentCompanyId as number,
+          item,
+        }));
+      setRelationOptions(opts);
+      const matched = opts.find((o) => o.item.companyStandardName === fields.companyStandardName);
+      if (matched) {
+        editForm.setFieldsValue({ relationId: matched.value });
+        onRelationChange(matched.value);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setNewCompanyLoading(false);
+    }
+  };
 
   const onSearchRelation = async (keyword: string) => {
     if (!keyword) return;
     setSearchLoading(true);
     try {
-      const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50 });
-      const opts = (res.data?.list || []).map((item) => ({
-        label: item.companyStandardName || item.companyShortName || '',
-        value: item.id as number,
-        item,
-      }));
+      const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
+      const opts = (res.data?.list || [])
+        .filter((item) => item.parentCompanyId != null)
+        .map((item) => ({
+          label: item.parentCompanyShortName || '',
+          value: item.parentCompanyId as number,
+          item,
+        }));
       setRelationOptions(opts);
     } catch (e) {
       console.error(e);
@@ -121,8 +167,8 @@ const CompanyClean: React.FC = () => {
   // 监听编辑状态和数据，处理表单回显
   useEffect(() => {
     if (editModalVisible && currentEditRecord) {
-      // 使用 setTimeout 确保表单项已注册
-      const timer = setTimeout(() => {
+      // 使用 requestAnimationFrame 确保 Dialog 渲染完成、表单项已注册
+      const raf = requestAnimationFrame(() => {
         editForm.setFieldsValue({
           relationId: currentEditRecord.standardId,
           companyStandardName: currentEditRecord.companyStandardName,
@@ -131,8 +177,8 @@ const CompanyClean: React.FC = () => {
           parentCompanyShortName: currentEditRecord.parentCompanyShortName,
           remark: currentEditRecord.remark,
         });
-      }, 0);
-      return () => clearTimeout(timer);
+      });
+      return () => cancelAnimationFrame(raf);
     }
     return undefined;
   }, [editModalVisible, currentEditRecord, editForm]);
@@ -141,6 +187,9 @@ const CompanyClean: React.FC = () => {
     setCurrentEditRecord(record);
     setRelationOptions([]);
     setEditModalVisible(true);
+    if (record.parentCompanyShortName) {
+      setTimeout(() => onSearchRelation(record.parentCompanyShortName!), 0);
+    }
   };
 
   const onRelationChange = (val: any) => {
@@ -170,7 +219,7 @@ const CompanyClean: React.FC = () => {
           companyType: fields.companyType,
           parentCompanyShortName: fields.parentCompanyShortName,
           remark: fields.remark,
-          status: 3, // 标记为手动清洗
+          cleanStatus: 3, // 标记为手动清洗
         };
         await companyApi.saveClean(submitData);
         MessagePlugin.success('保存成功');
@@ -191,21 +240,21 @@ const CompanyClean: React.FC = () => {
       width: '180px',
       cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
     },
-    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 120 , ellipsis: true },
-    // {
-    //   colKey: 'cnt',
-    //   title: '相关备案/登记号',
-    //   width: 160,
-    //   align: 'center' as const,
-    //   cell: ({ row }: any) => (
-    //     <span
-    //       style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }}
-    //       onClick={() => openAccModal(row.id!)}
-    //     >
-    //       {row.cnt || 0}
-    //     </span>
-    //   ),
-    // },
+    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 120, ellipsis: true },
+    {
+      colKey: 'cnt',
+      title: '相关备案/登记号',
+      width: 160,
+      align: 'center' as const,
+      cell: ({ row }: any) => (
+        <span
+          style={{ color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => openAccModal(row.id!)}
+        >
+          {row.cnt || 0}
+        </span>
+      ),
+    },
     {
       colKey: 'cleanStatus',
       title: '清洗状态',
@@ -219,7 +268,7 @@ const CompanyClean: React.FC = () => {
     { colKey: 'companyType', title: '公司类型', width: 100 },
     { colKey: 'companyShortName', title: '公司简称', width: 150 },
     { colKey: 'parentCompanyShortName', title: '母公司简称', width: 150 },
-    
+
     { colKey: 'updater', title: '操作人', width: 100 },
     {
       colKey: 'updateTime',
@@ -251,7 +300,7 @@ const CompanyClean: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false} style={{  height: 'calc(100vh - 86px)' }}>
+    <Card bordered={false} style={{ height: 'calc(100vh - 86px)' }}>
       <div style={{ marginBottom: 16 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
           公司名清洗
@@ -270,7 +319,7 @@ const CompanyClean: React.FC = () => {
             labelWidth={140}
             style={{ display: 'flex', gap: '16px 0', flexWrap: 'wrap' }}
           >
-            <Form.FormItem label="公司名(标准名)" name="companyName" style={{ marginBottom: 0 }}>
+            <Form.FormItem label="公司名(源数据)" name="companyName" style={{ marginBottom: 0 }}>
               <Input placeholder="请输入关键字" clearable style={{ width: 220 }} />
             </Form.FormItem>
             <Form.FormItem label="母公司简称" name="parentCompanyShortName" style={{ marginBottom: 0 }}>
@@ -353,14 +402,17 @@ const CompanyClean: React.FC = () => {
         <Form form={editForm} labelWidth={140} labelAlign="left">
           <div style={{ backgroundColor: '#e6f7ff', padding: '16px', borderRadius: 4, marginBottom: 16 }}>
             <Form.FormItem label="关联：" name="relationId" style={{ marginBottom: 0 }}>
-              <Select
-                filterable
-                onSearch={onSearchRelation}
-                loading={searchLoading}
-                options={relationOptions}
-                onChange={onRelationChange}
-                placeholder="请输入搜索标准公司"
-              />
+              <Space>
+                <Select
+                  filterable
+                  onSearch={onSearchRelation}
+                  loading={searchLoading}
+                  options={relationOptions}
+                  onChange={onRelationChange}
+                  placeholder="请输入搜索标准公司"
+                  style={{ width: 360 }}
+                />
+              </Space>
             </Form.FormItem>
           </div>
           <div style={{ backgroundColor: '#e6f7ff', padding: '16px', borderRadius: 4 }}>
@@ -380,6 +432,9 @@ const CompanyClean: React.FC = () => {
             <Form.FormItem label="备注" name="remark">
               <Textarea />
             </Form.FormItem>
+            <Button theme="primary" variant="outline" loading={newCompanyLoading} onClick={handleAddNewCompany}>
+              新增
+            </Button>
           </div>
         </Form>
       </Dialog>
