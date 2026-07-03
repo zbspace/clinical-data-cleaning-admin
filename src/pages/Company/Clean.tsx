@@ -25,7 +25,7 @@ const CompanyClean: React.FC = () => {
   // Table state
   const [data, setData] = useState<CleanCompanyDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 20, total: 0 });
 
   // Fetch Data
   const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
@@ -237,14 +237,14 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'rowIndex',
       title: '序号',
-      width: '180px',
+      width: 60,
       cell: ({ rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
     },
-    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 120, ellipsis: true },
+    { colKey: 'companyOriginName', title: '公司名(源数据)', width: 280, ellipsis: true },
     {
       colKey: 'cnt',
       title: '相关备案/登记号',
-      width: 160,
+      width: 120,
       align: 'center' as const,
       cell: ({ row }: any) => (
         <span
@@ -273,7 +273,7 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'updateTime',
       title: '更新时间',
-      width: 220,
+      width: 180,
       cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
     },
     {
@@ -359,7 +359,9 @@ const CompanyClean: React.FC = () => {
         }}
         bordered
         stripe
-        tableLayout="auto"
+        tableLayout="fixed"
+        maxHeight="calc(100vh - 340px)"
+        style={{ whiteSpace: 'nowrap' }}
       />
 
       {/* 备案号弹窗 */}

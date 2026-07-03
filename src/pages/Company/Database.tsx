@@ -19,7 +19,7 @@ const CompanyDatabase: React.FC = () => {
   // ----- Table State -----
   const [data, setData] = useState<StandardCompanyDto[]>([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 20, total: 0 });
 
   const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
     setLoading(true);
@@ -165,8 +165,8 @@ const CompanyDatabase: React.FC = () => {
     { colKey: 'companyStandardName', title: '公司名(标准名称)', width: 280 },
     {
       colKey: 'cnt',
-      title: '统计次数',
-      width: 180,
+      title: '相关备案/登记号',
+      width: 80,
       align: 'center' as const,
       cell: ({ row }: any) => (
         <div
@@ -183,28 +183,29 @@ const CompanyDatabase: React.FC = () => {
         </div>
       ),
     },
-    { colKey: 'companyType', title: '公司类型', width: 120 },
-    { colKey: 'companyShortName', title: '公司简称', width: 180 },
-    { colKey: 'parentCompanyShortName', title: '母公司简称', width: 180 }, // API has parentCompanyShortName
-    {
-      colKey: 'operation',
-      title: '编辑修正',
-      width: 120,
-      fixed: 'right' as const,
-      cell: ({ row }: any) => (
-        <div style={{  padding: '2px 8px', display: 'inline-block' }}>
-          <Button theme="primary" variant="text" onClick={() => openEditModal(row)}>
-            编辑
-          </Button>
-        </div>
-      ),
-    },
+    { colKey: 'companyType', title: '公司类型', width: 100 },
+    { colKey: 'companyShortName', title: '公司简称', width: 180, ellipsis: true },
+    { colKey: 'parentCompanyShortName', title: '母公司简称', width: 180, ellipsis: true }, // API has parentCompanyShortName
+
     { colKey: 'updater', title: '操作人', width: 100 },
     {
       colKey: 'updateTime',
       title: '更新时间',
       width: 170,
       cell: ({ row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
+    },
+    {
+      colKey: 'operation',
+      title: '编辑修正',
+      width: 100,
+      fixed: 'right' as const,
+      cell: ({ row }: any) => (
+        <div style={{ padding: '2px 8px', display: 'inline-block' }}>
+          <Button theme="primary" variant="text" onClick={() => openEditModal(row)}>
+            编辑
+          </Button>
+        </div>
+      ),
     },
   ];
 
@@ -219,7 +220,7 @@ const CompanyDatabase: React.FC = () => {
   ];
 
   return (
-    <Card bordered={false} style={{ padding: '10px' ,width: '100%'}}>
+    <Card bordered={false} style={{ height: 'calc(100vh - 86px)' }}>
       <div style={{ marginBottom: 10 }}>
         <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: 'var(--td-text-color-primary)' }}>
           公司名库
@@ -272,7 +273,9 @@ const CompanyDatabase: React.FC = () => {
         }}
         bordered
         stripe
-        tableLayout="auto"
+        tableLayout="fixed"
+        maxHeight="calc(100vh - 300px)"
+        style={{ whiteSpace: 'nowrap' }}
       />
 
       {/* 别名源数据弹窗 */}

@@ -145,6 +145,7 @@ const BasicLayout: React.FC = () => {
           marginLeft: collapsed ? '64px' : '232px',
           minHeight: '100%',
           position: 'relative',
+          width: `calc(100vw - ${collapsed ? '64px' : '232px'})`,
         }}
       >
         {/* #region Header */}
