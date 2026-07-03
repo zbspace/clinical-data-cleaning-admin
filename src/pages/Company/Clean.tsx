@@ -244,7 +244,7 @@ const CompanyClean: React.FC = () => {
     {
       colKey: 'cnt',
       title: '相关备案/登记号',
-      width: 120,
+      width: 150,
       align: 'center' as const,
       cell: ({ row }: any) => (
         <span

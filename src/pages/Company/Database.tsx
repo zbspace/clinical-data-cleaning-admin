@@ -166,7 +166,7 @@ const CompanyDatabase: React.FC = () => {
     {
       colKey: 'cnt',
       title: '相关备案/登记号',
-      width: 80,
+      width: 120,
       align: 'center' as const,
       cell: ({ row }: any) => (
         <div
