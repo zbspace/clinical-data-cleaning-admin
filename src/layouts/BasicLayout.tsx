@@ -1,6 +1,7 @@
 //#region Imports
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Layout, Menu, Dropdown, Button, MessagePlugin } from 'tdesign-react';
 import {
   DashboardIcon,
@@ -12,6 +13,9 @@ import {
   LogoutIcon,
   ViewListIcon,
 } from 'tdesign-icons-react';
+import { toggleCollapsed } from '../store/sidebarSlice';
+import { clearToken } from '../store/authSlice';
+import type { RootState, AppDispatch } from '../store';
 //#endregion
 
 //#region Constants
@@ -23,20 +27,21 @@ const { SubMenu, MenuItem } = Menu;
 const BasicLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const collapsed = useSelector((state: RootState) => state.sidebar.collapsed);
 
   const activeValue = location.pathname;
 
   //#region Handlers
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    dispatch(clearToken());
     MessagePlugin.success('已退出登录');
     navigate('/login', { replace: true });
   };
   //#endregion
 
   return (
-    <Layout style={{ minHeight: '100vh',display: 'flex' }}>
+    <Layout style={{ minHeight: '100vh', display: 'flex' }}>
       <Aside
         width={collapsed ? '64px' : '232px'}
         style={{
@@ -46,6 +51,10 @@ const BasicLayout: React.FC = () => {
           transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)',
           zIndex: 101,
           overflow: 'hidden',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
         }}
       >
         <Menu
@@ -130,7 +139,14 @@ const BasicLayout: React.FC = () => {
           {/* #endregion */}
         </Menu>
       </Aside>
-      <Layout style={{ transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)' }}>
+      <Layout
+        style={{
+          transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)',
+          marginLeft: collapsed ? '64px' : '232px',
+          minHeight: '100%',
+          position: 'relative',
+        }}
+      >
         {/* #region Header */}
         <Header
           style={{
@@ -147,11 +163,11 @@ const BasicLayout: React.FC = () => {
             <Button
               variant="text"
               shape="square"
-              onClick={() => setCollapsed(!collapsed)}
-              style={{ 
+              onClick={() => dispatch(toggleCollapsed())}
+              style={{
                 color: 'var(--td-text-color-secondary)',
                 transition: 'transform 0.3s',
-                transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)'
+                transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
               }}
             >
               <ViewListIcon size="20px" />
@@ -167,8 +183,34 @@ const BasicLayout: React.FC = () => {
             </span>
           </div>
           <Dropdown options={[{ content: '退出登录', value: 'logout', onClick: handleLogout }]}>
-            <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '20px', background: '#f1f5f9', transition: 'all 0.2s' }}>
-              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--td-brand-color-2)', color: 'var(--td-brand-color-8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 12 }}>A</div>
+            <div
+              style={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                background: '#f1f5f9',
+                transition: 'all 0.2s',
+              }}
+            >
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: 'var(--td-brand-color-2)',
+                  color: 'var(--td-brand-color-8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  fontSize: 12,
+                }}
+              >
+                A
+              </div>
               <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--td-text-color-primary)' }}>管理员</span>
             </div>
           </Dropdown>
@@ -177,7 +219,7 @@ const BasicLayout: React.FC = () => {
 
         {/* #region Content */}
         <Content style={{ padding: '10px', overflow: 'auto', backgroundColor: 'var(--td-bg-color-page)' }}>
-          <div style={{ minHeight: '100%', borderRadius: 'var(--td-radius-large)' ,width: '100%'}}>
+          <div style={{ minHeight: '100%', borderRadius: 'var(--td-radius-large)', width: '100%' }}>
             <Outlet />
           </div>
         </Content>

@@ -1,6 +1,8 @@
 //#region Imports
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store';
 //#endregion
 
 //#region Component
@@ -9,7 +11,7 @@ interface AuthRouteProps {
 }
 
 const AuthRoute: React.FC<AuthRouteProps> = ({ children }) => {
-  const token = localStorage.getItem('token');
+  const token = useSelector((state: RootState) => state.auth.token);
   const location = useLocation();
 
   if (!token) {

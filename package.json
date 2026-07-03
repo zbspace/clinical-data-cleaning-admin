@@ -14,11 +14,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
     "@vitejs/plugin-react-swc": "^4.3.1",
     "axios": "^1.18.0",
     "less": "^4.6.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-redux": "^9.3.0",
     "react-router-dom": "^6.22.3",
     "tdesign-icons-react": "^0.6.4",
     "tdesign-react": "^1.17.1"

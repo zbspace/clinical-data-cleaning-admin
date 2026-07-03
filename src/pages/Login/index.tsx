@@ -1,14 +1,18 @@
 //#region Imports
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Form, Input, Button, MessagePlugin, Card } from 'tdesign-react';
 import { DesktopIcon, LockOnIcon, RefreshIcon } from 'tdesign-icons-react';
 import { authApi } from '../../api';
+import { setToken } from '../../store/authSlice';
+import type { AppDispatch } from '../../store';
 //#endregion
 
 //#region Component
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
   const [captcha, setCaptcha] = useState({ img: '', key: '' });
 
@@ -55,13 +59,13 @@ const Login: React.FC = () => {
           captchaKey: captcha.key,
         });
 
-        // 存储 Token
+        // 存储 Token 到 Redux（同时写入 localStorage）
         const token = res.data?.token || res.data || res.token;
         if (token) {
-          localStorage.setItem('token', typeof token === 'string' ? token : JSON.stringify(token));
+          dispatch(setToken(typeof token === 'string' ? token : JSON.stringify(token)));
         } else {
           // 兜底：如果没找到 token 字段则默认存储一个标识
-          localStorage.setItem('token', 'mock_token_' + new Date().getTime());
+          dispatch(setToken('mock_token_' + new Date().getTime()));
         }
 
         MessagePlugin.success('登录成功');
