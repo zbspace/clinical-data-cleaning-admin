@@ -55,8 +55,8 @@
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-space>
-              <t-button theme="default" variant="base" @click="onReset" style="background: #fff"> 重置条件 </t-button>
-              <t-button theme="primary" type="submit"> 立即查询 </t-button>
+              <t-button theme="default" variant="base" @click="onReset" style="background: #fff"> 重置 </t-button>
+              <t-button theme="primary" type="submit"> 查询 </t-button>
             </t-space>
           </div>
         </t-form>
@@ -78,7 +78,11 @@
       :pagination="pagination"
       @page-change="onPageChange"
       @sort-change="onSortChange"
-    />
+    >
+      <template #operation="{ row }">
+        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      </template>
+    </t-table>
     <!--#endregion-->
 
     <!--#region 备案号弹窗 -->
@@ -124,28 +128,34 @@
               style="width: 360px"
               @search="onSearchRelation"
               @change="onRelationChange"
+              @clear="onRelationClear"
+              clearable
             />
           </t-form-item>
           <!--#endregion-->
         </div>
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
-          <div style="font-weight: bold; margin-bottom: 16px">新增：</div>
           <t-form-item label="公司名(标准名称)" name="companyStandardName">
-            <t-input v-model="editFormData.companyStandardName" />
+            <t-input v-model="editFormData.companyStandardName" :disabled="!!editFormData.relationId" />
           </t-form-item>
           <t-form-item label="公司简称" name="companyShortName">
-            <t-input v-model="editFormData.companyShortName" />
+            <t-input v-model="editFormData.companyShortName" :disabled="!!editFormData.relationId" />
           </t-form-item>
           <t-form-item label="公司类型" name="companyType">
-            <t-input v-model="editFormData.companyType" />
+            <t-select
+              v-model="editFormData.companyType"
+              :options="companyTypeOptions"
+              clearable
+              :disabled="!!editFormData.relationId"
+            />
           </t-form-item>
           <t-form-item label="母公司简称" name="parentCompanyShortName">
-            <t-input v-model="editFormData.parentCompanyShortName" />
+            <t-input v-model="editFormData.parentCompanyShortName" :disabled="!!editFormData.relationId" />
           </t-form-item>
           <t-form-item label="备注" name="remark">
             <t-textarea v-model="editFormData.remark" />
           </t-form-item>
-          <t-button theme="primary" variant="outline" :loading="newCompanyLoading" @click="handleAddNewCompany">
+          <t-button theme="primary" variant="outline" v-if="!editFormData.relationId" @click="confirmAddNewCompany">
             新增
           </t-button>
         </div>
@@ -159,10 +169,10 @@
 <script setup lang="ts">
 //#region Imports
 import { ref, reactive, h, onMounted, nextTick } from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { companyApi } from '@/api';
-import type { CleanCompanyDto, CompanyShortDto } from '@/api/types/company';
+import type { CleanCompanyDto, StandardCompanyDto, CompanyShortDto } from '@/api/types/company';
 //#endregion
 
 //#region Constants
@@ -292,16 +302,6 @@ const columns = [
     title: '操作',
     width: 100,
     fixed: 'right' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        't-button',
-        {
-          theme: 'primary',
-          variant: 'text',
-          onClick: () => openEditModal(row),
-        },
-        { default: () => '编辑' },
-      ),
   },
 ];
 
@@ -325,7 +325,6 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       pageNum: curr,
       pageSize: size,
     };
-    if (params.cleanStatus === 0) delete params.cleanStatus;
 
     const res = await companyApi.pageData(params);
     tableData.value = res.data?.list || [];
@@ -399,22 +398,31 @@ const onAccModalClose = () => {
 //#endregion
 
 //#region Edit Modal
-const openEditModal = (record: CleanCompanyDto) => {
-  currentEditRecord.value = record;
+const resetEditForm = () => {
   relationOptions.value = [];
-  editFormData.relationId = record.standardId;
+  editFormData.relationId = undefined;
+  editFormData.companyStandardName = '';
+  editFormData.companyShortName = '';
+  editFormData.companyType = '';
+  editFormData.parentCompanyShortName = '';
+  editFormData.remark = '';
+};
+
+const openEditModal = (record: CleanCompanyDto) => {
+  resetEditForm();
+  editModalVisible.value = true;
+  if (!record.parentCompanyShortName || !record.parentCompanyId) return;
+  currentEditRecord.value = record;
+  editFormData.relationId = record.parentCompanyId || undefined;
   editFormData.companyStandardName = record.companyStandardName || '';
   editFormData.companyShortName = record.companyShortName || '';
   editFormData.companyType = record.companyType || '';
   editFormData.parentCompanyShortName = record.parentCompanyShortName || '';
   editFormData.remark = record.remark || '';
-  editModalVisible.value = true;
 
-  if (record.parentCompanyShortName) {
-    nextTick(() => {
-      onSearchRelation(record.parentCompanyShortName!);
-    });
-  }
+  nextTick(() => {
+    onSearchRelation(record.parentCompanyShortName!);
+  });
 };
 
 const onSearchRelation = async (keyword: string) => {
@@ -442,6 +450,13 @@ const onSearchRelation = async (keyword: string) => {
   }
 };
 
+const onRelationClear = () => {
+  editFormData.companyStandardName = '';
+  editFormData.companyShortName = '';
+  editFormData.companyType = '';
+  editFormData.parentCompanyShortName = '';
+};
+
 const onRelationChange = (val: any) => {
   const allOpts = relationOptions.value as any;
   const opt = allOpts.find((o: any) => o.value === val);
@@ -453,25 +468,39 @@ const onRelationChange = (val: any) => {
   }
 };
 
+const confirmAddNewCompany = () => {
+  if (!editFormData.companyStandardName) {
+    MessagePlugin.warning('请填写标准名');
+    return;
+  }
+  DialogPlugin.confirm({
+    header: '确认新增',
+    body: '确认要新增该公司标准名吗？',
+    confirmBtn: '确认新增',
+    cancelBtn: '取消',
+    onConfirm: () => {
+      handleAddNewCompany();
+    },
+  });
+};
+
 const handleAddNewCompany = async () => {
-  if (!currentEditRecord.value) return;
   if (!editFormData.companyStandardName) {
     MessagePlugin.warning('请填写标准名');
     return;
   }
   newCompanyLoading.value = true;
   try {
-    const submitData: CleanCompanyDto = {
-      ...currentEditRecord.value,
-      standardId: editFormData.relationId,
+    const submitData: StandardCompanyDto = {
       companyStandardName: editFormData.companyStandardName,
       companyShortName: editFormData.companyShortName,
       companyType: editFormData.companyType,
       parentCompanyShortName: editFormData.parentCompanyShortName,
+      parentCompanyId: editFormData.relationId,
       remark: editFormData.remark,
-      cleanStatus: 3,
+      status: 0,
     };
-    await companyApi.saveClean(submitData);
+    await companyApi.saveStandardCompany(submitData);
     MessagePlugin.success('新增成功');
 
     // 刷新关联选项并选中新增的公司

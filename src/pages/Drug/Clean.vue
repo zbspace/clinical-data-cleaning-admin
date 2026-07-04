@@ -36,8 +36,8 @@
             />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置条件 </t-button>
-            <t-button theme="primary" type="submit"> 立即查询 </t-button>
+            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
+            <t-button theme="primary" type="submit"> 查询 </t-button>
           </div>
         </t-form>
       </div>

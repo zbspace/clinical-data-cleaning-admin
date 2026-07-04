@@ -62,7 +62,11 @@
       style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
-    />
+    >
+      <template #operation="{ row }">
+        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      </template>
+    </t-table>
     <!--#endregion-->
 
     <!--#region 源数据公司名(别名)弹窗 -->
@@ -105,9 +109,22 @@
         <t-form-item label="公司类型" name="companyType">
           <t-select v-model="editFormData.companyType" :options="companyTypeOptions" placeholder="请选择" />
         </t-form-item>
-        <t-form-item label="母公司简称" name="parentCompanyShortName">
-          <t-input v-model="editFormData.parentCompanyShortName" />
+        <!--#region 关联搜索 -->
+        <t-form-item label="母公司简称" name="parentCompanyId" style="margin-bottom: 0">
+          <t-select
+            v-model="editFormData.parentCompanyId"
+            :options="relationOptions"
+            filterable
+            :loading="searchLoading"
+            placeholder="请输入搜索标准公司"
+            style="width: 360px"
+            @search="onSearchRelation"
+            @change="onRelationChange"
+            @clear="onRelationClear"
+            clearable
+          />
         </t-form-item>
+        <!--#endregion-->
         <t-form-item label="备注" name="remark">
           <t-textarea v-model="editFormData.remark" />
         </t-form-item>
@@ -120,7 +137,7 @@
 
 <script setup lang="ts">
 //#region Imports
-import { ref, reactive, h, onMounted } from 'vue';
+import { ref, reactive, h, onMounted, nextTick } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { companyApi } from '@/api';
@@ -170,12 +187,15 @@ const currentCompanyId = ref<number>();
 const editModalVisible = ref(false);
 const editLoading = ref(false);
 const currentEditRecord = ref<StandardCompanyDto | null>(null);
+const relationOptions = ref<{ label: string; value: number; item: any }[]>([]);
+const searchLoading = ref(false);
 
 const editFormData = reactive<Record<string, any>>({
   companyStandardName: '',
   companyShortName: '',
   companyType: '',
   parentCompanyShortName: '',
+  parentCompanyId: undefined,
   remark: '',
 });
 //#endregion
@@ -219,16 +239,16 @@ const columns = [
     title: '编辑修正',
     width: 100,
     fixed: 'right' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        't-button',
-        {
-          theme: 'primary',
-          variant: 'text',
-          onClick: () => openEditModal(row),
-        },
-        { default: () => '编辑' },
-      ),
+    // cell: (h: any, { row }: any) =>
+    //   h(
+    //     't-button',
+    //     {
+    //       theme: 'primary',
+    //       variant: 'text',
+    //       onClick: () => openEditModal(row),
+    //     },
+    //     { default: () => '编辑' },
+    //   ),
   },
 ];
 
@@ -305,8 +325,43 @@ const onSourceModalClose = () => {
 //#endregion
 
 //#region Edit Modal
+const onSearchRelation = async (keyword: string) => {
+  if (!keyword) return;
+  searchLoading.value = true;
+  try {
+    const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
+    const opts = (res.data?.list || [])
+      .filter((item: any) => item.parentCompanyId != null)
+      .map((item: any) => ({
+        label: item.parentCompanyShortName || '',
+        value: item.parentCompanyId as number,
+        item,
+      }));
+    relationOptions.value = opts;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    searchLoading.value = false;
+  }
+};
+
+const onRelationChange = (val: any) => {
+  const opt = relationOptions.value.find((o) => o.value === val);
+  if (opt && opt.item) {
+    editFormData.parentCompanyShortName = opt.item.parentCompanyShortName;
+  }
+};
+
+const onRelationClear = () => {
+  editFormData.companyStandardName = '';
+  editFormData.companyShortName = '';
+  editFormData.companyType = '';
+  editFormData.parentCompanyShortName = '';
+};
+
 const openEditModal = async (record?: StandardCompanyDto) => {
   if (record && record.id) {
+    relationOptions.value = [];
     editLoading.value = true;
     currentEditRecord.value = record;
     editModalVisible.value = true;
@@ -319,7 +374,11 @@ const openEditModal = async (record?: StandardCompanyDto) => {
       editFormData.companyType = data.companyType || '';
       editFormData.parentCompanyShortName =
         data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+      editFormData.parentCompanyId = data.parentCompanyId || undefined;
       editFormData.remark = data.remark || '';
+      if (data.parentCompanyShortName != null) {
+        nextTick(() => onSearchRelation(String(data.parentCompanyShortName)));
+      }
     } catch (e) {
       console.error(e);
       editModalVisible.value = false;
@@ -346,6 +405,7 @@ const submitEdit = async () => {
       companyShortName: editFormData.companyShortName,
       companyType: editFormData.companyType,
       parentCompanyShortName: editFormData.parentCompanyShortName,
+      parentCompanyId: editFormData.parentCompanyId,
       remark: editFormData.remark,
     };
     await companyApi.saveStandardCompany(submitData);
