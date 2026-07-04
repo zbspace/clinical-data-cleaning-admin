@@ -1,42 +1,47 @@
 <template>
   <!--#region 公司名库管理页面 -->
-  <t-card bordered style="height: calc(100vh - 86px);">
+  <t-card bordered style="height: calc(100vh - 86px)">
     <!-- 页面标题 -->
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         公司名库
       </h2>
 
       <!--#region 搜索表单 -->
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+        "
+      >
         <t-form
           ref="formRef"
           :data="formData"
           layout="inline"
           label-width="120"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="公司名(标准名)" name="companyName" style="margin-bottom: 0;">
-            <t-input v-model="formData.companyName" placeholder="请输入" clearable style="width: 220px;" />
+          <t-form-item label="公司名(标准名)" name="companyName" style="margin-bottom: 0">
+            <t-input v-model="formData.companyName" placeholder="请输入" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="母公司简称" name="parentCompanyShortName" style="margin-bottom: 0;">
-            <t-input v-model="formData.parentCompanyShortName" placeholder="请输入" clearable style="width: 220px;" />
+          <t-form-item label="母公司简称" name="parentCompanyShortName" style="margin-bottom: 0">
+            <t-input v-model="formData.parentCompanyShortName" placeholder="请输入" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="公司类型" name="companyType" style="margin-bottom: 0;">
+          <t-form-item label="公司类型" name="companyType" style="margin-bottom: 0">
             <t-select
               v-model="formData.companyType"
               :options="companyTypeOptions"
               placeholder="请选择"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto;">
+          <div style="display: flex; align-items: center; margin-left: auto">
             <t-space>
-              <t-button theme="primary" type="submit">
-                搜索
-              </t-button>
+              <t-button theme="primary" type="submit"> 搜索 </t-button>
             </t-space>
           </div>
         </t-form>
@@ -54,7 +59,7 @@
       stripe
       table-layout="fixed"
       max-height="calc(100vh - 300px)"
-      style="white-space: nowrap;"
+      style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
     />
@@ -207,8 +212,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 170,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   {
     colKey: 'operation',
@@ -313,7 +317,8 @@ const openEditModal = async (record?: StandardCompanyDto) => {
       editFormData.companyStandardName = data.companyStandardName || '';
       editFormData.companyShortName = data.companyShortName || '';
       editFormData.companyType = data.companyType || '';
-      editFormData.parentCompanyShortName = data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+      editFormData.parentCompanyShortName =
+        data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
       editFormData.remark = data.remark || '';
     } catch (e) {
       console.error(e);

@@ -1,9 +1,7 @@
 <template>
   <!--#region 总览页面 -->
   <div>
-    <h2 style="margin: 0 0 24px 0; font-size: 20px; font-weight: 600; color: var(--td-text-color-primary);">
-      总览
-    </h2>
+    <h2 style="margin: 0 0 24px 0; font-size: 20px; font-weight: 600; color: var(--td-text-color-primary)">总览</h2>
     <t-row :gutter="[16, 16]">
       <t-col :span="3">
         <t-card bordered header-bordered>

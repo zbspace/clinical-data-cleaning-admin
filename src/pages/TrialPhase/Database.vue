@@ -1,20 +1,15 @@
 <template>
   <!--#region 试验分期库管理页面 -->
   <t-card bordered>
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         试验分期库管理
       </h2>
 
       <!--#region 搜索与操作栏 -->
-      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center">
         <t-space>
-          <t-input
-            v-model="searchKeyword"
-            placeholder="搜索分期名称"
-            clearable
-            style="width: 220px;"
-          />
+          <t-input v-model="searchKeyword" placeholder="搜索分期名称" clearable style="width: 220px" />
           <t-button theme="primary" @click="onSearch">搜索</t-button>
         </t-space>
         <t-button theme="primary" @click="handleAdd">新增试验分期</t-button>
@@ -51,11 +46,7 @@
           <t-input v-model="editFormData.trialStages" placeholder="请输入原始分期，如 I期" />
         </t-form-item>
         <t-form-item label="清洗后分期" name="cleanedTrialStages">
-          <t-tag-input
-            v-model="editFormData.cleanedTrialStagesList"
-            placeholder="输入后回车添加"
-            clearable
-          />
+          <t-tag-input v-model="editFormData.cleanedTrialStagesList" placeholder="输入后回车添加" clearable />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -99,7 +90,8 @@ const filteredData = computed(() => {
   const keyword = searchKeyword.value?.toLowerCase() || '';
   if (!keyword) return dataList.value;
   return dataList.value.filter(
-    (item) => item.trialStages?.toLowerCase().includes(keyword) || item.cleanedTrialStages?.toLowerCase().includes(keyword),
+    (item) =>
+      item.trialStages?.toLowerCase().includes(keyword) || item.cleanedTrialStages?.toLowerCase().includes(keyword),
   );
 });
 //#endregion
@@ -118,8 +110,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 170,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },
   {

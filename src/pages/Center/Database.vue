@@ -1,15 +1,15 @@
 <template>
   <!--#region 研究中心库管理页面 -->
   <t-card bordered>
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         研究中心库
       </h2>
 
       <!--#region 搜索与操作栏 -->
-      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center">
         <t-space>
-          <t-input v-model="searchKeyword" placeholder="搜索标准名称" clearable style="width: 220px;" />
+          <t-input v-model="searchKeyword" placeholder="搜索标准名称" clearable style="width: 220px" />
           <t-button theme="primary" @click="onSearch">搜索</t-button>
         </t-space>
         <t-button theme="primary" @click="handleAdd">新增研究中心</t-button>
@@ -18,15 +18,7 @@
     </div>
 
     <!--#region 数据表格 -->
-    <t-table
-      :data="filteredData"
-      :columns="columns"
-      row-key="id"
-      bordered
-      stripe
-      table-layout="auto"
-      hover
-    />
+    <t-table :data="filteredData" :columns="columns" row-key="id" bordered stripe table-layout="auto" hover />
     <!--#endregion-->
 
     <!--#region 编辑/新增弹窗 -->
@@ -66,12 +58,30 @@ import moment from 'moment';
 const mockData = [
   { id: 1, standardName: '北京协和医院', province: '北京', city: '北京市', updateTime: '2023-10-01 10:00:00' },
   { id: 2, standardName: '复旦大学附属中山医院', province: '上海', city: '上海市', updateTime: '2023-10-02 14:30:00' },
-  { id: 3, standardName: '上海交通大学医学院附属瑞金医院', province: '上海', city: '上海市', updateTime: '2023-10-03 09:15:00' },
+  {
+    id: 3,
+    standardName: '上海交通大学医学院附属瑞金医院',
+    province: '上海',
+    city: '上海市',
+    updateTime: '2023-10-03 09:15:00',
+  },
   { id: 4, standardName: '北京大学第三医院', province: '北京', city: '北京市', updateTime: '2023-10-04 16:45:00' },
-  { id: 5, standardName: '华中科技大学同济医学院附属同济医院', province: '湖北', city: '武汉市', updateTime: '2023-10-05 11:20:00' },
+  {
+    id: 5,
+    standardName: '华中科技大学同济医学院附属同济医院',
+    province: '湖北',
+    city: '武汉市',
+    updateTime: '2023-10-05 11:20:00',
+  },
   { id: 6, standardName: '中山大学附属第一医院', province: '广东', city: '广州市', updateTime: '2023-10-06 08:00:00' },
   { id: 7, standardName: '四川大学华西医院', province: '四川', city: '成都市', updateTime: '2023-10-07 13:30:00' },
-  { id: 8, standardName: '浙江大学医学院附属第一医院', province: '浙江', city: '杭州市', updateTime: '2023-10-08 15:00:00' },
+  {
+    id: 8,
+    standardName: '浙江大学医学院附属第一医院',
+    province: '浙江',
+    city: '杭州市',
+    updateTime: '2023-10-08 15:00:00',
+  },
 ];
 //#endregion
 
@@ -109,8 +119,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 170,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   {
     colKey: 'operation',

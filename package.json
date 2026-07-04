@@ -24,6 +24,9 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "@unocss/preset-mini": "^66.7.4",
+    "@unocss/preset-wind": "^66.7.4",
+    "@unocss/vite": "^66.7.4",
     "@vitejs/plugin-vue": "^5.0.4",
     "prettier": "^3.8.4",
     "typescript": "^5.4.0",

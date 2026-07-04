@@ -1,43 +1,46 @@
 <template>
   <!--#region 研究中心名称清洗页面 -->
   <t-card bordered>
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         研究中心名称清洗
       </h2>
 
       <!--#region 搜索表单 -->
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+        "
+      >
         <t-form
           ref="formRef"
           :data="formData"
           layout="inline"
           label-width="140"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="原始研究中心名称" name="originalName" style="margin-bottom: 0;">
-            <t-input v-model="formData.originalName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="原始研究中心名称" name="originalName" style="margin-bottom: 0">
+            <t-input v-model="formData.originalName" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="建议标准名称" name="suggestedName" style="margin-bottom: 0;">
-            <t-input v-model="formData.suggestedName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="建议标准名称" name="suggestedName" style="margin-bottom: 0">
+            <t-input v-model="formData.suggestedName" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0;">
+          <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0">
             <t-select
               v-model="formData.cleanStatus"
               :options="statusOptions"
               placeholder="请选择"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto;">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px;">
-              重置条件
-            </t-button>
-            <t-button theme="primary" type="submit">
-              立即查询
-            </t-button>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置条件 </t-button>
+            <t-button theme="primary" type="submit"> 立即查询 </t-button>
           </div>
         </t-form>
       </div>
@@ -65,12 +68,12 @@
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px;">
-        <p style="margin: 0 0 8px 0;">
+      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px">
+        <p style="margin: 0 0 8px 0">
           <strong>原始名称：</strong>
           {{ currentEditRecord?.originalName }}
         </p>
-        <p style="margin: 0;">
+        <p style="margin: 0">
           <strong>状态：</strong>
           {{ currentEditRecord?.status }}
         </p>
@@ -187,11 +190,7 @@ const columns = [
             { theme: 'primary', variant: 'text', onClick: () => openEditModal(row) },
             { default: () => '采纳' },
           ),
-          h(
-            't-button',
-            { theme: 'danger', variant: 'text' },
-            { default: () => '忽略' },
-          ),
+          h('t-button', { theme: 'danger', variant: 'text' }, { default: () => '忽略' }),
         ],
       }),
   },
@@ -208,7 +207,8 @@ const onSearch = () => {
   const filtered = mockData.filter((item) => {
     const matchOrigin = !query.originalName || item.originalName.toLowerCase().includes(query.originalName);
     const matchStandard = !query.suggestedName || item.suggestedName.toLowerCase().includes(query.suggestedName);
-    const matchStatus = query.cleanStatus === undefined || query.cleanStatus === null || item.cleanStatus === query.cleanStatus;
+    const matchStatus =
+      query.cleanStatus === undefined || query.cleanStatus === null || item.cleanStatus === query.cleanStatus;
     return matchOrigin && matchStandard && matchStatus;
   });
   tableData.value = filtered;

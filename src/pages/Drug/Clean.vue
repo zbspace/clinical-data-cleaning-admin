@@ -1,40 +1,43 @@
 <template>
   <!--#region 药品名清洗页面 -->
   <t-card bordered>
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         药品名清洗
       </h2>
 
       <!--#region 搜索表单 -->
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+        "
+      >
         <t-form
           ref="formRef"
           :data="formData"
           layout="inline"
           label-width="140"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="药品名（清洗后）" name="drugStandardName" style="margin-bottom: 0;">
-            <t-input v-model="formData.drugStandardName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="药品名（清洗后）" name="drugStandardName" style="margin-bottom: 0">
+            <t-input v-model="formData.drugStandardName" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0;">
+          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0">
             <t-select
               v-model="formData.status"
               :options="statusOptions"
               placeholder="请选择状态"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto;">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px;">
-              重置条件
-            </t-button>
-            <t-button theme="primary" type="submit">
-              立即查询
-            </t-button>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置条件 </t-button>
+            <t-button theme="primary" type="submit"> 立即查询 </t-button>
           </div>
         </t-form>
       </div>
@@ -64,13 +67,7 @@
       width="800px"
       @close="onAccModalClose"
     >
-      <t-table
-        :data="accData"
-        :columns="accColumns"
-        row-key="id"
-        bordered
-        :pagination="accPagination"
-      />
+      <t-table :data="accData" :columns="accColumns" row-key="id" bordered :pagination="accPagination" />
     </t-dialog>
     <!--#endregion-->
 
@@ -83,12 +80,12 @@
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px;">
-        <p style="margin: 0 0 8px 0;">
+      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px">
+        <p style="margin: 0 0 8px 0">
           <strong>药品名（源数据）：</strong>
           {{ currentEditRecord?.drugNickName || currentEditRecord?.drugComment || currentEditRecord?.drugStandardName }}
         </p>
-        <p style="margin: 0;">
+        <p style="margin: 0">
           <strong>药品类型：</strong>
           {{ currentEditRecord?.drugType || '化学药物' }}
         </p>
@@ -265,8 +262,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 170,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   {
     colKey: 'operation',

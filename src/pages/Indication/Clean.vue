@@ -1,40 +1,43 @@
 <template>
   <!--#region 适应症名称清洗页面 -->
   <t-card bordered>
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         适应症名称清洗
       </h2>
 
       <!--#region 搜索表单 -->
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+        "
+      >
         <t-form
           ref="formRef"
           :data="formData"
           layout="inline"
           label-width="140"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="适应症(源数据)" name="indicationComment" style="margin-bottom: 0;">
-            <t-input v-model="formData.indicationComment" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="适应症(源数据)" name="indicationComment" style="margin-bottom: 0">
+            <t-input v-model="formData.indicationComment" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0;">
+          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0">
             <t-select
               v-model="formData.status"
               :options="statusOptions"
               placeholder="请选择"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto;">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px;">
-              重置条件
-            </t-button>
-            <t-button theme="primary" type="submit">
-              立即查询
-            </t-button>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置条件 </t-button>
+            <t-button theme="primary" type="submit"> 立即查询 </t-button>
           </div>
         </t-form>
       </div>
@@ -63,14 +66,7 @@
       width="600px"
       @close="onAccModalClose"
     >
-      <t-table
-        :data="accData"
-        :columns="accColumns"
-        row-key="no"
-        bordered
-        stripe
-        :pagination="{ pageSize: 5 }"
-      />
+      <t-table :data="accData" :columns="accColumns" row-key="no" bordered stripe :pagination="{ pageSize: 5 }" />
     </t-dialog>
     <!--#endregion-->
 
@@ -83,20 +79,26 @@
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-          <div style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px;"></div>
-          <div style="font-weight: bold;">适应症（源数据）：</div>
+      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px">
+          <div
+            style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px"
+          ></div>
+          <div style="font-weight: bold">适应症（源数据）：</div>
         </div>
-        <div style="background: #fff; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6; color: #333;">
+        <div
+          style="background: #fff; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6; color: #333"
+        >
           {{ currentEditRecord?.indicationComment }}
         </div>
       </div>
 
-      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-          <div style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px;"></div>
-          <div style="font-weight: bold;">适应症（清洗后）：</div>
+      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px">
+          <div
+            style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px"
+          ></div>
+          <div style="font-weight: bold">适应症（清洗后）：</div>
         </div>
         <!--#region 内嵌编辑表格 -->
         <t-table
@@ -216,8 +218,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 170,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   {
     colKey: 'operation',

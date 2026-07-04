@@ -1,54 +1,62 @@
 <template>
   <!--#region 公司名清洗页面 -->
-  <t-card bordered style="height: calc(100vh - 86px);">
+  <t-card bordered style="height: calc(100vh - 86px)">
     <!-- 页面标题 -->
-    <div style="margin-bottom: 16px;">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+    <div style="margin-bottom: 16px">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         公司名清洗
       </h2>
 
       <!--#region 搜索表单 -->
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+        "
+      >
         <t-form
           ref="formRef"
           :data="formData"
           layout="inline"
           label-width="140"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="公司名(源数据)" name="companyName" style="margin-bottom: 0;">
-            <t-input v-model="formData.companyName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="公司名(源数据)" name="companyName" style="margin-bottom: 0">
+            <t-input v-model="formData.companyName" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="母公司简称" name="parentCompanyShortName" style="margin-bottom: 0;">
-            <t-input v-model="formData.parentCompanyShortName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          <t-form-item label="母公司简称" name="parentCompanyShortName" style="margin-bottom: 0">
+            <t-input
+              v-model="formData.parentCompanyShortName"
+              placeholder="请输入关键字"
+              clearable
+              style="width: 220px"
+            />
           </t-form-item>
-          <t-form-item label="公司类型" name="companyType" style="margin-bottom: 0;">
+          <t-form-item label="公司类型" name="companyType" style="margin-bottom: 0">
             <t-select
               v-model="formData.companyType"
               :options="companyTypeOptions"
               placeholder="请选择公司类型"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0;">
+          <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0">
             <t-select
               v-model="formData.cleanStatus"
               :options="statusOptions"
               placeholder="请选择状态"
               clearable
-              style="width: 220px;"
+              style="width: 220px"
             />
           </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto;">
+          <div style="display: flex; align-items: center; margin-left: auto">
             <t-space>
-              <t-button theme="default" variant="base" @click="onReset" style="background: #fff;">
-                重置条件
-              </t-button>
-              <t-button theme="primary" type="submit">
-                立即查询
-              </t-button>
+              <t-button theme="default" variant="base" @click="onReset" style="background: #fff"> 重置条件 </t-button>
+              <t-button theme="primary" type="submit"> 立即查询 </t-button>
             </t-space>
           </div>
         </t-form>
@@ -66,7 +74,7 @@
       stripe
       table-layout="fixed"
       max-height="calc(100vh - 340px)"
-      style="white-space: nowrap;"
+      style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
       @sort-change="onSortChange"
@@ -104,24 +112,24 @@
       @close="onEditModalClose"
     >
       <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left">
-        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px;">
+        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
           <!--#region 关联搜索 -->
-          <t-form-item label="关联：" name="relationId" style="margin-bottom: 0;">
+          <t-form-item label="关联：" name="relationId" style="margin-bottom: 0">
             <t-select
               v-model="editFormData.relationId"
               :options="relationOptions"
               filterable
               :loading="searchLoading"
               placeholder="请输入搜索标准公司"
-              style="width: 360px;"
+              style="width: 360px"
               @search="onSearchRelation"
               @change="onRelationChange"
             />
           </t-form-item>
           <!--#endregion-->
         </div>
-        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px;">
-          <div style="font-weight: bold; margin-bottom: 16px;">新增：</div>
+        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
+          <div style="font-weight: bold; margin-bottom: 16px">新增：</div>
           <t-form-item label="公司名(标准名称)" name="companyStandardName">
             <t-input v-model="editFormData.companyStandardName" />
           </t-form-item>
@@ -137,12 +145,7 @@
           <t-form-item label="备注" name="remark">
             <t-textarea v-model="editFormData.remark" />
           </t-form-item>
-          <t-button
-            theme="primary"
-            variant="outline"
-            :loading="newCompanyLoading"
-            @click="handleAddNewCompany"
-          >
+          <t-button theme="primary" variant="outline" :loading="newCompanyLoading" @click="handleAddNewCompany">
             新增
           </t-button>
         </div>
@@ -194,7 +197,7 @@ const formData = reactive<Record<string, any>>({
   companyName: '',
   parentCompanyShortName: '',
   companyType: '',
-  cleanStatus: 0,
+  cleanStatus: null,
 });
 
 // 备案号弹窗
@@ -234,7 +237,12 @@ const columns = [
     width: 60,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'companyOriginName', title: '公司名(源数据)', width: 280, ellipsis: true },
+  {
+    colKey: 'companyOriginName',
+    title: '公司名(源数据)',
+    width: 280,
+    ellipsis: true,
+  },
   {
     colKey: 'cnt',
     title: '相关备案/登记号',
@@ -245,7 +253,11 @@ const columns = [
       h(
         'span',
         {
-          style: { color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' },
+          style: {
+            color: '#0052d9',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+          },
           onClick: () => openAccModal(row.id!),
         },
         row.cnt || 0,
@@ -260,7 +272,11 @@ const columns = [
       return item ? item.label : '-';
     },
   },
-  { colKey: 'companyStandardName', title: '清洗后公司名称(标准名)', width: 250 },
+  {
+    colKey: 'companyStandardName',
+    title: '清洗后公司名称(标准名)',
+    width: 250,
+  },
   { colKey: 'companyType', title: '公司类型', width: 100 },
   { colKey: 'companyShortName', title: '公司简称', width: 150 },
   { colKey: 'parentCompanyShortName', title: '母公司简称', width: 150 },
@@ -269,8 +285,7 @@ const columns = [
     colKey: 'updateTime',
     title: '更新时间',
     width: 180,
-    cell: (h: any, { row }: any) =>
-      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   {
     colKey: 'operation',
@@ -347,8 +362,14 @@ const onSortChange = (sortInfo: any) => {
 const fetchAcceptanceNos = async (companyId: number, curr = 1, size = 5) => {
   accLoading.value = true;
   try {
-    const res = await companyApi.getAcceptanceNos({ queryId: companyId, pageNum: curr, pageSize: size });
-    const mappedList = (res.data?.list || []).map((no: string) => ({ acceptanceNo: no }));
+    const res = await companyApi.getAcceptanceNos({
+      queryId: companyId,
+      pageNum: curr,
+      pageSize: size,
+    });
+    const mappedList = (res.data?.list || []).map((no: string) => ({
+      acceptanceNo: no,
+    }));
     accData.value = mappedList;
     accPagination.current = curr;
     accPagination.pageSize = size;
@@ -400,7 +421,12 @@ const onSearchRelation = async (keyword: string) => {
   if (!keyword) return;
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
+    const res = await companyApi.queryByName({
+      searchKey: keyword,
+      pageNum: 1,
+      pageSize: 50,
+      id: null,
+    });
     const opts = (res.data?.list || [])
       .filter((item: CompanyShortDto) => item.parentCompanyId != null)
       .map((item: CompanyShortDto) => ({
@@ -449,7 +475,11 @@ const handleAddNewCompany = async () => {
     MessagePlugin.success('新增成功');
 
     // 刷新关联选项并选中新增的公司
-    const res = await companyApi.queryByName({ searchKey: editFormData.companyStandardName, pageNum: 1, pageSize: 50 });
+    const res = await companyApi.queryByName({
+      searchKey: editFormData.companyStandardName,
+      pageNum: 1,
+      pageSize: 50,
+    });
     const opts = (res.data?.list || [])
       .filter((item: CompanyShortDto) => item.parentCompanyId != null)
       .map((item: CompanyShortDto) => ({

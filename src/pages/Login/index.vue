@@ -2,15 +2,30 @@
   <!--#region 登录页面 -->
   <div
     class="auth-page-wrapper"
-    style="height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"
+    style="
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    "
   >
-    <div
-      style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10vh;"
-    >
+    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10vh">
       <!-- Logo/Brand Icon -->
       <!--#region Logo区域 -->
       <div
-        style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, var(--td-brand-color-4), var(--td-brand-color-7)); display: flex; align-items: center; justify-content: center; color: #fff; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(3, 105, 161, 0.25);"
+        style="
+          width: 64px;
+          height: 64px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, var(--td-brand-color-4), var(--td-brand-color-7));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          margin-bottom: 24px;
+          box-shadow: 0 8px 24px rgba(3, 105, 161, 0.25);
+        "
       >
         <DesktopIcon size="32px" />
       </div>
@@ -18,17 +33,22 @@
 
       <t-card
         bordered
-        style="width: 420px; padding: 24px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-radius: 24px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.05);"
+        style="
+          width: 420px;
+          padding: 24px;
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(20px);
+          border-radius: 24px;
+          box-shadow:
+            0 20px 40px rgba(15, 23, 42, 0.08),
+            0 1px 3px rgba(15, 23, 42, 0.05);
+        "
       >
-        <div style="text-align: center; margin-bottom: 32px;">
-          <h1
-            style="margin: 0; font-size: 24px; color: var(--td-text-color-primary); letter-spacing: -0.02em;"
-          >
+        <div style="text-align: center; margin-bottom: 32px">
+          <h1 style="margin: 0; font-size: 24px; color: var(--td-text-color-primary); letter-spacing: -0.02em">
             临床数据清洗系统
           </h1>
-          <p
-            style="margin: 8px 0 0 0; color: var(--td-text-color-secondary); font-size: 14px;"
-          >
+          <p style="margin: 8px 0 0 0; color: var(--td-text-color-secondary); font-size: 14px">
             欢迎回来，请输入您的管理员账号
           </p>
         </div>
@@ -36,12 +56,7 @@
         <t-form ref="formRef" :data="formData" :rules="formRules" @submit="onSubmit" label-width="0">
           <!--#region 账号输入 -->
           <t-form-item name="username">
-            <t-input
-              v-model="formData.username"
-              size="large"
-              placeholder="请输入账号"
-              clearable
-            >
+            <t-input v-model="formData.username" size="large" placeholder="请输入账号" clearable>
               <template #prefix-icon>
                 <DesktopIcon />
               </template>
@@ -50,14 +65,8 @@
           <!--#endregion-->
 
           <!--#region 密码输入 -->
-          <t-form-item name="password" style="margin-top: 24px;">
-            <t-input
-              v-model="formData.password"
-              size="large"
-              type="password"
-              placeholder="请输入密码"
-              clearable
-            >
+          <t-form-item name="password" style="margin-top: 24px">
+            <t-input v-model="formData.password" size="large" type="password" placeholder="请输入密码" clearable>
               <template #prefix-icon>
                 <LockOnIcon />
               </template>
@@ -66,27 +75,33 @@
           <!--#endregion-->
 
           <!--#region 验证码区域 -->
-          <div style="display: flex; gap: 12px;">
-            <div style="width: 200px;">
+          <div style="display: flex; gap: 12px">
+            <div style="width: 200px">
               <t-form-item name="captchaCode">
-                <t-input
-                  v-model="formData.captchaCode"
-                  size="large"
-                  placeholder="请输入验证码"
-                  clearable
-                />
+                <t-input v-model="formData.captchaCode" size="large" placeholder="请输入验证码" clearable />
               </t-form-item>
             </div>
             <div
               @click="fetchCaptcha"
               title="点击刷新验证码"
-              style="cursor: pointer; height: 40px; width: 120px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--td-border-level-1-color); background: #f5f5f5;"
+              style="
+                cursor: pointer;
+                height: 40px;
+                width: 120px;
+                border-radius: 8px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid var(--td-border-level-1-color);
+                background: #f5f5f5;
+              "
             >
               <img
                 v-if="captchaImg"
                 :src="captchaImg"
                 alt="验证码"
-                style="width: 100%; height: 100%; object-fit: contain;"
+                style="width: 100%; height: 100%; object-fit: contain"
               />
               <RefreshIcon v-else />
             </div>
@@ -94,14 +109,14 @@
           <!--#endregion-->
 
           <!--#region 登录按钮 -->
-          <t-form-item style="margin-top: 32px;">
+          <t-form-item style="margin-top: 32px">
             <t-button
               size="large"
               theme="primary"
               type="submit"
               block
               :loading="loading"
-              style="height: 48px; font-size: 16px;"
+              style="height: 48px; font-size: 16px"
             >
               登录
             </t-button>
@@ -110,9 +125,7 @@
         </t-form>
       </t-card>
 
-      <div
-        style="margin-top: 40px; color: var(--td-text-color-placeholder); font-size: 13px;"
-      >
+      <div style="margin-top: 40px; color: var(--td-text-color-placeholder); font-size: 13px">
         &copy; {{ currentYear }} Clinical Data Intelligence
       </div>
     </div>

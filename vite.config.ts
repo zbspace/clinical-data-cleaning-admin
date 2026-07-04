@@ -1,10 +1,23 @@
+//#region Imports
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import UnoCSS from '@unocss/vite';
+import presetWind from '@unocss/preset-wind';
 import path from 'path';
+//#endregion
 
-// https://vitejs.dev/config/
+//#region Config
 export default defineConfig({
-  plugins: [vue() as any],
+  plugins: [
+    vue(),
+    UnoCSS({
+      presets: [presetWind()],
+      shortcuts: {
+        'flex-center': 'flex items-center justify-center',
+        'flex-between': 'flex items-center justify-between',
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -35,3 +48,4 @@ export default defineConfig({
     },
   },
 });
+//#endregion
