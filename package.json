@@ -2,37 +2,32 @@
   "name": "clinical-data-cleaning-admin",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "NODE_OPTIONS=--max-old-space-size=1024 tsc --incremental && vite build",
+    "build": "NODE_OPTIONS=--max-old-space-size=1024 vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\""
+    "format": "prettier --write \"src/**/*.{js,ts,vue,css,md,json}\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@reduxjs/toolkit": "^2.12.0",
-    "@vitejs/plugin-react-swc": "^4.3.1",
     "axios": "^1.18.0",
     "less": "^4.6.6",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-redux": "^9.3.0",
-    "react-router-dom": "^6.22.3",
-    "tdesign-icons-react": "^0.6.4",
-    "tdesign-react": "^1.17.1"
+    "moment": "^2.30.1",
+    "pinia": "^2.1.7",
+    "tdesign-icons-vue-next": "^0.2.3",
+    "tdesign-vue-next": "^1.9.9",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.3",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.7.0",
-    "moment": "^2.30.1",
+    "@types/node": "^20.11.19",
+    "@vitejs/plugin-vue": "^5.0.4",
     "prettier": "^3.8.4",
-    "typescript": "^6.0.3",
-    "vite": "^5.4.21"
+    "typescript": "^5.4.0",
+    "vite": "^5.4.21",
+    "vue-tsc": "^2.0.6"
   }
 }

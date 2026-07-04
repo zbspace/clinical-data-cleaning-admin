@@ -1,6 +1,6 @@
 //#region Imports
 import axios from 'axios';
-import { MessagePlugin } from 'tdesign-react';
+import { MessagePlugin } from 'tdesign-vue-next';
 //#endregion
 
 //#region Instance
@@ -11,7 +11,6 @@ const request = axios.create({
 //#endregion
 
 //#region Interceptors
-// 请求拦截器
 request.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,31 +19,22 @@ request.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
-// 响应拦截器
 request.interceptors.response.use(
   (response) => {
-    // 如果是流或者二进制数据，直接返回整个响应对象，以便获取响应头
     if (response.config.responseType === 'blob' || response.config.responseType === 'arraybuffer') {
       return response as any;
     }
-
     const res = response.data;
-
-    // 假设正常业务响应的 code 是 200 或 0
     if (res.code && res.code !== 200 && res.code !== 0) {
       MessagePlugin.error(res.message || '系统错误');
       return Promise.reject(new Error(res.message || 'Error'));
     }
-
     return res;
   },
   (error) => {
-    // 处理 HTTP 状态码错误
     if (error.response?.status === 401) {
       MessagePlugin.error('登录状态已过期，请重新登录');
       localStorage.removeItem('token');

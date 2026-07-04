@@ -1,0 +1,392 @@
+<template>
+  <!--#region 药品名清洗页面 -->
+  <t-card bordered>
+    <div style="margin-bottom: 16px;">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary);">
+        药品名清洗
+      </h2>
+
+      <!--#region 搜索表单 -->
+      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--td-border-level-1-color);">
+        <t-form
+          ref="formRef"
+          :data="formData"
+          layout="inline"
+          label-width="140"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap;"
+          @submit="onSearch"
+        >
+          <t-form-item label="药品名（清洗后）" name="drugStandardName" style="margin-bottom: 0;">
+            <t-input v-model="formData.drugStandardName" placeholder="请输入关键字" clearable style="width: 220px;" />
+          </t-form-item>
+          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0;">
+            <t-select
+              v-model="formData.status"
+              :options="statusOptions"
+              placeholder="请选择状态"
+              clearable
+              style="width: 220px;"
+            />
+          </t-form-item>
+          <div style="display: flex; align-items: center; margin-left: auto;">
+            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px;">
+              重置条件
+            </t-button>
+            <t-button theme="primary" type="submit">
+              立即查询
+            </t-button>
+          </div>
+        </t-form>
+      </div>
+      <!--#endregion-->
+    </div>
+
+    <!--#region 数据表格 -->
+    <t-table
+      :data="tableData"
+      :columns="columns"
+      row-key="drugCommentId"
+      :loading="loading"
+      bordered
+      stripe
+      table-layout="auto"
+      hover
+      :pagination="pagination"
+      @page-change="onPageChange"
+    />
+    <!--#endregion-->
+
+    <!--#region 相关备案/登记号弹窗 -->
+    <t-dialog
+      v-model:visible="accModalVisible"
+      header="相关备案/登记号"
+      :footer="false"
+      width="800px"
+      @close="onAccModalClose"
+    >
+      <t-table
+        :data="accData"
+        :columns="accColumns"
+        row-key="id"
+        bordered
+        :pagination="accPagination"
+      />
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 编辑弹窗 -->
+    <t-dialog
+      v-model:visible="editModalVisible"
+      header="编辑"
+      width="600px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
+      @confirm="submitEdit"
+      @close="onEditModalClose"
+    >
+      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px;">
+        <p style="margin: 0 0 8px 0;">
+          <strong>药品名（源数据）：</strong>
+          {{ currentEditRecord?.drugNickName || currentEditRecord?.drugComment || currentEditRecord?.drugStandardName }}
+        </p>
+        <p style="margin: 0;">
+          <strong>药品类型：</strong>
+          {{ currentEditRecord?.drugType || '化学药物' }}
+        </p>
+      </div>
+      <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
+        <t-form-item label="药品名（清洗后）" name="cleanedName">
+          <t-input v-model="editFormData.cleanedName" />
+        </t-form-item>
+        <t-form-item label="通用名（中文）" name="genericNameCn">
+          <t-input v-model="editFormData.genericNameCn" />
+        </t-form-item>
+        <t-form-item label="通用名（英文）" name="genericNameEn">
+          <t-input v-model="editFormData.genericNameEn" />
+        </t-form-item>
+        <t-form-item label="研发代号" name="rdCode">
+          <t-input v-model="editFormData.rdCode" />
+        </t-form-item>
+        <t-form-item label="其他名（例如结构名称）" name="otherNames">
+          <t-input v-model="editFormData.otherNames" />
+        </t-form-item>
+        <t-form-item label="剂型" name="dosageForm">
+          <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
+        </t-form-item>
+        <t-form-item label="药品类型" name="drugType">
+          <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+  </t-card>
+  <!--#endregion-->
+</template>
+
+<script setup lang="ts">
+//#region Imports
+import { ref, reactive, h, onMounted } from 'vue';
+import { MessagePlugin } from 'tdesign-vue-next';
+import moment from 'moment';
+import { drugApi } from '@/api';
+//#endregion
+
+//#region Constants
+const statusOptions = [
+  { label: '未清洗', value: 0 },
+  { label: '已清洗', value: 1 },
+  { label: '不用清洗', value: 2 },
+];
+
+const dosageFormOptions = [
+  { label: '注射液', value: '注射液' },
+  { label: '片剂', value: '片剂' },
+  { label: '胶囊', value: '胶囊' },
+  { label: '颗粒', value: '颗粒' },
+];
+
+const drugTypeOptions = [
+  { label: '化学药物', value: '化学药物' },
+  { label: '生物制品', value: '生物制品' },
+  { label: '中药', value: '中药' },
+];
+//#endregion
+
+//#region State
+const formRef = ref();
+const editFormRef = ref();
+const loading = ref(false);
+const tableData = ref<any[]>([]);
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showJumper: true,
+});
+
+const formData = reactive({
+  drugStandardName: '',
+  status: undefined as number | undefined,
+});
+
+// 备案号弹窗
+const accModalVisible = ref(false);
+const accData = ref<any[]>([]);
+const accPagination = reactive({ current: 1, pageSize: 5, total: 0 });
+
+// 编辑弹窗
+const editModalVisible = ref(false);
+const editLoading = ref(false);
+const currentEditRecord = ref<any>(null);
+
+const editFormData = reactive<Record<string, any>>({
+  cleanedName: '',
+  genericNameCn: '',
+  genericNameEn: '',
+  rdCode: '',
+  otherNames: '',
+  dosageForm: '',
+  drugType: '',
+});
+//#endregion
+
+//#region Columns Definition
+const columns = [
+  {
+    colKey: 'rowIndex',
+    title: '序号',
+    width: 60,
+    cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
+  },
+  {
+    colKey: 'originalName',
+    title: '药品名（源数据）',
+    width: 180,
+    cell: (h: any, { row }: any) => row.drugNickName || row.drugComment || row.drugStandardName || '-',
+  },
+  {
+    colKey: 'genericNameCn',
+    title: '商品名(中)',
+    width: 150,
+    cell: (h: any, { row }: any) => row.drugGoodsNameCn || row.genericNameCn || '-',
+  },
+  {
+    colKey: 'genericNameEn',
+    title: '商品名(英)',
+    width: 150,
+    cell: (h: any, { row }: any) => row.drugGoodsNameEn || row.genericNameEn || '-',
+  },
+  {
+    colKey: 'relatedNo',
+    title: '登记号',
+    width: 150,
+    cell: (h: any, { row }: any) =>
+      h(
+        't-button',
+        {
+          theme: 'primary',
+          variant: 'text',
+          onClick: () => {
+            accModalVisible.value = true;
+          },
+        },
+        { default: () => row.acceptanceNo || '-' },
+      ),
+  },
+  {
+    colKey: 'companyName',
+    title: '公司名',
+    width: 150,
+    cell: (h: any, { row }: any) => row.companyName || row.companyNameOrigin || '-',
+  },
+  { colKey: 'dosageForm', title: '剂型', width: 100, cell: (h: any, { row }: any) => row.dosageForm || '-' },
+  {
+    colKey: 'registerType',
+    title: '注册分类',
+    width: 120,
+    cell: (h: any, { row }: any) => row.registerType || row.registerTypeOrigin || '-',
+  },
+  {
+    colKey: 'drugType',
+    title: '药品类型',
+    width: 120,
+    cell: (h: any, { row }: any) => row.drugType || row.drugTypeOrigin || '-',
+  },
+  {
+    colKey: 'cleanStatus',
+    title: '清洗状态',
+    width: 120,
+    cell: (h: any, { row }: any) => {
+      const item = statusOptions.find((opt) => opt.value === row.status || opt.value === row.cleanStatus);
+      return item ? item.label : '-';
+    },
+  },
+  { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },
+  {
+    colKey: 'updateTime',
+    title: '更新时间',
+    width: 170,
+    cell: (h: any, { row }: any) =>
+      row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    width: 100,
+    fixed: 'right' as const,
+    cell: (h: any, { row }: any) =>
+      h(
+        't-button',
+        {
+          theme: 'primary',
+          variant: 'text',
+          onClick: () => openEditModal(row),
+        },
+        { default: () => '编辑' },
+      ),
+  },
+];
+
+const accColumns = [
+  { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
+  { colKey: 'recordNo', title: '相关登记号/备案号', width: 180 },
+  { colKey: 'relatedCompany', title: '相关公司（源数据）', width: 180 },
+  { colKey: 'regClassSource', title: '注册分类（源数据）', width: 150 },
+  { colKey: 'regClassCleaned', title: '注册分类（清洗后）', width: 150 },
+];
+//#endregion
+
+//#region Data Fetching
+const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
+  loading.value = true;
+  try {
+    const res = await drugApi.cleanPageData({
+      pageNum: curr,
+      pageSize: size,
+      drugStandardName: formData.drugStandardName || undefined,
+      status: formData.status !== undefined ? Number(formData.status) : undefined,
+    });
+    if (res.code === 0) {
+      tableData.value = res.data?.list || [];
+      pagination.current = curr;
+      pagination.pageSize = size;
+      pagination.total = res.data?.total || 0;
+    } else {
+      MessagePlugin.error(res.msg || '查询失败');
+    }
+  } catch (e) {
+    console.error('Fetch data failed:', e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onSearch = () => fetchData(1);
+
+const onReset = () => {
+  formData.drugStandardName = '';
+  formData.status = undefined;
+  fetchData(1);
+};
+
+const onPageChange = (pageInfo: any) => {
+  fetchData(pageInfo.current, pageInfo.pageSize);
+};
+//#endregion
+
+//#region Edit Modal
+const openEditModal = (record: any) => {
+  currentEditRecord.value = record;
+  editFormData.cleanedName = record.drugStandardName || record.cleanedName || '';
+  editFormData.genericNameCn = record.drugNormalNameCn || record.genericNameCn || '';
+  editFormData.genericNameEn = record.drugNormalNameEn || record.genericNameEn || '';
+  editFormData.rdCode = record.drugCode || record.rdCode || '';
+  editFormData.otherNames = record.otherComment || record.otherNames || '';
+  editFormData.dosageForm = record.dosageForm || '';
+  editFormData.drugType = record.drugType || '';
+  editModalVisible.value = true;
+};
+
+const submitEdit = async () => {
+  editLoading.value = true;
+  try {
+    if (currentEditRecord.value) {
+      const submitData = {
+        ...currentEditRecord.value,
+        drugStandardName: editFormData.cleanedName,
+        drugNormalNameCn: editFormData.genericNameCn,
+        drugNormalNameEn: editFormData.genericNameEn,
+        drugCode: editFormData.rdCode,
+        otherComment: editFormData.otherNames,
+        dosageForm: editFormData.dosageForm,
+        drugType: editFormData.drugType,
+      };
+      await drugApi.saveRelation(submitData);
+      MessagePlugin.success('保存成功');
+      editModalVisible.value = false;
+      fetchData();
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    editLoading.value = false;
+  }
+};
+
+const onEditModalClose = () => {
+  editModalVisible.value = false;
+  currentEditRecord.value = null;
+};
+//#endregion
+
+//#region Acc Modal
+const onAccModalClose = () => {
+  accModalVisible.value = false;
+};
+//#endregion
+
+//#region Lifecycle
+onMounted(() => {
+  fetchData();
+});
+//#endregion
+</script>

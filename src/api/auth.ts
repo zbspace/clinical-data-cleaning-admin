@@ -1,5 +1,5 @@
 //#region Imports
-import request from '../utils/request';
+import request from '@/utils/request';
 import type { LoginRequest, UserDto } from './types/auth';
 //#endregion
 
