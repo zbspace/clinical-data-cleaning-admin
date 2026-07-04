@@ -110,7 +110,7 @@
           <t-select v-model="editFormData.companyType" :options="companyTypeOptions" placeholder="请选择" />
         </t-form-item>
         <!--#region 关联搜索 -->
-        <t-form-item label="母公司简称" name="parentCompanyId" style="margin-bottom: 0">
+        <t-form-item label="母公司简称" name="parentCompanyId">
           <t-select
             v-model="editFormData.parentCompanyId"
             :options="relationOptions"
