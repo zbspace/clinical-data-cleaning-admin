@@ -52,10 +52,15 @@
       :loading="loading"
       bordered
       stripe
-      table-layout="auto"
+      table-layout="fixed"
+      max-height="calc(100vh - 300px)"
       :pagination="pagination"
       @page-change="onPageChange"
-    />
+    >
+      <template #operation="{ row }">
+        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      </template>
+    </t-table>
     <!--#endregion-->
 
     <!--#region 相关受理号/备案号弹窗 -->
@@ -225,16 +230,16 @@ const columns = [
     title: '操作',
     width: 100,
     fixed: 'right' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        't-button',
-        {
-          theme: 'primary',
-          variant: 'text',
-          onClick: () => openEditModal(row),
-        },
-        { default: () => '编辑' },
-      ),
+    // cell: (h: any, { row }: any) =>
+    //   h(
+    //     't-button',
+    //     {
+    //       theme: 'primary',
+    //       variant: 'text',
+    //       onClick: () => openEditModal(row),
+    //     },
+    //     { default: () => '编辑' },
+    //   ),
   },
 ];
 
@@ -272,14 +277,10 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       status: formData.status !== undefined ? Number(formData.status) : undefined,
     };
     const res = await indicationApi.pageData(params);
-    if (res.code === 0) {
-      tableData.value = res.data?.list || [];
-      pagination.current = curr;
-      pagination.pageSize = size;
-      pagination.total = res.data?.total || 0;
-    } else {
-      MessagePlugin.error(res.msg || '查询失败');
-    }
+    tableData.value = res.data?.list || [];
+    pagination.current = curr;
+    pagination.pageSize = size;
+    pagination.total = res.data?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {

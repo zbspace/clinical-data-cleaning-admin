@@ -46,11 +46,17 @@
       :loading="loading"
       bordered
       stripe
-      table-layout="auto"
+      table-layout="fixed"
+      max-height="calc(100vh - 290px)"
+      style="white-space: nowrap"
       hover
       :pagination="pagination"
       @page-change="onPageChange"
-    />
+    >
+      <template #operation="{ row }">
+        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      </template>
+    </t-table>
     <!--#endregion-->
 
     <!--#region 药品别名弹窗 -->
@@ -133,7 +139,7 @@ const loading = ref(false);
 const tableData = ref<DrugStandardDto[]>([]);
 const pagination = reactive({
   current: 1,
-  pageSize: 10,
+  pageSize: 20,
   total: 0,
   showJumper: true,
 });
@@ -175,37 +181,51 @@ const columns = [
     width: 60,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'drugStandardName', title: '药品标准名', width: 180 },
-  { colKey: 'dosageForm', title: '剂型', width: 100 },
-  { colKey: 'drugType', title: '药品类型', width: 140 },
+  { colKey: 'drugStandardName', title: '药品名（清洗后）', width: 180, ellipsis: true },
   {
     colKey: 'genericNameCn',
-    title: '商品名(中)',
-    width: 150,
+    title: '通用名（中文）',
+    width: 250,
+    ellipsis: true,
     cell: (h: any, { row }: any) => row.genericNameCn || '-',
   },
   {
     colKey: 'genericNameEn',
-    title: '商品名(英)',
-    width: 150,
+    title: '通用名(英文)',
+    width: 250,
+    ellipsis: true,
     cell: (h: any, { row }: any) => row.genericNameEn || '-',
   },
   {
     colKey: 'developmentCode',
-    title: '开发代码',
+    title: '研发代码',
     width: 120,
     cell: (h: any, { row }: any) => row.developmentCode || '-',
   },
   {
+    colKey: 'otherInfo',
+    title: '其他（例如药物结构描述）',
+    width: 220,
+    cell: (h: any, { row }: any) => row.otherInfo || '-',
+  },
+  { colKey: 'dosageForm', title: '剂型', width: 100 },
+  { colKey: 'drugType', title: '药品类型', width: 140 },
+  {
     colKey: 'companyName',
-    title: '公司',
+    title: '相关公司',
     width: 200,
     cell: (h: any, { row }: any) => row.companyName || '-',
   },
   {
+    colKey: 'parentCompanyName',
+    title: '相关母公司',
+    width: 200,
+    cell: (h: any, { row }: any) => row.parentCompanyName || '-',
+  },
+  {
     colKey: 'statisticCount',
-    title: '统计',
-    width: 100,
+    title: '源数据药品名（别名）',
+    width: 170,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>
       h(
@@ -222,7 +242,7 @@ const columns = [
     title: '状态',
     width: 80,
     cell: (h: any, { row }: any) => {
-      const statusMap: Record<number, string> = { 0: '无效', 1: '有效' };
+      const statusMap: Record<number, string> = { 0: '无冲突', 1: '待确认', 2: '已确认' };
       return statusMap[row.status] ?? '-';
     },
   },
@@ -238,16 +258,6 @@ const columns = [
     title: '操作',
     width: 100,
     fixed: 'right' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        't-button',
-        {
-          theme: 'primary',
-          variant: 'text',
-          onClick: () => openEditModal(row),
-        },
-        { default: () => '编辑' },
-      ),
   },
 ];
 
@@ -272,14 +282,10 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       drugStandardName: formData.drugStandardName || undefined,
     };
     const res = await drugApi.standardPageData(params);
-    if (res.code === 0) {
-      tableData.value = res.data?.list || [];
-      pagination.current = curr;
-      pagination.pageSize = size;
-      pagination.total = res.data?.total || 0;
-    } else {
-      MessagePlugin.error(res.msg || '查询失败');
-    }
+    tableData.value = res.data?.list || [];
+    pagination.current = curr;
+    pagination.pageSize = size;
+    pagination.total = res.data?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {

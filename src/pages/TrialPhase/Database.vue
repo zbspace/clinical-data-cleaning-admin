@@ -29,7 +29,9 @@
       hover
       :pagination="pagination"
       @page-change="onPageChange"
-    />
+    >
+      <!--  -->
+    </t-table>
     <!--#endregion-->
 
     <!--#region 编辑/新增弹窗 -->
