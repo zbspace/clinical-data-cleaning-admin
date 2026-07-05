@@ -28,7 +28,13 @@
             <t-input v-model="formData.companyName" placeholder="请输入" clearable style="width: 220px" />
           </t-form-item>
           <t-form-item label="母公司简称" name="parentCompanyShortName" style="margin-bottom: 0">
-            <t-input v-model="formData.parentCompanyShortName" placeholder="请输入" clearable style="width: 220px" />
+            <t-input
+              v-model="formData.parentCompanyShortName"
+              placeholder="请输入"
+              :disabled="formData.id !== formData.parentCompanyId"
+              clearable
+              style="width: 220px"
+            />
           </t-form-item>
           <t-form-item label="公司类型" name="companyType" style="margin-bottom: 0">
             <t-select
