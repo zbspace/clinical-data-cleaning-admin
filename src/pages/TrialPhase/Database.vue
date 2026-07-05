@@ -53,7 +53,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 340px)"
+      max-height="calc(100vh - 290px)"
       style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
@@ -67,7 +67,7 @@
     <!--#region 编辑/新增弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      :header="isAddMode ? '新增试验分期' : '编辑试验分期'"
+      header="编辑试验分期"
       width="600px"
       :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
@@ -78,7 +78,7 @@
           <t-input v-model="editFormData.trialStages" placeholder="请输入原始分期，如 I期" />
         </t-form-item>
         <t-form-item label="清洗后分期" name="cleanedTrialStages">
-          <t-tag-input v-model="editFormData.cleanedTrialStagesList" placeholder="输入后回车添加" clearable />
+          <t-input v-model="editFormData.cleanedTrialStages" placeholder="多个分期用;分隔，如 I期;II期" />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -119,7 +119,7 @@ const currentEditRecord = ref<CdeTrialStagesMapping | null>(null);
 
 const editFormData = reactive<Record<string, any>>({
   trialStages: '',
-  cleanedTrialStagesList: [],
+  cleanedTrialStages: '',
 });
 //#endregion
 
@@ -131,10 +131,10 @@ const columns = [
     width: 80,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'trialStages', title: '原始分期', width: 200 },
+  { colKey: 'trialStages', title: '原试验期（源数据）', width: 200 },
   {
     colKey: 'cleanedTrialStages',
-    title: '清洗后分期',
+    title: '试验分期（清洗后）',
     width: 300,
     cell: (h: any, { row }: any) => row.cleanedTrialStages || '-',
   },
@@ -148,7 +148,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 80,
     fixed: 'right' as const,
   },
 ];
@@ -192,7 +192,15 @@ const openEditModal = (record: CdeTrialStagesMapping) => {
   isAddMode.value = false;
   currentEditRecord.value = { ...record };
   editFormData.trialStages = record.trialStages || '';
-  editFormData.cleanedTrialStagesList = record.cleanedTrialStagesList || [];
+  editFormData.cleanedTrialStages = record.cleanedTrialStages || '';
+  editModalVisible.value = true;
+};
+
+const handleAdd = () => {
+  isAddMode.value = true;
+  currentEditRecord.value = null;
+  editFormData.trialStages = '';
+  editFormData.cleanedTrialStages = '';
   editModalVisible.value = true;
 };
 
@@ -202,10 +210,10 @@ const submitEdit = async () => {
     const submitData: CdeTrialStagesMapping = {
       ...currentEditRecord.value,
       trialStages: editFormData.trialStages,
-      cleanedTrialStages: (editFormData.cleanedTrialStagesList || []).join('; '),
-      cleanedTrialStagesList: editFormData.cleanedTrialStagesList || [],
+      cleanedTrialStages: editFormData.cleanedTrialStages,
+      cleanedTrialStagesList: editFormData.cleanedTrialStages.split('; '),
     };
-    const res = await trialStageApi.save(submitData);
+    await trialStageApi.save(submitData);
     MessagePlugin.success('保存成功');
     editModalVisible.value = false;
     fetchData();
