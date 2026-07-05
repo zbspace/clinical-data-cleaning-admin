@@ -59,6 +59,7 @@ export interface CompanyShortDto {
   id?: number;
   parentCompanyId?: number;
   parentCompanyShortName?: string;
+  standardId?: number;
 }
 
 export interface BasePageVo<T> {

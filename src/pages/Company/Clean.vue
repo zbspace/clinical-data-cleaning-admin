@@ -439,7 +439,8 @@ const onSearchRelation = async (keyword: string) => {
       .filter((item: CompanyShortDto) => item.parentCompanyId != null)
       .map((item: CompanyShortDto) => ({
         label: item.parentCompanyShortName || '',
-        value: item.parentCompanyId as number,
+        // value: item.parentCompanyId as number,
+        value: item.standardId as number,
         item,
       }));
     relationOptions.value = opts;
