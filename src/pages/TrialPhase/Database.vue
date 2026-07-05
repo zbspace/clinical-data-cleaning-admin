@@ -1,36 +1,66 @@
 <template>
   <!--#region 试验分期库管理页面 -->
-  <t-card bordered>
+  <t-card bordered style="height: calc(100vh - 86px)">
+    <!-- 页面标题 -->
     <div style="margin-bottom: 16px">
       <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         试验分期库管理
       </h2>
 
-      <!--#region 搜索与操作栏 -->
-      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center">
-        <t-space>
-          <t-input v-model="searchKeyword" placeholder="搜索分期名称" clearable style="width: 220px" />
-          <t-button theme="primary" @click="onSearch">搜索</t-button>
-        </t-space>
-        <t-button theme="primary" @click="handleAdd">新增试验分期</t-button>
+      <!--#region 搜索表单 -->
+      <div
+        style="
+          background: #f8fafc;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid var(--td-border-level-1-color);
+          margin-bottom: 16px;
+        "
+      >
+        <t-form
+          ref="formRef"
+          :data="formData"
+          layout="inline"
+          label-width="120"
+          style="display: flex; gap: 16px 0; flex-wrap: wrap"
+          @submit="onSearch"
+        >
+          <t-form-item label="分期名称" name="searchKey" style="margin-bottom: 0">
+            <t-input
+              v-model="formData.searchKey"
+              placeholder="请输入原始分期或清洗后分期"
+              clearable
+              style="width: 280px"
+            />
+          </t-form-item>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-space>
+              <t-button theme="default" variant="base" @click="onReset" style="background: #fff"> 重置 </t-button>
+              <t-button theme="primary" type="submit"> 搜索 </t-button>
+            </t-space>
+          </div>
+        </t-form>
       </div>
       <!--#endregion-->
     </div>
 
     <!--#region 数据表格 -->
     <t-table
-      :data="filteredData"
+      :data="dataList"
       :columns="columns"
       row-key="id"
       :loading="loading"
       bordered
       stripe
-      table-layout="auto"
-      hover
+      table-layout="fixed"
+      max-height="calc(100vh - 340px)"
+      style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
     >
-      <!--  -->
+      <template #operation="{ row }">
+        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      </template>
     </t-table>
     <!--#endregion-->
 
@@ -59,7 +89,7 @@
 
 <script setup lang="ts">
 //#region Imports
-import { ref, reactive, h, computed, onMounted } from 'vue';
+import { ref, reactive, h, onMounted } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { trialStageApi } from '@/api';
@@ -67,17 +97,21 @@ import type { CdeTrialStagesMapping } from '@/api/types/trialStage';
 //#endregion
 
 //#region State
+const formRef = ref();
 const editFormRef = ref();
 const loading = ref(false);
 const dataList = ref<CdeTrialStagesMapping[]>([]);
 const pagination = reactive({
   current: 1,
-  pageSize: 10,
+  pageSize: 20,
   total: 0,
   showJumper: true,
 });
 
-const searchKeyword = ref('');
+const formData = reactive<Record<string, any>>({
+  searchKey: '',
+});
+
 const editModalVisible = ref(false);
 const editLoading = ref(false);
 const isAddMode = ref(false);
@@ -87,20 +121,16 @@ const editFormData = reactive<Record<string, any>>({
   trialStages: '',
   cleanedTrialStagesList: [],
 });
-
-const filteredData = computed(() => {
-  const keyword = searchKeyword.value?.toLowerCase() || '';
-  if (!keyword) return dataList.value;
-  return dataList.value.filter(
-    (item) =>
-      item.trialStages?.toLowerCase().includes(keyword) || item.cleanedTrialStages?.toLowerCase().includes(keyword),
-  );
-});
 //#endregion
 
 //#region Columns Definition
 const columns = [
-  { colKey: 'id', title: '序号', width: 80 },
+  {
+    colKey: 'rowIndex',
+    title: '序号',
+    width: 80,
+    cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
+  },
   { colKey: 'trialStages', title: '原始分期', width: 200 },
   {
     colKey: 'cleanedTrialStages',
@@ -120,16 +150,6 @@ const columns = [
     title: '操作',
     width: 100,
     fixed: 'right' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        't-button',
-        {
-          theme: 'primary',
-          variant: 'text',
-          onClick: () => openEditModal(row),
-        },
-        { default: () => '编辑' },
-      ),
   },
 ];
 //#endregion
@@ -138,15 +158,16 @@ const columns = [
 const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
   loading.value = true;
   try {
-    const res = await trialStageApi.pageData({ pageNum: curr, pageSize: size });
-    if (res.code === 0) {
-      dataList.value = res.data?.list || [];
-      pagination.current = curr;
-      pagination.pageSize = size;
-      pagination.total = res.data?.total || 0;
-    } else {
-      MessagePlugin.error(res.msg || '查询失败');
-    }
+    const params: Record<string, any> = {
+      ...formData,
+      pageNum: curr,
+      pageSize: size,
+    };
+    const res = await trialStageApi.pageData(params);
+    dataList.value = res.data?.list || [];
+    pagination.current = curr;
+    pagination.pageSize = size;
+    pagination.total = res.data?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {
@@ -154,8 +175,11 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
   }
 };
 
-const onSearch = () => {
-  // computed handles filtering
+const onSearch = () => fetchData(1);
+
+const onReset = () => {
+  formData.searchKey = '';
+  fetchData(1);
 };
 
 const onPageChange = (pageInfo: any) => {
@@ -172,14 +196,6 @@ const openEditModal = (record: CdeTrialStagesMapping) => {
   editModalVisible.value = true;
 };
 
-const handleAdd = () => {
-  isAddMode.value = true;
-  currentEditRecord.value = null;
-  editFormData.trialStages = '';
-  editFormData.cleanedTrialStagesList = [];
-  editModalVisible.value = true;
-};
-
 const submitEdit = async () => {
   editLoading.value = true;
   try {
@@ -190,13 +206,9 @@ const submitEdit = async () => {
       cleanedTrialStagesList: editFormData.cleanedTrialStagesList || [],
     };
     const res = await trialStageApi.save(submitData);
-    if (res.code === 0) {
-      MessagePlugin.success(isAddMode.value ? '新增成功' : '保存成功');
-      editModalVisible.value = false;
-      fetchData();
-    } else {
-      MessagePlugin.error(res.msg || '保存失败');
-    }
+    MessagePlugin.success('保存成功');
+    editModalVisible.value = false;
+    fetchData();
   } catch (e) {
     console.error(e);
   } finally {

@@ -318,12 +318,8 @@ const openEditModal = async (record: IndicationDto) => {
   if (!record.indicationCommentId) return;
   try {
     const res = await indicationApi.getIndicationDetail(record.indicationCommentId);
-    if (res.code === 0 && res.data) {
-      currentEditRecord.value = JSON.parse(JSON.stringify(res.data));
-      editModalVisible.value = true;
-    } else {
-      MessagePlugin.error(res.msg || '获取详情失败');
-    }
+    currentEditRecord.value = JSON.parse(JSON.stringify(res.data));
+    editModalVisible.value = true;
   } catch (e) {
     console.error(e);
   }
@@ -345,13 +341,9 @@ const submitEdit = async () => {
   editLoading.value = true;
   try {
     const res = await indicationApi.saveIndication(currentEditRecord.value);
-    if (res.code === 0) {
-      MessagePlugin.success('保存成功');
-      editModalVisible.value = false;
-      fetchData();
-    } else {
-      MessagePlugin.error(res.msg || '保存失败');
-    }
+    MessagePlugin.success('保存成功');
+    editModalVisible.value = false;
+    fetchData();
   } catch (e) {
     console.error(e);
   } finally {

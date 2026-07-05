@@ -311,13 +311,11 @@ const fetchAliasNos = async (drugId: number, curr = 1, size = 5) => {
   aliasLoading.value = true;
   try {
     const res = await drugApi.commentDrugPageData({ id: drugId, pageNum: curr, pageSize: size });
-    if (res.code === 0) {
-      const mappedList = (res.data?.list || []).map((name: string) => ({ aliasName: name }));
-      aliasData.value = mappedList;
-      aliasPagination.current = curr;
-      aliasPagination.pageSize = size;
-      aliasPagination.total = res.data?.total || 0;
-    }
+    const mappedList = (res.data?.list || []).map((name: string) => ({ aliasName: name }));
+    aliasData.value = mappedList;
+    aliasPagination.current = curr;
+    aliasPagination.pageSize = size;
+    aliasPagination.total = res.data?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {
@@ -353,6 +351,7 @@ const openEditModal = (record: DrugStandardDto) => {
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
   editFormData.companyName = record.companyName || '';
+  editFormData.id = record.standardId || '';
   editModalVisible.value = true;
 };
 
@@ -361,7 +360,7 @@ const submitEdit = async () => {
   editLoading.value = true;
   try {
     const submitData: DrugStandardInfo = {
-      id: currentEditRecord.value.id,
+      id: currentEditRecord.value.standardId,
       cleanedDrugName: editFormData.cleanedDrugName,
       genericNameCn: editFormData.genericNameCn,
       genericNameEn: editFormData.genericNameEn,
@@ -372,13 +371,9 @@ const submitEdit = async () => {
       status: currentEditRecord.value.status,
     };
     const res = await drugApi.standardSave(submitData);
-    if (res.code === 0) {
-      MessagePlugin.success('保存成功');
-      editModalVisible.value = false;
-      fetchData();
-    } else {
-      MessagePlugin.error(res.msg || '保存失败');
-    }
+    MessagePlugin.success('保存成功');
+    editModalVisible.value = false;
+    fetchData();
   } catch (e) {
     console.error(e);
   } finally {

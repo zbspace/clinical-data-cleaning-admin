@@ -238,13 +238,11 @@ const fetchAliasList = async (tagId: number, curr = 1, size = 5) => {
   aliasLoading.value = true;
   try {
     const res = await indicationApi.getIndicationCommentList({ id: tagId, pageNum: curr, pageSize: size });
-    if (res.code === 0) {
-      const mappedList = (res.data?.list || []).map((name: string) => ({ aliasName: name }));
-      aliasData.value = mappedList;
-      aliasPagination.current = curr;
-      aliasPagination.pageSize = size;
-      aliasPagination.total = res.data?.total || 0;
-    }
+    const mappedList = (res.data?.list || []).map((name: string) => ({ aliasName: name }));
+    aliasData.value = mappedList;
+    aliasPagination.current = curr;
+    aliasPagination.pageSize = size;
+    aliasPagination.total = res.data?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {
@@ -283,9 +281,7 @@ onMounted(async () => {
   // 获取分类下拉选项
   try {
     const res = await indicationApi.categoryPageData({ pageNum: 1, pageSize: 1000 });
-    if (res.code === 0) {
-      categoryOptions.value = res.data?.list || [];
-    }
+    categoryOptions.value = res.data?.list || [];
   } catch (e) {
     console.error(e);
   }

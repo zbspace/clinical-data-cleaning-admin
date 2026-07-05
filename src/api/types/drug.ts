@@ -79,6 +79,7 @@ export interface DrugStandardDto {
   status?: number;
   updateTime?: string;
   updateUser?: string;
+  standardId?: number;
 }
 
 export interface DrugStandardInfo {

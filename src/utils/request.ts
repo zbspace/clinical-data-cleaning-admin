@@ -29,8 +29,8 @@ request.interceptors.response.use(
     }
     const res = response.data;
     if (res.code && res.code !== 200 && res.code !== 0) {
-      MessagePlugin.error(res.message || '系统错误');
-      return Promise.reject(new Error(res.message || 'Error'));
+      MessagePlugin.error(res.msg || '系统错误');
+      return Promise.reject(new Error(res.msg || 'Error'));
     }
     return res;
   },
