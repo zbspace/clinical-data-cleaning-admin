@@ -24,11 +24,11 @@
           style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="原始研究中心名称" name="hosOriginName" style="margin-bottom: 0">
-            <t-input v-model="formData.hosOriginName" placeholder="请输入关键字" clearable style="width: 220px" />
+          <t-form-item label="中心名称（原名称）" name="hosOriginName" style="margin-bottom: 0">
+            <t-input v-model="formData.hosOriginName" placeholder="请输入关键字" clearable style="width: 200px" />
           </t-form-item>
           <t-form-item label="标准名称" name="hosStandardName" style="margin-bottom: 0">
-            <t-input v-model="formData.hosStandardName" placeholder="请输入关键字" clearable style="width: 220px" />
+            <t-input v-model="formData.hosStandardName" placeholder="请输入关键字" clearable style="width: 200px" />
           </t-form-item>
           <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0">
             <t-select
@@ -36,7 +36,7 @@
               :options="statusOptions"
               placeholder="请选择状态"
               clearable
-              style="width: 220px"
+              style="width: 200px"
             />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
@@ -127,6 +127,14 @@
           <t-form-item label="标准名称" name="hosStandardName">
             <t-input v-model="editFormData.hosStandardName" :disabled="!!editFormData.hosStandardId" />
           </t-form-item>
+          <t-form-item label="清洗状态" name="cleanStatus">
+            <t-select
+              v-model="editFormData.cleanStatus"
+              :options="statusOptions"
+              placeholder="请选择清洗状态"
+              clearable
+            />
+          </t-form-item>
           <t-form-item label="备注" name="remark">
             <t-textarea v-model="editFormData.remark" />
           </t-form-item>
@@ -198,6 +206,7 @@ const editFormData = reactive<Record<string, any>>({
   hosStandardId: undefined,
   hosStandardName: '',
   remark: '',
+  cleanStatus: undefined,
 });
 //#endregion
 
@@ -361,6 +370,7 @@ const resetEditForm = () => {
   editFormData.hosStandardId = undefined;
   editFormData.hosStandardName = '';
   editFormData.remark = '';
+  editFormData.cleanStatus = undefined;
 };
 
 const openEditModal = (record: HospitalCleanDto) => {
@@ -369,6 +379,11 @@ const openEditModal = (record: HospitalCleanDto) => {
   editModalVisible.value = true;
   editFormData.hosStandardName = record.hosStandardName || '';
   editFormData.remark = record.remark || '';
+  editFormData.cleanStatus = record.cleanStatus;
+
+  if (record.hosStandardId) {
+    editFormData.hosStandardId = record.hosStandardId;
+  }
 
   if (record.hosStandardName) {
     nextTick(() => {
@@ -392,6 +407,14 @@ const onSearchRelation = async (keyword: string) => {
       item,
     }));
     relationOptions.value = opts;
+
+    // 如果已有 hosStandardId，自动选中匹配项
+    if (editFormData.hosStandardId) {
+      const matched = opts.find((o) => o.value === editFormData.hosStandardId);
+      if (matched) {
+        onRelationChange(matched.value);
+      }
+    }
   } catch (e) {
     console.error(e);
   } finally {
@@ -470,7 +493,7 @@ const submitEdit = async () => {
       hosStandardId: editFormData.hosStandardId,
       hosStandardName: editFormData.hosStandardName,
       remark: editFormData.remark,
-      cleanStatus: 3,
+      cleanStatus: editFormData.cleanStatus ?? 3,
     };
     await hospitalApi.saveClean(submitData);
     MessagePlugin.success('保存成功');
