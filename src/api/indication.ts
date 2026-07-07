@@ -59,6 +59,11 @@ export const indicationApi = {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/indication/saveIndication', data);
   },
 
+  /** 适应症字典保存 */
+  saveIndicationDict(data: IndicationDictDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/indication/saveIndicationDict', data);
+  },
+
   /** 适应症名称查询 */
   shortNameData(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<IndicationShortDto>; msg: string }>(

@@ -86,6 +86,35 @@
       />
     </t-dialog>
     <!--#endregion-->
+
+    <!--#region 编辑弹窗 -->
+    <t-dialog
+      v-model:visible="editModalVisible"
+      header="编辑适应症"
+      :confirm-on-enter="true"
+      :on-confirm="submitEdit"
+      :on-close="onEditModalClose"
+      :loading="editLoading"
+      width="600px"
+    >
+      <t-form ref="editFormRef" :data="editFormData" label-width="100">
+        <t-form-item label="适应症归类" name="indicationCategoryId">
+          <t-select
+            v-model="editFormData.indicationCategoryId"
+            :options="categoryOptions"
+            placeholder="请选择"
+            clearable
+            style="width: 100%"
+            value-key="id"
+            :keys="{ label: 'categoryName', value: 'id' }"
+          />
+        </t-form-item>
+        <t-form-item label="适应症" name="indicationStandard">
+          <t-input v-model="editFormData.indicationStandard" placeholder="请输入" clearable style="width: 100%" />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
   </t-card>
   <!--#endregion-->
 </template>
@@ -105,7 +134,7 @@ const loading = ref(false);
 const tableData = ref<IndicationDictDto[]>([]);
 const pagination = reactive({
   current: 1,
-  pageSize: 10,
+  pageSize: 20,
   total: 0,
   showJumper: true,
 });
@@ -270,11 +299,42 @@ const onAliasModalClose = () => {
 };
 //#endregion
 
-//#region Edit Modal (placeholder - not implemented in React version either)
+//#region Edit Modal
 const editModalVisible = ref(false);
+const editLoading = ref(false);
+const editFormRef = ref();
+const editFormData = reactive<IndicationDictDto>({
+  indicationTagId: undefined,
+  indicationCategoryId: undefined,
+  indicationCategoryName: undefined,
+  indicationStandard: '',
+});
+
 const openEditModal = (record: IndicationDictDto) => {
-  // 编辑功能待实现，同React版本一致
-  MessagePlugin.info('编辑功能开发中');
+  editFormData.indicationTagId = record.indicationTagId;
+  editFormData.indicationCategoryId = record.indicationCategoryId;
+  editFormData.indicationCategoryName = record.indicationCategoryName;
+  editFormData.indicationStandard = record.indicationStandard;
+  editModalVisible.value = true;
+};
+
+const submitEdit = async () => {
+  editLoading.value = true;
+  try {
+    const res = await indicationApi.saveIndicationDict(editFormData);
+    MessagePlugin.success('保存成功');
+    editModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+    MessagePlugin.error('保存失败');
+  } finally {
+    editLoading.value = false;
+  }
+};
+
+const onEditModalClose = () => {
+  editModalVisible.value = false;
 };
 //#endregion
 

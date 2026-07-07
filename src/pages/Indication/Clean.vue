@@ -91,11 +91,17 @@
           ></div>
           <div style="font-weight: bold">适应症（源数据）：</div>
         </div>
-        <div
-          style="background: #fff; padding: 12px; border-radius: 4px; font-size: 13px; line-height: 1.6; color: #333"
-        >
-          {{ currentEditRecord?.indicationComment }}
-        </div>
+        <t-input
+          :model-value="currentEditRecord?.indicationComment ?? ''"
+          @update:model-value="
+            (val: string) => {
+              if (currentEditRecord) currentEditRecord.indicationComment = val;
+            }
+          "
+          placeholder="请输入适应症（源数据）"
+          :autosize="{ minRows: 2, maxRows: 6 }"
+          style="background: #fff; border-radius: 4px; font-size: 13px; line-height: 1.6"
+        />
       </div>
 
       <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
@@ -105,15 +111,64 @@
           ></div>
           <div style="font-weight: bold">适应症（清洗后）：</div>
         </div>
-        <!--#region 内嵌编辑表格 -->
-        <t-table
-          :data="currentEditRecord?.indicationTagDtoList || []"
-          :columns="editColumns"
-          row-key="id"
-          bordered
-          size="small"
-          :pagination="undefined"
-        />
+        <!--#region 编辑列表 -->
+        <div style="margin-bottom: 8px">
+          <t-button theme="primary" variant="outline" @click="addEditRow">+ 新增</t-button>
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 4px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #999;
+          "
+        >
+          <div style="width: 40px; text-align: center; flex-shrink: 0">序号</div>
+          <div style="flex: 1; min-width: 0">适应症归类</div>
+          <div style="flex: 2; min-width: 0">人工审核清洗后数据</div>
+          <div style="width: 56px; flex-shrink: 0"></div>
+        </div>
+        <div
+          v-for="(item, index) in currentEditRecord?.indicationTagDtoList || []"
+          :key="index"
+          style="
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+          "
+        >
+          <div style="width: 40px; text-align: center; font-weight: 500; flex-shrink: 0">{{ index + 1 }}</div>
+          <div style="flex: 1; min-width: 0">
+            <t-select
+              v-model="item.indicationCategoryId"
+              :options="categoryOptions"
+              placeholder="请选择适应症归类"
+              clearable
+              style="width: 100%"
+              value-key="id"
+              :keys="{ label: 'categoryName', value: 'id' }"
+            />
+          </div>
+          <div style="flex: 2; min-width: 0">
+            <t-select
+              v-model="item.indicationTagId"
+              :options="dictOptions"
+              placeholder="请选择清洗后数据"
+              clearable
+              filterable
+              style="width: 100%"
+              :keys="{ label: 'indicationStandard', value: 'indicationTagId' }"
+            />
+          </div>
+          <t-button theme="danger" variant="text" style="flex-shrink: 0" @click="removeEditRow(index)">删除</t-button>
+        </div>
         <!--#endregion-->
       </div>
     </t-dialog>
@@ -128,7 +183,13 @@ import { ref, reactive, h, onMounted } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { indicationApi } from '@/api';
-import type { IndicationDto, IndicationDetailDto, IndicationTagDto } from '@/api/types/indication';
+import type {
+  IndicationDto,
+  IndicationDetailDto,
+  IndicationTagDto,
+  IndicationCategory,
+  IndicationDictDto,
+} from '@/api/types/indication';
 //#endregion
 
 //#region Constants
@@ -163,6 +224,10 @@ const accData = ref<{ no: string }[]>([]);
 const editModalVisible = ref(false);
 const editLoading = ref(false);
 const currentEditRecord = ref<IndicationDetailDto | null>(null);
+
+// 编辑弹窗下拉选项
+const categoryOptions = ref<IndicationCategory[]>([]);
+const dictOptions = ref<IndicationDictDto[]>([]);
 //#endregion
 
 //#region Columns Definition
@@ -248,23 +313,6 @@ const accColumns = [
   { colKey: 'no', title: '相关受理号/备案号' },
 ];
 
-const editColumns = [
-  { colKey: 'rowIndex', title: '序号', width: 60, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
-  {
-    colKey: 'aiClean',
-    title: 'AI清洗后适应症',
-    cell: (h: any, { row }: any) => h('span', row.indicationStandard || ''),
-  },
-  {
-    colKey: 'manualClean',
-    title: '人工审核清洗后数据',
-    cell: (h: any, { row, rowIndex }: any) =>
-      h('t-input', {
-        value: row.indicationStandard,
-        onChange: (val: string) => handleEditChange(rowIndex, 'indicationStandard', val),
-      }),
-  },
-];
 //#endregion
 
 //#region Data Fetching
@@ -314,33 +362,62 @@ const onAccModalClose = () => {
 //#endregion
 
 //#region Edit Modal
-const openEditModal = async (record: IndicationDto) => {
+const openEditModal = (record: IndicationDto) => {
   if (!record.indicationCommentId) return;
-  try {
-    const res = await indicationApi.getIndicationDetail(record.indicationCommentId);
-    currentEditRecord.value = JSON.parse(JSON.stringify(res.data));
-    editModalVisible.value = true;
-  } catch (e) {
-    console.error(e);
-  }
+  // 使用表格行数据直接回显，无需调用详情接口
+  currentEditRecord.value = {
+    indicationComment: record.indicationComment,
+    indicationCommentId: record.indicationCommentId,
+    indicationTagDtoList: (record.indicationTagList || []).map((tag) => ({
+      id: tag.id,
+      indicationTagId: tag.id,
+      indicationCategoryId: tag.indicationCategoryId,
+      indicationCategoryName: tag.indicationCategoryName,
+      indicationStandard: tag.indicationStandard,
+      isDeleted: tag.isDeleted,
+      createTime: tag.createTime,
+      createUser: tag.createUser,
+      updateTime: tag.updateTime,
+      updateUser: tag.updateUser,
+    })),
+    sourceList: record.sourceList,
+    statisticCount: record.statisticCount,
+    status: record.status,
+    updateUser: record.updateUser,
+  };
+  editModalVisible.value = true;
 };
 
-const handleEditChange = (index: number, field: string, value: any) => {
+const addEditRow = () => {
   if (!currentEditRecord.value) return;
-  const newData = { ...currentEditRecord.value };
-  if (!newData.indicationTagDtoList) newData.indicationTagDtoList = [];
-  newData.indicationTagDtoList[index] = {
-    ...newData.indicationTagDtoList[index],
-    [field]: value,
-  };
-  currentEditRecord.value = newData;
+  if (!currentEditRecord.value.indicationTagDtoList) {
+    currentEditRecord.value.indicationTagDtoList = [];
+  }
+  currentEditRecord.value.indicationTagDtoList.push({
+    id: undefined,
+    indicationTagId: undefined,
+    indicationCategoryId: undefined,
+    indicationStandard: '',
+  });
+};
+
+const removeEditRow = (index: number) => {
+  if (!currentEditRecord.value?.indicationTagDtoList) return;
+  currentEditRecord.value.indicationTagDtoList.splice(index, 1);
 };
 
 const submitEdit = async () => {
   if (!currentEditRecord.value) return;
   editLoading.value = true;
   try {
-    const res = await indicationApi.saveIndication(currentEditRecord.value);
+    // 提交前移除 indicationStandard，后端需要的是 indicationTagId
+    const submitData = JSON.parse(JSON.stringify(currentEditRecord.value));
+    if (submitData.indicationTagDtoList) {
+      submitData.indicationTagDtoList = submitData.indicationTagDtoList.map(
+        ({ indicationStandard, ...rest }: any) => rest,
+      );
+    }
+    const res = await indicationApi.saveIndication(submitData);
     MessagePlugin.success('保存成功');
     editModalVisible.value = false;
     fetchData();
@@ -358,7 +435,21 @@ const onEditModalClose = () => {
 //#endregion
 
 //#region Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  // 获取分类下拉选项
+  try {
+    const catRes = await indicationApi.categoryPageData({ pageNum: 1, pageSize: 1000 });
+    categoryOptions.value = catRes.data?.list || [];
+  } catch (e) {
+    console.error(e);
+  }
+  // 获取清洗后数据字典选项
+  try {
+    const dictRes = await indicationApi.dictPageData({ pageNum: 1, pageSize: 1000 });
+    dictOptions.value = dictRes.data?.list || [];
+  } catch (e) {
+    console.error(e);
+  }
   fetchData();
 });
 //#endregion

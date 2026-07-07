@@ -32,6 +32,7 @@ export interface IndicationTagDto {
   createTime?: string;
   createUser?: string;
   id?: number;
+  indicationTagId?: number;
   indicationCategoryId?: number;
   indicationCategoryName?: string;
   indicationIcdName?: string;
