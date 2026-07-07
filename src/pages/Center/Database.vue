@@ -1,6 +1,6 @@
 <template>
   <!--#region 研究中心库管理页面 -->
-  <t-card bordered style="height: calc(100vh - 86px)">
+  <t-card bordered style="height: calc(100vh - 80px)">
     <!-- 页面标题 -->
     <div style="margin-bottom: 16px">
       <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
@@ -24,7 +24,7 @@
           style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="标准研究中心名称" name="hosStandardName" style="margin-bottom: 0">
+          <t-form-item label="中心名称（标准名）" name="hosStandardName" style="margin-bottom: 0">
             <t-input v-model="formData.hosStandardName" placeholder="请输入" clearable style="width: 220px" />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
@@ -46,7 +46,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 300px)"
+      max-height="calc(100vh - 280px)"
       style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
@@ -168,13 +168,13 @@ const columns = [
     width: 80,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'hosStandardName', title: '标准研究中心名称', width: 300 },
+  { colKey: 'hosStandardName', title: '中心名称（标准名）', width: 300, ellipsis: true },
   { colKey: 'province', title: '省份', width: 150 },
   { colKey: 'city', title: '城市', width: 150 },
   {
     colKey: 'cnt',
-    title: '源数据研究中心',
-    width: 130,
+    title: '别名',
+    width: 80,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>
       h(
@@ -186,7 +186,7 @@ const columns = [
         row.cnt || 0,
       ),
   },
-  { colKey: 'hosShortName', title: '简称', width: 150, ellipsis: true },
+  { colKey: 'hosShortName', title: '简称', width: 200, ellipsis: true },
   { colKey: 'updater', title: '操作人', width: 100 },
   {
     colKey: 'updateTime',

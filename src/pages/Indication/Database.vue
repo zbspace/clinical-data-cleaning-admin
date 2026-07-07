@@ -34,7 +34,7 @@
               :keys="{ label: 'categoryName', value: 'id' }"
             />
           </t-form-item>
-          <t-form-item label="适应症(标准)" name="indicationStandard" style="margin-bottom: 0">
+          <t-form-item label="适应症" name="indicationStandard" style="margin-bottom: 0">
             <t-input v-model="formData.indicationStandard" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
@@ -135,22 +135,24 @@ const columns = [
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
   {
-    colKey: 'indicationIcdName',
-    title: '适应症(ICD)',
-    width: 200,
-    cell: (h: any, { row }: any) => row.indicationIcdName || '-',
-  },
-  { colKey: 'indicationStandard', title: '适应症(标准)', width: 200 },
-  {
     colKey: 'indicationCategoryName',
-    title: '分类',
+    title: '适应症归类',
     width: 150,
     cell: (h: any, { row }: any) => row.indicationCategoryName || '-',
   },
+  // {
+  //   colKey: 'indicationIcdName',
+  //   title: '适应症',
+  //   width: 200,
+  //   cell: (h: any, { row }: any) => row.indicationIcdName || '-',
+  // },
+
+  { colKey: 'indicationStandard', title: '适应症', width: 220, ellipsis: true },
+
   {
     colKey: 'statisticCount',
-    title: '统计',
-    width: 100,
+    title: '源数据适应症（别名）',
+    width: 180,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>
       h(
