@@ -55,7 +55,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 300px)"
+      max-height="calc(100vh - 290px)"
       hover
       :pagination="pagination"
       @page-change="onPageChange"

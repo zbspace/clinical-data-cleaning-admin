@@ -53,7 +53,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 300px)"
+      max-height="calc(100vh - 290px)"
       :pagination="pagination"
       @page-change="onPageChange"
     >
@@ -206,7 +206,7 @@ const loading = ref(false);
 const tableData = ref<IndicationDto[]>([]);
 const pagination = reactive({
   current: 1,
-  pageSize: 10,
+  pageSize: 20,
   total: 0,
   showJumper: true,
 });
