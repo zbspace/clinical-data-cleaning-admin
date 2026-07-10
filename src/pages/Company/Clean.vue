@@ -411,7 +411,7 @@ const resetEditForm = () => {
 const openEditModal = (record: CleanCompanyDto) => {
   resetEditForm();
   editModalVisible.value = true;
-  if (!record.parentCompanyShortName || !record.parentCompanyId) return;
+
   currentEditRecord.value = record;
   editFormData.relationId = record.parentCompanyId || undefined;
   editFormData.companyStandardName = record.companyStandardName || '';
@@ -421,6 +421,7 @@ const openEditModal = (record: CleanCompanyDto) => {
   editFormData.remark = record.remark || '';
 
   nextTick(() => {
+    if (!record.parentCompanyShortName || !record.parentCompanyId) return;
     onSearchRelation(record.parentCompanyShortName!);
   });
 };

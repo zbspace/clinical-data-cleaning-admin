@@ -91,10 +91,18 @@
       v-model:visible="accModalVisible"
       header="相关备案/登记号"
       :footer="false"
-      width="800px"
+      width="880px"
       @close="onAccModalClose"
     >
-      <t-table :data="accData" :columns="accColumns" row-key="id" bordered :pagination="accPagination" />
+      <t-table
+        :data="accData"
+        :columns="accColumns"
+        :loading="accLoading"
+        row-key="acceptanceNo"
+        bordered
+        :pagination="accPagination"
+        @page-change="onAccPageChange"
+      />
     </t-dialog>
     <!--#endregion-->
 
@@ -200,7 +208,9 @@ const companyOptions = ref<{ id?: number; companyStandardName?: string }[]>([]);
 // 备案号弹窗
 const accModalVisible = ref(false);
 const accData = ref<any[]>([]);
-const accPagination = reactive({ current: 1, pageSize: 5, total: 0 });
+const accLoading = ref(false);
+const currentAccDrugId = ref<number | undefined>(undefined);
+const accPagination = reactive({ current: 1, pageSize: 20, total: 0 });
 
 // 编辑弹窗
 const editModalVisible = ref(false);
@@ -246,6 +256,9 @@ const columns = [
             textDecoration: 'underline',
           },
           onClick: () => {
+            currentAccDrugId.value = row.drugStandardId;
+            accPagination.current = 1;
+            fetchAccData();
             accModalVisible.value = true;
           },
         },
@@ -316,10 +329,10 @@ const columns = [
 
 const accColumns = [
   { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
-  { colKey: 'recordNo', title: '相关登记号/备案号', width: 180 },
-  { colKey: 'relatedCompany', title: '相关公司（源数据）', width: 180 },
-  { colKey: 'regClassSource', title: '注册分类（源数据）', width: 150 },
-  { colKey: 'regClassCleaned', title: '注册分类（清洗后）', width: 150 },
+  { colKey: 'acceptanceNo', title: '相关登记号/备案号', width: 180 },
+  { colKey: 'companyNameOrigin', title: '相关公司（源数据）', width: 180 },
+  { colKey: 'registrationCategoryOrigin', title: '注册分类（源数据）', width: 180 },
+  { colKey: 'registrationCategoryCleaned', title: '注册分类（清洗后）', width: 180 },
 ];
 //#endregion
 
@@ -407,6 +420,30 @@ const onEditModalClose = () => {
 //#endregion
 
 //#region Acc Modal
+const fetchAccData = async (curr = accPagination.current, size = accPagination.pageSize) => {
+  accLoading.value = true;
+  try {
+    const res = await drugApi.acceptanceNoList({
+      id: currentAccDrugId.value,
+      pageNum: curr,
+      pageSize: size,
+    });
+    accData.value = res.data?.list || [];
+    accPagination.current = curr;
+    accPagination.pageSize = size;
+    accPagination.total = res.data?.total || 0;
+  } catch (e) {
+    console.error('Fetch acceptance data failed:', e);
+    accData.value = [];
+  } finally {
+    accLoading.value = false;
+  }
+};
+
+const onAccPageChange = (pageInfo: any) => {
+  fetchAccData(pageInfo.current, pageInfo.pageSize);
+};
+
 const onAccModalClose = () => {
   accModalVisible.value = false;
 };

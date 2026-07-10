@@ -183,7 +183,7 @@
 }
 ```
 
-## 中心(原数据)信息获取
+## 中心(源数据)信息获取
 
 **接口地址**:`/api/admin/hospital/pageData`
 
@@ -1606,7 +1606,7 @@
 
 # 药物信息管理
 
-## 登记号列表
+## 登记号&企业列表
 
 **接口地址**:`/api/admin/drug/acceptanceNoList`
 
@@ -1642,24 +1642,28 @@
 
 **响应状态**:
 
-| 状态码 | 说明         | schema                     |
-| ------ | ------------ | -------------------------- |
-| 200    | OK           | Result«BasePageVo«string»» |
-| 201    | Created      |                            |
-| 401    | Unauthorized |                            |
-| 403    | Forbidden    |                            |
-| 404    | Not Found    |                            |
+| 状态码 | 说明         | schema                                |
+| ------ | ------------ | ------------------------------------- |
+| 200    | OK           | Result«BasePageVo«DrugAcceptanceDto»» |
+| 201    | Created      |                                       |
+| 401    | Unauthorized |                                       |
+| 403    | Forbidden    |                                       |
+| 404    | Not Found    |                                       |
 
 **响应参数**:
 
-| 参数名称          | 参数说明 | 类型               | schema             |
-| ----------------- | -------- | ------------------ | ------------------ |
-| code              |          | integer(int32)     | integer(int32)     |
-| data              |          | BasePageVo«string» | BasePageVo«string» |
-| &emsp;&emsp;list  |          | array              | string             |
-| &emsp;&emsp;pages |          | integer(int32)     |                    |
-| &emsp;&emsp;total |          | integer(int64)     |                    |
-| msg               |          | string             |                    |
+| 参数名称                                            | 参数说明           | 类型                          | schema                        |
+| --------------------------------------------------- | ------------------ | ----------------------------- | ----------------------------- |
+| code                                                |                    | integer(int32)                | integer(int32)                |
+| data                                                |                    | BasePageVo«DrugAcceptanceDto» | BasePageVo«DrugAcceptanceDto» |
+| &emsp;&emsp;list                                    |                    | array                         | DrugAcceptanceDto             |
+| &emsp;&emsp;&emsp;&emsp;acceptanceNo                | 先关登记号/备案号  | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;companyNameOrigin           | 相关公司（源数据） | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后） | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据） | string                        |                               |
+| &emsp;&emsp;pages                                   |                    | integer(int32)                |                               |
+| &emsp;&emsp;total                                   |                    | integer(int64)                |                               |
+| msg                                                 |                    | string                        |                               |
 
 **响应示例**:
 
@@ -1667,7 +1671,14 @@
 {
 	"code": 0,
 	"data": {
-		"list": [],
+		"list": [
+			{
+				"acceptanceNo": "",
+				"companyNameOrigin": "",
+				"registrationCategoryCleaned": "",
+				"registrationCategoryOrigin": ""
+			}
+		],
 		"pages": 0,
 		"total": 0
 	},
@@ -1691,7 +1702,6 @@
 
 ```javascript
 {
-  "companyId": 0,
   "drugComment": "",
   "drugCommentId": 0,
   "drugStandardId": 0,
@@ -1699,25 +1709,26 @@
   "pageNum": 0,
   "pageSize": 0,
   "parentCompanyId": 0,
+  "standardCompanyId": 0,
   "status": 0
 }
 ```
 
 **请求参数**:
 
-| 参数名称                     | 参数说明                           | 请求类型 | 是否必须 | 数据类型       | schema         |
-| ---------------------------- | ---------------------------------- | -------- | -------- | -------------- | -------------- |
-| Authorization                | 用户登录令牌                       | header   | true     |                |                |
-| param                        | param                              | body     | true     | DrugCleanParam | DrugCleanParam |
-| &emsp;&emsp;companyId        | 公司ID                             |          | false    | integer(int32) |                |
-| &emsp;&emsp;drugComment      | 药品源名称                         |          | false    | string         |                |
-| &emsp;&emsp;drugCommentId    | 药品源数据ID                       |          | false    | integer(int32) |                |
-| &emsp;&emsp;drugStandardId   | 药品标准名ID                       |          | false    | integer(int32) |                |
-| &emsp;&emsp;drugStandardName | 标准名                             |          | false    | string         |                |
-| &emsp;&emsp;pageNum          | 当前页数                           |          | false    | integer(int32) |                |
-| &emsp;&emsp;pageSize         | 每页条数                           |          | false    | integer(int32) |                |
-| &emsp;&emsp;parentCompanyId  | 父级公司ID                         |          | false    | integer(int32) |                |
-| &emsp;&emsp;status           | 0-暂未匹配，1-已匹配，2-不需要清洗 |          | false    | integer(int32) |                |
+| 参数名称                      | 参数说明                           | 请求类型 | 是否必须 | 数据类型       | schema         |
+| ----------------------------- | ---------------------------------- | -------- | -------- | -------------- | -------------- |
+| Authorization                 | 用户登录令牌                       | header   | true     |                |                |
+| param                         | param                              | body     | true     | DrugCleanParam | DrugCleanParam |
+| &emsp;&emsp;drugComment       | 药品源名称                         |          | false    | string         |                |
+| &emsp;&emsp;drugCommentId     | 药品源数据ID                       |          | false    | integer(int32) |                |
+| &emsp;&emsp;drugStandardId    | 药品标准名ID                       |          | false    | integer(int32) |                |
+| &emsp;&emsp;drugStandardName  | 标准名                             |          | false    | string         |                |
+| &emsp;&emsp;pageNum           | 当前页数                           |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize          | 每页条数                           |          | false    | integer(int32) |                |
+| &emsp;&emsp;parentCompanyId   | 父级公司ID                         |          | false    | integer(int32) |                |
+| &emsp;&emsp;standardCompanyId | 标准公司ID                         |          | false    | integer(int32) |                |
+| &emsp;&emsp;status            | 0-暂未匹配，1-已匹配，2-不需要清洗 |          | false    | integer(int32) |                |
 
 **响应状态**:
 
@@ -1919,7 +1930,76 @@
 }
 ```
 
-## 药品名称查询
+## 登记号名称列表
+
+**接口地址**:`/api/admin/drug/getAcceptanceNos`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                     |
+| ------ | ------------ | -------------------------- |
+| 200    | OK           | Result«BasePageVo«string»» |
+| 201    | Created      |                            |
+| 401    | Unauthorized |                            |
+| 403    | Forbidden    |                            |
+| 404    | Not Found    |                            |
+
+**响应参数**:
+
+| 参数名称          | 参数说明 | 类型               | schema             |
+| ----------------- | -------- | ------------------ | ------------------ |
+| code              |          | integer(int32)     | integer(int32)     |
+| data              |          | BasePageVo«string» | BasePageVo«string» |
+| &emsp;&emsp;list  |          | array              | string             |
+| &emsp;&emsp;pages |          | integer(int32)     |                    |
+| &emsp;&emsp;total |          | integer(int64)     |                    |
+| msg               |          | string             |                    |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
+## 药品标准简称查询
 
 **接口地址**:`/api/admin/drug/queryByName`
 
@@ -1965,18 +2045,18 @@
 
 **响应参数**:
 
-| 参数名称                                 | 参数说明 | 类型                     | schema                   |
-| ---------------------------------------- | -------- | ------------------------ | ------------------------ |
-| code                                     |          | integer(int32)           | integer(int32)           |
-| data                                     |          | BasePageVo«DrugShortDto» | BasePageVo«DrugShortDto» |
-| &emsp;&emsp;list                         |          | array                    | DrugShortDto             |
-| &emsp;&emsp;&emsp;&emsp;drugCd           | 代号编码 | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugStandardName | 标准名   | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugType         | 类型     | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;id               | id       | integer                  |                          |
-| &emsp;&emsp;pages                        |          | integer(int32)           |                          |
-| &emsp;&emsp;total                        |          | integer(int64)           |                          |
-| msg                                      |          | string                   |                          |
+| 参数名称                                 | 参数说明   | 类型                     | schema                   |
+| ---------------------------------------- | ---------- | ------------------------ | ------------------------ |
+| code                                     |            | integer(int32)           | integer(int32)           |
+| data                                     |            | BasePageVo«DrugShortDto» | BasePageVo«DrugShortDto» |
+| &emsp;&emsp;list                         |            | array                    | DrugShortDto             |
+| &emsp;&emsp;&emsp;&emsp;drugCd           | 代号编码   | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;drugStandardName | 标准名     | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;drugType         | 类型       | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;standardId       | standardId | integer                  |                          |
+| &emsp;&emsp;pages                        |            | integer(int32)           |                          |
+| &emsp;&emsp;total                        |            | integer(int64)           |                          |
+| msg                                      |            | string                   |                          |
 
 **响应示例**:
 
@@ -1989,7 +2069,7 @@
 				"drugCd": "",
 				"drugStandardName": "",
 				"drugType": "",
-				"id": 0
+				"standardId": 0
 			}
 		],
 		"pages": 0,
@@ -2162,12 +2242,11 @@
 
 ```javascript
 {
-  "companyId": 0,
   "drugComment": "",
   "drugStandardName": "",
   "pageNum": 0,
   "pageSize": 0,
-  "parentCompanyId": 0
+  "standardId": 0
 }
 ```
 
@@ -2177,12 +2256,11 @@
 | ---------------------------- | ------------ | -------- | -------- | ----------------- | ----------------- |
 | Authorization                | 用户登录令牌 | header   | true     |                   |                   |
 | param                        | param        | body     | true     | DrugStandardParam | DrugStandardParam |
-| &emsp;&emsp;companyId        | 公司ID       |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;drugComment      | 药品源名称   |          | false    | string            |                   |
 | &emsp;&emsp;drugStandardName | 标准名       |          | false    | string            |                   |
 | &emsp;&emsp;pageNum          | 当前页数     |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageSize         | 每页条数     |          | false    | integer(int32)    |                   |
-| &emsp;&emsp;parentCompanyId  | 父级公司ID   |          | false    | integer(int32)    |                   |
+| &emsp;&emsp;standardId       | 标准ID       |          | false    | integer(int32)    |                   |
 
 **响应状态**:
 
@@ -2208,9 +2286,9 @@
 | &emsp;&emsp;&emsp;&emsp;drugType          | 类型                             | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;genericNameCn     | 通用名(中文)                     | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;genericNameEn     | 通用名(英文)                     | string                      |                             |
-| &emsp;&emsp;&emsp;&emsp;id                | id                               | integer                     |                             |
 | &emsp;&emsp;&emsp;&emsp;otherInfo         | 其他信息                         | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;parentCompanyName | 父级公司名称                     | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;standardId        | standardId                       | integer                     |                             |
 | &emsp;&emsp;&emsp;&emsp;statisticCount    | 统计次数                         | integer                     |                             |
 | &emsp;&emsp;&emsp;&emsp;status            | 状态0-无冲突，1-待确认，2-已确认 | integer                     |                             |
 | &emsp;&emsp;&emsp;&emsp;updateTime        | 更新时间                         | string                      |                             |
@@ -2234,9 +2312,9 @@
 				"drugType": "",
 				"genericNameCn": "",
 				"genericNameEn": "",
-				"id": 0,
 				"otherInfo": "",
 				"parentCompanyName": "",
+				"standardId": 0,
 				"statisticCount": 0,
 				"status": 0,
 				"updateTime": "",
@@ -2590,7 +2668,7 @@
 }
 ```
 
-## 适应症字典列表
+## 适应症字典(标准信息)列表
 
 **接口地址**:`/api/admin/indication/dictPageData`
 
@@ -2678,7 +2756,7 @@
 }
 ```
 
-## 适应症字典-查询源数据
+## 通过适应症（标准信息）查询源数据名称
 
 **接口地址**:`/api/admin/indication/getIndicationCommentList`
 
@@ -2747,7 +2825,7 @@
 }
 ```
 
-## 适应症信息详情
+## 适应症信息(源数据)详情
 
 **接口地址**:`/api/admin/indication/getIndicationDetail`
 
@@ -2837,7 +2915,7 @@
 }
 ```
 
-## 适应症信息查询
+## 适应症信息(源数据)查询
 
 **接口地址**:`/api/admin/indication/pageData`
 
@@ -2952,7 +3030,7 @@
 }
 ```
 
-## 适应症信息保存
+## 适应症(源信息)信息保存
 
 **接口地址**:`/api/admin/indication/saveIndication`
 
@@ -3049,7 +3127,7 @@
 }
 ```
 
-## 适应症字典保存
+## 适应症字典(标准信息)保存
 
 **接口地址**:`/api/admin/indication/saveIndicationDict`
 
@@ -3117,7 +3195,7 @@
 }
 ```
 
-## 适应症名称查询
+## 适应症名称(源数据)查询
 
 **接口地址**:`/api/admin/indication/shortNameData`
 

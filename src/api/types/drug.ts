@@ -98,4 +98,11 @@ export interface DrugStandardInfo {
   updateTime?: string;
   updateUser?: string;
 }
+
+export interface DrugAcceptanceDto {
+  acceptanceNo?: string;
+  companyNameOrigin?: string;
+  registrationCategoryCleaned?: string;
+  registrationCategoryOrigin?: string;
+}
 //#endregion

@@ -8,6 +8,7 @@ import type {
   DrugStandardParam,
   DrugStandardDto,
   DrugStandardInfo,
+  DrugAcceptanceDto,
 } from './types/drug';
 //#endregion
 
@@ -15,7 +16,7 @@ import type {
 export const drugApi = {
   /** 登记号列表 */
   acceptanceNoList(data: BaseQueryParam) {
-    return request.post<any, { code: number; data: BasePageVo<string>; msg: string }>(
+    return request.post<any, { code: number; data: BasePageVo<DrugAcceptanceDto>; msg: string }>(
       '/admin/drug/acceptanceNoList',
       data,
     );
