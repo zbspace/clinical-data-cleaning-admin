@@ -35,6 +35,28 @@
               style="width: 220px"
             />
           </t-form-item>
+          <t-form-item label="公司名（清洗后）" name="companyId" style="margin-bottom: 0">
+            <t-select
+              v-model="formData.companyId"
+              :options="companyOptions"
+              placeholder="请选择公司"
+              clearable
+              filterable
+              style="width: 220px"
+              :keys="{ label: 'companyStandardName', value: 'id' }"
+            />
+          </t-form-item>
+          <t-form-item label="母公司" name="parentCompanyId" style="margin-bottom: 0">
+            <t-select
+              v-model="formData.parentCompanyId"
+              :options="companyOptions"
+              placeholder="请选择母公司"
+              clearable
+              filterable
+              style="width: 220px"
+              :keys="{ label: 'parentCompanyShortName', value: 'parentCompanyId' }"
+            />
+          </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
             <t-button theme="primary" type="submit"> 查询 </t-button>
@@ -129,7 +151,7 @@
 import { ref, reactive, h, onMounted } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
-import { drugApi } from '@/api';
+import { drugApi, companyApi } from '@/api';
 //#endregion
 
 //#region Constants
@@ -168,7 +190,12 @@ const pagination = reactive({
 const formData = reactive({
   drugStandardName: '',
   status: undefined as number | undefined,
+  companyId: undefined as number | undefined,
+  parentCompanyId: undefined as number | undefined,
 });
+
+// 公司选项
+const companyOptions = ref<{ id?: number; companyStandardName?: string }[]>([]);
 
 // 备案号弹窗
 const accModalVisible = ref(false);
@@ -196,7 +223,7 @@ const columns = [
   {
     colKey: 'rowIndex',
     title: '序号',
-    width: 60,
+    width: 80,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
   {
@@ -206,52 +233,24 @@ const columns = [
     cell: (h: any, { row }: any) => row.drugNickName || row.drugComment || row.drugStandardName || '-',
   },
   {
-    colKey: 'genericNameCn',
-    title: '商品名(中)',
-    width: 150,
-    cell: (h: any, { row }: any) => row.drugGoodsNameCn || row.genericNameCn || '-',
-  },
-  {
-    colKey: 'genericNameEn',
-    title: '商品名(英)',
-    width: 150,
-    cell: (h: any, { row }: any) => row.drugGoodsNameEn || row.genericNameEn || '-',
-  },
-  {
-    colKey: 'relatedNo',
-    title: '登记号',
-    width: 150,
+    colKey: 'acceptanceCount',
+    title: '相关受理号/登记号',
+    width: 160,
     cell: (h: any, { row }: any) =>
       h(
-        't-button',
+        'span',
         {
-          theme: 'primary',
-          variant: 'text',
+          style: {
+            color: '#0052d9',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+          },
           onClick: () => {
             accModalVisible.value = true;
           },
         },
-        { default: () => row.acceptanceNo || '-' },
+        { default: () => row.acceptanceCount || '-' },
       ),
-  },
-  {
-    colKey: 'companyName',
-    title: '公司名',
-    width: 150,
-    cell: (h: any, { row }: any) => row.companyName || row.companyNameOrigin || '-',
-  },
-  { colKey: 'dosageForm', title: '剂型', width: 100, cell: (h: any, { row }: any) => row.dosageForm || '-' },
-  {
-    colKey: 'registerType',
-    title: '注册分类',
-    width: 120,
-    cell: (h: any, { row }: any) => row.registerType || row.registerTypeOrigin || '-',
-  },
-  {
-    colKey: 'drugType',
-    title: '药品类型',
-    width: 120,
-    cell: (h: any, { row }: any) => row.drugType || row.drugTypeOrigin || '-',
   },
   {
     colKey: 'cleanStatus',
@@ -262,6 +261,44 @@ const columns = [
       return item ? item.label : '-';
     },
   },
+
+  {
+    colKey: 'drugStandardName',
+    title: '药品名（清洗后）',
+    width: 180,
+    cell: (h: any, { row }: any) => row.drugStandardName || row.drugStandardName || '-',
+    ellipsis: true,
+  },
+  {
+    colKey: 'genericNameCn',
+    title: '通用名(中)',
+    width: 150,
+    cell: (h: any, { row }: any) => row.drugGoodsNameCn || row.genericNameCn || '-',
+  },
+  {
+    colKey: 'genericNameEn',
+    title: '通用名(英)',
+    width: 150,
+    cell: (h: any, { row }: any) => row.drugGoodsNameEn || row.genericNameEn || '-',
+  },
+  { colKey: 'drugCode', title: '研发代号', width: 100, cell: (h: any, { row }: any) => row.drugCode || '-' },
+  {
+    colKey: 'otherComment',
+    title: '其他名（如结构描述）',
+    width: 200,
+    cell: (h: any, { row }: any) => row.otherComment || '-',
+    ellipsis: true,
+  },
+
+  { colKey: 'dosageForm', title: '剂型', width: 100, cell: (h: any, { row }: any) => row.dosageForm || '-' },
+  {
+    colKey: 'drugType',
+    title: '药品类型',
+    width: 150,
+    cell: (h: any, { row }: any) => row.drugType || row.drugTypeOrigin || '-',
+    ellipsis: true,
+  },
+
   { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },
   {
     colKey: 'updateTime',
@@ -274,16 +311,6 @@ const columns = [
     title: '操作',
     width: 100,
     fixed: 'right' as const,
-    // cell: (h: any, { row }: any) =>
-    //   h(
-    //     't-button',
-    //     {
-    //       theme: 'primary',
-    //       variant: 'text',
-    //       onClick: () => openEditModal(row),
-    //     },
-    //     { default: () => '编辑' },
-    //   ),
   },
 ];
 
@@ -305,6 +332,8 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       pageSize: size,
       drugStandardName: formData.drugStandardName || undefined,
       status: formData.status !== undefined ? Number(formData.status) : undefined,
+      companyId: formData.companyId || undefined,
+      parentCompanyId: formData.parentCompanyId || undefined,
     });
     tableData.value = res.data?.list || [];
     pagination.current = curr;
@@ -322,6 +351,8 @@ const onSearch = () => fetchData(1);
 const onReset = () => {
   formData.drugStandardName = '';
   formData.status = undefined;
+  formData.companyId = undefined;
+  formData.parentCompanyId = undefined;
   fetchData(1);
 };
 
@@ -382,7 +413,14 @@ const onAccModalClose = () => {
 //#endregion
 
 //#region Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  // 获取公司选项
+  try {
+    const res = await companyApi.queryStandardList({ pageNum: 1, pageSize: 1000 });
+    companyOptions.value = res.data?.list || [];
+  } catch (e) {
+    console.error(e);
+  }
   fetchData();
 });
 //#endregion
