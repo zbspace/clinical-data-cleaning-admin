@@ -268,7 +268,7 @@ const columns = [
       h(
         'span',
         {
-          style: { color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' },
+          style: { color: '#0052d9', cursor: 'pointer' },
           onClick: () => openAccModal(row),
         },
         row.statisticCount || 0,

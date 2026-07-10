@@ -266,7 +266,6 @@ const columns = [
           style: {
             color: '#0052d9',
             cursor: 'pointer',
-            textDecoration: 'underline',
           },
           onClick: () => openAccModal(row.id!),
         },

@@ -187,7 +187,7 @@ const columns = [
       h(
         'span',
         {
-          style: { color: '#0052d9', cursor: 'pointer', textDecoration: 'underline' },
+          style: { color: '#0052d9', cursor: 'pointer' },
           onClick: () => openAliasModal(row),
         },
         row.statisticCount || 0,
