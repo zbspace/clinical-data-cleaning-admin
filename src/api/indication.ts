@@ -1,6 +1,6 @@
 //#region Imports
 import request from '@/utils/request';
-import type { BaseQueryParam, BasePageVo } from './types/company';
+import type { BaseQueryParam, BasePageVo, StatDataDto } from './types/company';
 import type {
   IndicationCategory,
   IndicationDictParam,
@@ -77,6 +77,14 @@ export const indicationApi = {
   shortNameData(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<IndicationShortDto>; msg: string }>(
       '/admin/indication/shortNameData',
+      data,
+    );
+  },
+
+  /** 获取统计信息 */
+  getStatData(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
+      '/admin/indication/getStatData',
       data,
     );
   },

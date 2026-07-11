@@ -67,4 +67,12 @@ export interface BasePageVo<T> {
   pages: number;
   total: number;
 }
+
+export interface StatDataDto {
+  allTotal?: number;
+  completedTotal?: number;
+  name?: string;
+  otherTotal?: number;
+  pendingTotal?: number;
+}
 //#endregion

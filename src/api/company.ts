@@ -7,6 +7,7 @@ import type {
   CompanyQueryParam,
   CompanyShortDto,
   StandardCompanyDto,
+  StatDataDto,
 } from './types/company';
 //#endregion
 
@@ -70,6 +71,14 @@ export const companyApi = {
   /** 公司字典(标准名)信息保存 */
   saveStandardCompany(data: StandardCompanyDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/saveStandardCompany', data);
+  },
+
+  /** 获取统计信息 */
+  getStatData(data: CompanyQueryParam) {
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
+      '/admin/company/getStatData',
+      data,
+    );
   },
 };
 //#endregion

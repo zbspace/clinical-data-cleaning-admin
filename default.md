@@ -183,6 +183,79 @@
 }
 ```
 
+## 获取中心信息处理统计量
+
+**接口地址**:`/api/admin/hospital/getStatData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| queryParam            | queryParam   | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema              |
+| ------ | ------------ | ------------------- |
+| 200    | OK           | Result«StatDataDto» |
+| 201    | Created      |                     |
+| 401    | Unauthorized |                     |
+| 403    | Forbidden    |                     |
+| 404    | Not Found    |                     |
+
+**响应参数**:
+
+| 参数名称                   | 参数说明   | 类型           | schema         |
+| -------------------------- | ---------- | -------------- | -------------- |
+| code                       |            | integer(int32) | integer(int32) |
+| data                       |            | StatDataDto    | StatDataDto    |
+| &emsp;&emsp;allTotal       | 总量       | integer(int64) |                |
+| &emsp;&emsp;completedTotal | 已处理量   | integer(int64) |                |
+| &emsp;&emsp;name           | 名称       | string         |                |
+| &emsp;&emsp;otherTotal     | 其他数据量 | integer(int64) |                |
+| &emsp;&emsp;pendingTotal   | 待处理量   | integer(int64) |                |
+| msg                        |            | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"allTotal": 0,
+		"completedTotal": 0,
+		"name": "",
+		"otherTotal": 0,
+		"pendingTotal": 0
+	},
+	"msg": ""
+}
+```
+
 ## 中心(源数据)信息获取
 
 **接口地址**:`/api/admin/hospital/pageData`
@@ -822,6 +895,79 @@
 		"remark": "",
 		"updateTime": "",
 		"updater": ""
+	},
+	"msg": ""
+}
+```
+
+## 获取公司信息处理统计量
+
+**接口地址**:`/api/admin/company/getStatData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| queryParam            | queryParam   | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema              |
+| ------ | ------------ | ------------------- |
+| 200    | OK           | Result«StatDataDto» |
+| 201    | Created      |                     |
+| 401    | Unauthorized |                     |
+| 403    | Forbidden    |                     |
+| 404    | Not Found    |                     |
+
+**响应参数**:
+
+| 参数名称                   | 参数说明   | 类型           | schema         |
+| -------------------------- | ---------- | -------------- | -------------- |
+| code                       |            | integer(int32) | integer(int32) |
+| data                       |            | StatDataDto    | StatDataDto    |
+| &emsp;&emsp;allTotal       | 总量       | integer(int64) |                |
+| &emsp;&emsp;completedTotal | 已处理量   | integer(int64) |                |
+| &emsp;&emsp;name           | 名称       | string         |                |
+| &emsp;&emsp;otherTotal     | 其他数据量 | integer(int64) |                |
+| &emsp;&emsp;pendingTotal   | 待处理量   | integer(int64) |                |
+| msg                        |            | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"allTotal": 0,
+		"completedTotal": 0,
+		"name": "",
+		"otherTotal": 0,
+		"pendingTotal": 0
 	},
 	"msg": ""
 }
@@ -1999,6 +2145,79 @@
 }
 ```
 
+## 获取药品信息处理统计量
+
+**接口地址**:`/api/admin/drug/getStatData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| queryParam            | queryParam   | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema              |
+| ------ | ------------ | ------------------- |
+| 200    | OK           | Result«StatDataDto» |
+| 201    | Created      |                     |
+| 401    | Unauthorized |                     |
+| 403    | Forbidden    |                     |
+| 404    | Not Found    |                     |
+
+**响应参数**:
+
+| 参数名称                   | 参数说明   | 类型           | schema         |
+| -------------------------- | ---------- | -------------- | -------------- |
+| code                       |            | integer(int32) | integer(int32) |
+| data                       |            | StatDataDto    | StatDataDto    |
+| &emsp;&emsp;allTotal       | 总量       | integer(int64) |                |
+| &emsp;&emsp;completedTotal | 已处理量   | integer(int64) |                |
+| &emsp;&emsp;name           | 名称       | string         |                |
+| &emsp;&emsp;otherTotal     | 其他数据量 | integer(int64) |                |
+| &emsp;&emsp;pendingTotal   | 待处理量   | integer(int64) |                |
+| msg                        |            | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"allTotal": 0,
+		"completedTotal": 0,
+		"name": "",
+		"otherTotal": 0,
+		"pendingTotal": 0
+	},
+	"msg": ""
+}
+```
+
 ## 药品标准简称查询
 
 **接口地址**:`/api/admin/drug/queryByName`
@@ -2988,6 +3207,79 @@
 		"status": 0,
 		"updateTime": "",
 		"updateUser": ""
+	},
+	"msg": ""
+}
+```
+
+## 获取适应症信息处理统计量
+
+**接口地址**:`/api/admin/indication/getStatData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| queryParam            | queryParam   | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema              |
+| ------ | ------------ | ------------------- |
+| 200    | OK           | Result«StatDataDto» |
+| 201    | Created      |                     |
+| 401    | Unauthorized |                     |
+| 403    | Forbidden    |                     |
+| 404    | Not Found    |                     |
+
+**响应参数**:
+
+| 参数名称                   | 参数说明   | 类型           | schema         |
+| -------------------------- | ---------- | -------------- | -------------- |
+| code                       |            | integer(int32) | integer(int32) |
+| data                       |            | StatDataDto    | StatDataDto    |
+| &emsp;&emsp;allTotal       | 总量       | integer(int64) |                |
+| &emsp;&emsp;completedTotal | 已处理量   | integer(int64) |                |
+| &emsp;&emsp;name           | 名称       | string         |                |
+| &emsp;&emsp;otherTotal     | 其他数据量 | integer(int64) |                |
+| &emsp;&emsp;pendingTotal   | 待处理量   | integer(int64) |                |
+| msg                        |            | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"allTotal": 0,
+		"completedTotal": 0,
+		"name": "",
+		"otherTotal": 0,
+		"pendingTotal": 0
 	},
 	"msg": ""
 }

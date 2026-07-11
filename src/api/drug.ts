@@ -1,6 +1,6 @@
 //#region Imports
 import request from '@/utils/request';
-import type { BaseQueryParam, BasePageVo } from './types/company';
+import type { BaseQueryParam, BasePageVo, StatDataDto } from './types/company';
 import type {
   DrugCleanParam,
   DrugCleanDto,
@@ -62,6 +62,14 @@ export const drugApi = {
   /** 药品标准信息保存 */
   standardSave(data: DrugStandardInfo) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/standardSave', data);
+  },
+
+  /** 获取统计信息 */
+  getStatData(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
+      '/admin/drug/getStatData',
+      data,
+    );
   },
 };
 //#endregion

@@ -1,6 +1,6 @@
 //#region Imports
 import request from '@/utils/request';
-import type { BasePageVo } from './types/company';
+import type { BasePageVo, StatDataDto } from './types/company';
 import type {
   HospitalQueryParam,
   HospitalCleanDto,
@@ -51,6 +51,14 @@ export const hospitalApi = {
   saveStandardHospital(data: StandardHospitalDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>(
       '/admin/hospital/saveStandardHospital',
+      data,
+    );
+  },
+
+  /** 获取统计信息 */
+  getStatData(data: HospitalQueryParam) {
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
+      '/admin/hospital/getStatData',
       data,
     );
   },
