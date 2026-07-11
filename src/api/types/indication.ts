@@ -83,6 +83,12 @@ export interface IndicationParam {
   status?: number;
 }
 
+export interface IndicationRelDto {
+  acceptanceNo?: string;
+  indicationComment?: string;
+  sourceRef?: string;
+}
+
 export interface IndicationShortDto {
   indicationComment?: string;
   indicationCommentId?: number;

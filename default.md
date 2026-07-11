@@ -970,7 +970,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -1635,7 +1635,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -1890,7 +1890,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -1959,7 +1959,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -2028,7 +2028,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -2441,7 +2441,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -2609,7 +2609,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -2756,6 +2756,84 @@
 }
 ```
 
+## 获取关联登记号
+
+**接口地址**:`/api/admin/indication/getAcceptanceNos`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                               |
+| ------ | ------------ | ------------------------------------ |
+| 200    | OK           | Result«BasePageVo«IndicationRelDto»» |
+| 201    | Created      |                                      |
+| 401    | Unauthorized |                                      |
+| 403    | Forbidden    |                                      |
+| 404    | Not Found    |                                      |
+
+**响应参数**:
+
+| 参数名称                                  | 参数说明                 | 类型                         | schema                       |
+| ----------------------------------------- | ------------------------ | ---------------------------- | ---------------------------- |
+| code                                      |                          | integer(int32)               | integer(int32)               |
+| data                                      |                          | BasePageVo«IndicationRelDto» | BasePageVo«IndicationRelDto» |
+| &emsp;&emsp;list                          |                          | array                        | IndicationRelDto             |
+| &emsp;&emsp;&emsp;&emsp;acceptanceNo      | 受理号                   | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;indicationComment | 适应症描述               | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;sourceRef         | 来源：HGR、IND、CDE、NDA | string                       |                              |
+| &emsp;&emsp;pages                         |                          | integer(int32)               |                              |
+| &emsp;&emsp;total                         |                          | integer(int64)               |                              |
+| msg                                       |                          | string                       |                              |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [
+			{
+				"acceptanceNo": "",
+				"indicationComment": "",
+				"sourceRef": ""
+			}
+		],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
 ## 通过适应症（标准信息）查询源数据名称
 
 **接口地址**:`/api/admin/indication/getIndicationCommentList`
@@ -2785,7 +2863,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
@@ -2984,7 +3062,7 @@
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;updateTime             |                                        | string                    |                           |
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;updateUser             |                                        | string                    |                           |
 | &emsp;&emsp;&emsp;&emsp;sourceList                         | 来源                                   | array                     | string                    |
-| &emsp;&emsp;&emsp;&emsp;statisticCount                     | 统计次数                               | integer                   |                           |
+| &emsp;&emsp;&emsp;&emsp;statisticCount                     | 统计次数(相关受理号/备案号)            | integer                   |                           |
 | &emsp;&emsp;&emsp;&emsp;status                             | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 | integer                   |                           |
 | &emsp;&emsp;&emsp;&emsp;updateUser                         |                                        | string                    |                           |
 | &emsp;&emsp;pages                                          |                                        | integer(int32)            |                           |
@@ -3224,7 +3302,7 @@
 | --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
 | Authorization         | 用户登录令牌 | header   | true     |                |                |
 | param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
-| &emsp;&emsp;id        | ID           |          | false    | integer(int32) |                |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
 | &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
 | &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |

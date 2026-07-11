@@ -71,7 +71,16 @@
       width="600px"
       @close="onAccModalClose"
     >
-      <t-table :data="accData" :columns="accColumns" row-key="no" bordered stripe :pagination="{ pageSize: 5 }" />
+      <t-table
+        :data="accData"
+        :columns="accColumns"
+        row-key="acceptanceNo"
+        :loading="accLoading"
+        bordered
+        stripe
+        :pagination="accPagination"
+        @page-change="onAccPageChange"
+      />
     </t-dialog>
     <!--#endregion-->
 
@@ -189,6 +198,7 @@ import type {
   IndicationTagDto,
   IndicationCategory,
   IndicationDictDto,
+  IndicationRelDto,
 } from '@/api/types/indication';
 //#endregion
 
@@ -218,7 +228,15 @@ const formData = reactive({
 
 // 备案号弹窗
 const accModalVisible = ref(false);
-const accData = ref<{ no: string }[]>([]);
+const accLoading = ref(false);
+const accData = ref<IndicationRelDto[]>([]);
+const accPagination = reactive({
+  current: 1,
+  pageSize: 5,
+  total: 0,
+  showJumper: true,
+});
+const currentIndicationId = ref<number | null>(null);
 
 // 编辑弹窗
 const editModalVisible = ref(false);
@@ -235,34 +253,20 @@ const columns = [
   {
     colKey: 'rowIndex',
     title: '序号',
-    width: 80,
+    width: 60,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
   {
     colKey: 'indicationComment',
     title: '适应症(源数据)',
-    width: 250,
-    cell: (h: any, { row }: any) =>
-      h(
-        'div',
-        {
-          style: {
-            maxHeight: '80px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-          },
-          title: row.indicationComment,
-        },
-        row.indicationComment || '-',
-      ),
+    width: 300,
+    cell: (h: any, { row }: any) => row.indicationComment || '-',
+    ellipsis: true,
   },
   {
     colKey: 'statisticCount',
     title: '相关受理号/备案号',
-    width: 100,
+    width: 120,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>
       h(
@@ -277,7 +281,7 @@ const columns = [
   {
     colKey: 'status',
     title: '状态',
-    width: 120,
+    width: 80,
     cell: (h: any, { row }: any) => {
       const item = statusOptions.find((opt) => opt.value === row.status);
       return item ? item.label : '-';
@@ -293,7 +297,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 80,
     fixed: 'right' as const,
     // cell: (h: any, { row }: any) =>
     //   h(
@@ -310,7 +314,9 @@ const columns = [
 
 const accColumns = [
   { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
-  { colKey: 'no', title: '相关受理号/备案号' },
+  { colKey: 'acceptanceNo', title: '相关受理号/备案号', width: 180 },
+  // { colKey: 'indicationComment', title: '适应症描述', width: 200, ellipsis: true },
+  { colKey: 'sourceRef', title: '来源', width: 100, align: 'center' as const },
 ];
 
 //#endregion
@@ -350,10 +356,36 @@ const onPageChange = (pageInfo: any) => {
 //#endregion
 
 //#region Acc Modal
+const fetchAcceptanceNos = async (id: number, curr = 1, size = 5) => {
+  accLoading.value = true;
+  try {
+    const res = await indicationApi.getAcceptanceNos({
+      id,
+      pageNum: curr,
+      pageSize: size,
+    });
+    accData.value = res.data?.list || [];
+    accPagination.current = curr;
+    accPagination.pageSize = size;
+    accPagination.total = res.data?.total || 0;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    accLoading.value = false;
+  }
+};
+
 const openAccModal = (record: IndicationDto) => {
-  const list = (record.sourceList || []).map((no: string) => ({ no }));
-  accData.value = list;
+  if (!record.indicationCommentId) return;
+  currentIndicationId.value = record.indicationCommentId;
+  fetchAcceptanceNos(record.indicationCommentId, 1, 5);
   accModalVisible.value = true;
+};
+
+const onAccPageChange = (pageInfo: any) => {
+  if (currentIndicationId.value) {
+    fetchAcceptanceNos(currentIndicationId.value, pageInfo.current, pageInfo.pageSize);
+  }
 };
 
 const onAccModalClose = () => {

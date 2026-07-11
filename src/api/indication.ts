@@ -8,6 +8,7 @@ import type {
   IndicationDetailDto,
   IndicationDto,
   IndicationParam,
+  IndicationRelDto,
   IndicationShortDto,
 } from './types/indication';
 //#endregion
@@ -34,6 +35,14 @@ export const indicationApi = {
   getIndicationCommentList(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<string>; msg: string }>(
       '/admin/indication/getIndicationCommentList',
+      data,
+    );
+  },
+
+  /** 获取关联登记号 */
+  getAcceptanceNos(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: BasePageVo<IndicationRelDto>; msg: string }>(
+      '/admin/indication/getAcceptanceNos',
       data,
     );
   },
