@@ -261,7 +261,7 @@ const columns = [
   },
   {
     colKey: 'statisticCount',
-    title: '统计',
+    title: '相关受理号/备案号',
     width: 100,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>

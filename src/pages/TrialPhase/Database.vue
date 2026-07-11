@@ -210,8 +210,11 @@ const submitEdit = async () => {
     const submitData: CdeTrialStagesMapping = {
       ...currentEditRecord.value,
       trialStages: editFormData.trialStages,
-      cleanedTrialStages: editFormData.cleanedTrialStages,
-      cleanedTrialStagesList: editFormData.cleanedTrialStages.split('; '),
+      cleanedTrialStages: editFormData.cleanedTrialStages.replace(/；/g, ';'),
+      cleanedTrialStagesList: editFormData.cleanedTrialStages
+        .replace(/；/g, ';')
+        .split(';')
+        .map((item: string) => item),
     };
     await trialStageApi.save(submitData);
     MessagePlugin.success('保存成功');
