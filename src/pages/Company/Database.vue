@@ -217,15 +217,15 @@ const columns = [
   { colKey: 'companyStandardName', title: '公司名(标准名称)', width: 280 },
   {
     colKey: 'cnt',
-    title: '相关备案/登记号',
-    width: 120,
+    title: '源数据公司名（别名）',
+    width: 180,
     align: 'center' as const,
     cell: (h: any, { row }: any) =>
       h(
         'span',
         {
           style: { color: '#0052d9', cursor: 'pointer' },
-          onClick: () => openSourceModal(row.id!),
+          onClick: () => openSourceModal(row.parentCompanyId!),
         },
         row.cnt || 0,
       ),
@@ -245,16 +245,6 @@ const columns = [
     title: '编辑修正',
     width: 100,
     fixed: 'right' as const,
-    // cell: (h: any, { row }: any) =>
-    //   h(
-    //     't-button',
-    //     {
-    //       theme: 'primary',
-    //       variant: 'text',
-    //       onClick: () => openEditModal(row),
-    //     },
-    //     { default: () => '编辑' },
-    //   ),
   },
 ];
 
