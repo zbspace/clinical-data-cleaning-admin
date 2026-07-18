@@ -59,7 +59,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 290px)"
+      max-height="calc(100vh - 320px)"
       style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"

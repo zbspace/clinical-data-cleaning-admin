@@ -75,7 +75,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 290px)"
+      max-height="calc(100vh - 320px)"
       hover
       :pagination="pagination"
       @page-change="onPageChange"
@@ -255,7 +255,7 @@ const columns = [
             cursor: 'pointer',
           },
           onClick: () => {
-            currentAccDrugId.value = row.drugStandardId;
+            currentAccDrugId.value = row.drugCommentId;
             accPagination.current = 1;
             fetchAccData();
             accModalVisible.value = true;
@@ -328,10 +328,10 @@ const columns = [
 
 const accColumns = [
   { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
-  { colKey: 'acceptanceNo', title: '相关登记号/备案号', width: 180 },
-  { colKey: 'companyNameOrigin', title: '相关公司（源数据）', width: 180 },
-  { colKey: 'registrationCategoryOrigin', title: '注册分类（源数据）', width: 180 },
-  { colKey: 'registrationCategoryCleaned', title: '注册分类（清洗后）', width: 180 },
+  { colKey: 'acceptanceNo', title: '相关登记号/备案号', width: 160 },
+  { colKey: 'companyNameOrigin', title: '相关公司（源数据）', width: 180, ellipsis: true },
+  { colKey: 'registrationCategoryOrigin', title: '注册分类（源数据）', width: 160 },
+  { colKey: 'registrationCategoryCleaned', title: '注册分类（清洗后）', width: 160 },
 ];
 //#endregion
 

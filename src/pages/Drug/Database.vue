@@ -232,7 +232,7 @@ const columns = [
         'span',
         {
           style: { color: '#0052d9', cursor: 'pointer' },
-          onClick: () => openAliasModal(row.id!),
+          onClick: () => openAliasModal(row.standardId!),
         },
         row.statisticCount || 0,
       ),
