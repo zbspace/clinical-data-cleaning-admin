@@ -1,8 +1,8 @@
 <template>
   <!--#region 研究中心名称清洗页面 -->
-  <t-card bordered style="height: calc(100vh - 86px)">
+  <t-card bordered>
     <!-- 页面标题 -->
-    <div style="margin-bottom: 16px">
+    <div style="margin-bottom: 16px" ref="searchCardRef">
       <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
         研究中心名称清洗
       </h2>
@@ -59,7 +59,7 @@
       bordered
       stripe
       table-layout="fixed"
-      max-height="calc(100vh - 320px)"
+      :max-height="tableMaxHeight"
       style="white-space: nowrap"
       :pagination="pagination"
       @page-change="onPageChange"
@@ -170,6 +170,11 @@ const statusOptions = [
 const formRef = ref();
 const editFormRef = ref();
 const loading = ref(false);
+
+// 表格最大高度，根据 .search-card 动态计算
+const tableMaxHeight = ref('calc(100vh - 320px)');
+const searchCardRef = ref<HTMLElement | null>(null);
+
 const tableData = ref<HospitalCleanDto[]>([]);
 const pagination = reactive({
   current: 1,
@@ -281,6 +286,17 @@ const accColumns = [
   },
   { colKey: 'acceptanceNo', title: '相关登记号/备案号' },
 ];
+//#endregion
+
+//#region 动态表格高度
+const updateTableHeight = () => {
+  const card = searchCardRef.value;
+  if (!card) return;
+  const rect = card.getBoundingClientRect();
+  // 剩余高度 = 视口高度 - search-card 底部位置 - 固定偏移（card 内边距 + 表格头部 + 分页 + 留白）
+  const availableHeight = window.innerHeight - rect.bottom - 106;
+  tableMaxHeight.value = `${Math.max(200, Math.floor(availableHeight))}px`;
+};
 //#endregion
 
 //#region Data Fetching
@@ -514,6 +530,15 @@ const onEditModalClose = () => {
 //#region Lifecycle
 onMounted(() => {
   fetchData();
+
+  // 初始化表格高度 + 监听 resize + 监听 search-card 尺寸变化
+  updateTableHeight();
+  window.addEventListener('resize', updateTableHeight);
+  const card = searchCardRef.value;
+  if (card) {
+    const observer = new ResizeObserver(updateTableHeight);
+    observer.observe(card);
+  }
 });
 //#endregion
 </script>
