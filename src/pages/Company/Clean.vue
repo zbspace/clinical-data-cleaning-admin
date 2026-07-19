@@ -378,7 +378,6 @@ const onSortChange = (sortInfo: any) => {
 
 //#region 清洗状态 select 切换
 const onCleanStatusChange = async (row: CleanCompanyDto, val: number) => {
-  if (val === row.cleanStatus) return;
   try {
     await companyApi.updateCleanStatus({
       id: row.id!,
