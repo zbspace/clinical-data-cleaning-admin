@@ -83,6 +83,15 @@
       <template #operation="{ row }">
         <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
       </template>
+
+      <template #cleanStatus="{ row }">
+        <t-select
+          :value="row.cleanStatus"
+          :options="statusOptions"
+          style="width: 100px"
+          @change="(val: number) => onCleanStatusChange(row, val)"
+        />
+      </template>
     </t-table>
     <!--#endregion-->
 
@@ -198,11 +207,12 @@ const pagination = reactive({
   pageSize: 20,
   total: 0,
   showJumper: true,
+  foldedMaxPageBtn: 3,
 });
 
 const formData = reactive({
   drugStandardName: '',
-  status: undefined as number | undefined,
+  status: 0 as number | undefined,
   companyId: undefined as number | undefined,
   parentCompanyId: undefined as number | undefined,
 });
@@ -272,11 +282,7 @@ const columns = [
   {
     colKey: 'cleanStatus',
     title: '清洗状态',
-    width: 120,
-    cell: (h: any, { row }: any) => {
-      const item = statusOptions.find((opt) => opt.value === row.status || opt.value === row.cleanStatus);
-      return item ? item.label : '-';
-    },
+    width: 130,
   },
 
   {
@@ -386,6 +392,23 @@ const onReset = () => {
 
 const onPageChange = (pageInfo: any) => {
   fetchData(pageInfo.current, pageInfo.pageSize);
+};
+//#endregion
+
+//#region 清洗状态 select 切换
+const onCleanStatusChange = async (row: any, val: number) => {
+  if (val === row.cleanStatus) return;
+  try {
+    await companyApi.saveClean({
+      ...row,
+      cleanStatus: val,
+    } as any);
+    MessagePlugin.success('状态已更新');
+    fetchData();
+  } catch (e) {
+    console.error(e);
+    fetchData();
+  }
 };
 //#endregion
 

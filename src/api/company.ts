@@ -8,6 +8,7 @@ import type {
   CompanyShortDto,
   StandardCompanyDto,
   StatDataDto,
+  UpdateCleanStatusDto,
 } from './types/company';
 //#endregion
 
@@ -77,6 +78,14 @@ export const companyApi = {
   getStatData(data: CompanyQueryParam) {
     return request.post<any, { code: number; data: StatDataDto; msg: string }>(
       '/admin/company/getStatData',
+      data,
+    );
+  },
+
+  /** 修改清洗状态 */
+  updateCleanStatus(data: UpdateCleanStatusDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>(
+      '/admin/company/updateCleanStatus',
       data,
     );
   },

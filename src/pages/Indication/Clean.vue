@@ -60,6 +60,15 @@
       <template #operation="{ row }">
         <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
       </template>
+
+      <template #status="{ row }">
+        <t-select
+          :value="row.status"
+          :options="statusOptions"
+          style="width: 100px"
+          @change="(val: number) => onCleanStatusChange(row, val)"
+        />
+      </template>
     </t-table>
     <!--#endregion-->
 
@@ -219,11 +228,12 @@ const pagination = reactive({
   pageSize: 20,
   total: 0,
   showJumper: true,
+  foldedMaxPageBtn: 3,
 });
 
 const formData = reactive({
   indicationComment: '',
-  status: undefined as number | undefined,
+  status: 0 as number | undefined,
 });
 
 // 备案号弹窗
@@ -281,11 +291,7 @@ const columns = [
   {
     colKey: 'status',
     title: '状态',
-    width: 80,
-    cell: (h: any, { row }: any) => {
-      const item = statusOptions.find((opt) => opt.value === row.status);
-      return item ? item.label : '-';
-    },
+    width: 110,
   },
   { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },
   {
@@ -299,16 +305,6 @@ const columns = [
     title: '操作',
     width: 80,
     fixed: 'right' as const,
-    // cell: (h: any, { row }: any) =>
-    //   h(
-    //     't-button',
-    //     {
-    //       theme: 'primary',
-    //       variant: 'text',
-    //       onClick: () => openEditModal(row),
-    //     },
-    //     { default: () => '编辑' },
-    //   ),
   },
 ];
 
@@ -352,6 +348,23 @@ const onReset = () => {
 
 const onPageChange = (pageInfo: any) => {
   fetchData(pageInfo.current, pageInfo.pageSize);
+};
+//#endregion
+
+//#region 清洗状态 select 切换
+const onCleanStatusChange = async (row: any, val: number) => {
+  if (val === row.cleanStatus) return;
+  try {
+    // await companyApi.saveClean({
+    //   ...row,
+    //   cleanStatus: val,
+    // } as any);
+    MessagePlugin.success('状态已更新');
+    fetchData();
+  } catch (e) {
+    console.error(e);
+    fetchData();
+  }
 };
 //#endregion
 

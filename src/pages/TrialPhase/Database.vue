@@ -106,6 +106,7 @@ const pagination = reactive({
   pageSize: 20,
   total: 0,
   showJumper: true,
+  foldedMaxPageBtn: 3,
 });
 
 const formData = reactive<Record<string, any>>({
@@ -128,20 +129,20 @@ const columns = [
   {
     colKey: 'rowIndex',
     title: '序号',
-    width: 80,
+    width: 60,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'trialStages', title: '原试验期（源数据）', width: 200 },
+  { colKey: 'trialStages', title: '原试验期（源数据）', width: 200, ellipsis: true },
   {
     colKey: 'cleanedTrialStages',
     title: '试验分期（清洗后）',
-    width: 300,
+    width: 100,
     cell: (h: any, { row }: any) => row.cleanedTrialStages || '-',
   },
   {
     colKey: 'updateTime',
     title: '更新时间',
-    width: 170,
+    width: 130,
     cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
   },
   { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },

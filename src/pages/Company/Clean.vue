@@ -82,6 +82,14 @@
       <template #operation="{ row }">
         <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
       </template>
+      <template #cleanStatus="{ row }">
+        <t-select
+          :value="row.cleanStatus"
+          :options="statusOptions"
+          style="width: 100px"
+          @change="(val: number) => onCleanStatusChange(row, val)"
+        />
+      </template>
     </t-table>
     <!--#endregion-->
 
@@ -206,13 +214,14 @@ const pagination = reactive({
   pageSize: 20,
   total: 0,
   showJumper: true,
+  foldedMaxPageBtn: 3,
 });
 
 const formData = reactive<Record<string, any>>({
   companyName: '',
   parentCompanyShortName: '',
   companyType: '',
-  cleanStatus: null,
+  cleanStatus: 0,
 });
 
 // 备案号弹窗
@@ -280,11 +289,7 @@ const columns = [
   {
     colKey: 'cleanStatus',
     title: '清洗状态',
-    width: 120,
-    cell: (h: any, { row }: any) => {
-      const item = statusOptions.find((opt) => opt.value === row.cleanStatus);
-      return item ? item.label : '-';
-    },
+    width: 130,
   },
   {
     colKey: 'companyStandardName',
@@ -370,6 +375,24 @@ const onPageChange = (pageInfo: any) => {
 const onSortChange = (sortInfo: any) => {
   console.log('sortChange', sortInfo);
 };
+
+//#region 清洗状态 select 切换
+const onCleanStatusChange = async (row: CleanCompanyDto, val: number) => {
+  if (val === row.cleanStatus) return;
+  try {
+    await companyApi.updateCleanStatus({
+      id: row.id!,
+      cleanStatus: val,
+    });
+    MessagePlugin.success('状态已更新');
+    fetchData();
+  } catch (e) {
+    console.error(e);
+    fetchData();
+  }
+};
+//#endregion
+
 //#endregion
 
 //#region Acceptance Numbers Modal
@@ -428,7 +451,7 @@ const openEditModal = (record: CleanCompanyDto) => {
   editModalVisible.value = true;
 
   currentEditRecord.value = record;
-  editFormData.relationId = record.parentCompanyId || undefined;
+  editFormData.relationId = record.standardId || undefined;
   editFormData.companyStandardName = record.companyStandardName || '';
   editFormData.companyShortName = record.companyShortName || '';
   editFormData.companyType = record.companyType || '';

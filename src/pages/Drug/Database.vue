@@ -142,6 +142,7 @@ const pagination = reactive({
   pageSize: 20,
   total: 0,
   showJumper: true,
+  foldedMaxPageBtn: 3,
 });
 
 const formData = reactive({

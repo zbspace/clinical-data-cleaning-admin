@@ -75,4 +75,9 @@ export interface StatDataDto {
   otherTotal?: number;
   pendingTotal?: number;
 }
+
+export interface UpdateCleanStatusDto {
+  id: number;
+  cleanStatus: number;
+}
 //#endregion
