@@ -86,7 +86,7 @@
 
       <template #cleanStatus="{ row }">
         <t-select
-          :value="row.cleanStatus"
+          :value="row.status"
           :options="statusOptions"
           style="width: 100px"
           @change="(val: number) => onCleanStatusChange(row, val)"
@@ -397,10 +397,9 @@ const onPageChange = (pageInfo: any) => {
 
 //#region 清洗状态 select 切换
 const onCleanStatusChange = async (row: any, val: number) => {
-  if (val === row.cleanStatus) return;
   try {
-    await companyApi.saveClean({
-      ...row,
+    await drugApi.updateCleanStatus({
+      id: row.drugCommentId!,
       cleanStatus: val,
     } as any);
     MessagePlugin.success('状态已更新');

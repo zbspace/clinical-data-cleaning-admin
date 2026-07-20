@@ -665,6 +665,64 @@
 }
 ```
 
+## 修改清洗状态
+
+**接口地址**:`/api/admin/hospital/updateCleanStatus`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "cleanStatus": 0,
+  "id": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                | 参数说明                               | 请求类型 | 是否必须 | 数据类型             | schema               |
+| ----------------------- | -------------------------------------- | -------- | -------- | -------------------- | -------------------- |
+| Authorization           | 用户登录令牌                           | header   | true     |                      |                      |
+| updateCleanStatusDto    | updateCleanStatusDto                   | body     | true     | UpdateCleanStatusDto | UpdateCleanStatusDto |
+| &emsp;&emsp;cleanStatus | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)       |                      |
+| &emsp;&emsp;id          | id                                     |          | false    | integer(int64)       |                      |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 # 公司信息管理
 
 ## 获取关联登记号
@@ -2687,7 +2745,110 @@
 }
 ```
 
+## 修改清洗状态
+
+**接口地址**:`/api/admin/drug/updateCleanStatus`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "cleanStatus": 0,
+  "id": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                | 参数说明                               | 请求类型 | 是否必须 | 数据类型             | schema               |
+| ----------------------- | -------------------------------------- | -------- | -------- | -------------------- | -------------------- |
+| Authorization           | 用户登录令牌                           | header   | true     |                      |                      |
+| updateCleanStatusDto    | updateCleanStatusDto                   | body     | true     | UpdateCleanStatusDto | UpdateCleanStatusDto |
+| &emsp;&emsp;cleanStatus | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)       |                      |
+| &emsp;&emsp;id          | id                                     |          | false    | integer(int64)       |                      |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 # 试验分期字典管理
+
+## 获取实验分期基础枚举
+
+**接口地址**:`/api/admin/trialStagesMapping/getOptions`
+
+**请求方式**:`GET`
+
+**请求数据类型**:`application/x-www-form-urlencoded`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求参数**:
+
+| 参数名称      | 参数说明     | 请求类型 | 是否必须 | 数据类型 | schema |
+| ------------- | ------------ | -------- | -------- | -------- | ------ |
+| Authorization | 用户登录令牌 | header   | true     |          |        |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema               |
+| ------ | ------------ | -------------------- |
+| 200    | OK           | Result«List«string»» |
+| 401    | Unauthorized |                      |
+| 403    | Forbidden    |                      |
+| 404    | Not Found    |                      |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | array          |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": [],
+	"msg": ""
+}
+```
 
 ## 试验分期列表
 
@@ -3695,6 +3856,64 @@
 		"pages": 0,
 		"total": 0
 	},
+	"msg": ""
+}
+```
+
+## 修改清洗状态
+
+**接口地址**:`/api/admin/indication/updateCleanStatus`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "cleanStatus": 0,
+  "id": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                | 参数说明                               | 请求类型 | 是否必须 | 数据类型             | schema               |
+| ----------------------- | -------------------------------------- | -------- | -------- | -------------------- | -------------------- |
+| Authorization           | 用户登录令牌                           | header   | true     |                      |                      |
+| updateCleanStatusDto    | updateCleanStatusDto                   | body     | true     | UpdateCleanStatusDto | UpdateCleanStatusDto |
+| &emsp;&emsp;cleanStatus | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)       |                      |
+| &emsp;&emsp;id          | id                                     |          | false    | integer(int64)       |                      |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
 	"msg": ""
 }
 ```

@@ -18,5 +18,10 @@ export const trialStageApi = {
   save(data: CdeTrialStagesMapping) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/trialStagesMapping/save', data);
   },
+
+  /** 获取清洗后分期选项 */
+  getOptions() {
+    return request.get<any, { code: number; data: string[]; msg: string }>('/admin/trialStagesMapping/getOptions');
+  },
 };
 //#endregion

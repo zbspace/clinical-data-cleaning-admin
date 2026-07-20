@@ -78,7 +78,15 @@
           <t-input v-model="editFormData.trialStages" placeholder="请输入原始分期，如 I期" />
         </t-form-item>
         <t-form-item label="清洗后分期" name="cleanedTrialStages">
-          <t-input v-model="editFormData.cleanedTrialStages" placeholder="多个分期用;分隔，如 I期;II期" />
+          <t-select
+            v-model="editFormData.cleanedTrialStages"
+            :options="cleanedStageOptions"
+            placeholder="请选择清洗后分期"
+            multiple
+            clearable
+            filterable
+            style="width: 100%"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -118,9 +126,11 @@ const editLoading = ref(false);
 const isAddMode = ref(false);
 const currentEditRecord = ref<CdeTrialStagesMapping | null>(null);
 
+const cleanedStageOptions = ref<{ value: string; label: string }[]>([]);
+
 const editFormData = reactive<Record<string, any>>({
   trialStages: '',
-  cleanedTrialStages: '',
+  cleanedTrialStages: [],
 });
 //#endregion
 
@@ -193,7 +203,9 @@ const openEditModal = (record: CdeTrialStagesMapping) => {
   isAddMode.value = false;
   currentEditRecord.value = { ...record };
   editFormData.trialStages = record.trialStages || '';
-  editFormData.cleanedTrialStages = record.cleanedTrialStages || '';
+  editFormData.cleanedTrialStages = record.cleanedTrialStages
+    ? record.cleanedTrialStages.replace(/；/g, ';').split(';')
+    : [];
   editModalVisible.value = true;
 };
 
@@ -201,7 +213,7 @@ const handleAdd = () => {
   isAddMode.value = true;
   currentEditRecord.value = null;
   editFormData.trialStages = '';
-  editFormData.cleanedTrialStages = '';
+  editFormData.cleanedTrialStages = [];
   editModalVisible.value = true;
 };
 
@@ -211,11 +223,8 @@ const submitEdit = async () => {
     const submitData: CdeTrialStagesMapping = {
       ...currentEditRecord.value,
       trialStages: editFormData.trialStages,
-      cleanedTrialStages: editFormData.cleanedTrialStages.replace(/；/g, ';'),
-      cleanedTrialStagesList: editFormData.cleanedTrialStages
-        .replace(/；/g, ';')
-        .split(';')
-        .map((item: string) => item),
+      cleanedTrialStages: editFormData.cleanedTrialStages.join(';'),
+      cleanedTrialStagesList: editFormData.cleanedTrialStages,
     };
     await trialStageApi.save(submitData);
     MessagePlugin.success('保存成功');
@@ -234,9 +243,21 @@ const onEditModalClose = () => {
 };
 //#endregion
 
+//#region Fetch Options
+const fetchOptions = async () => {
+  try {
+    const res = await trialStageApi.getOptions();
+    cleanedStageOptions.value = (res.data || []).map((item) => ({ value: item, label: item }));
+  } catch (e) {
+    console.error(e);
+  }
+};
+//#endregion
+
 //#region Lifecycle
 onMounted(() => {
   fetchData();
+  fetchOptions();
 });
 //#endregion
 </script>

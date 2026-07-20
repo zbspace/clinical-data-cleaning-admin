@@ -1,6 +1,6 @@
 //#region Imports
 import request from '@/utils/request';
-import type { BaseQueryParam, BasePageVo, StatDataDto } from './types/company';
+import type { BaseQueryParam, BasePageVo, StatDataDto, UpdateCleanStatusDto } from './types/company';
 import type {
   IndicationCategory,
   IndicationDictParam,
@@ -85,6 +85,13 @@ export const indicationApi = {
   getStatData(data: BaseQueryParam) {
     return request.post<any, { code: number; data: StatDataDto; msg: string }>(
       '/admin/indication/getStatData',
+      data,
+    );
+  },
+  /** 修改清洗状态 */
+  updateCleanStatus(data: UpdateCleanStatusDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>(
+      '/admin/indication/updateCleanStatus',
       data,
     );
   },

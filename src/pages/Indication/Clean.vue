@@ -355,10 +355,10 @@ const onPageChange = (pageInfo: any) => {
 const onCleanStatusChange = async (row: any, val: number) => {
   if (val === row.cleanStatus) return;
   try {
-    // await companyApi.saveClean({
-    //   ...row,
-    //   cleanStatus: val,
-    // } as any);
+    await indicationApi.updateCleanStatus({
+      id: row.indicationCommentId!,
+      cleanStatus: val,
+    } as any);
     MessagePlugin.success('状态已更新');
     fetchData();
   } catch (e) {
