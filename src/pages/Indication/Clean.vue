@@ -325,6 +325,7 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       pageNum: curr,
       pageSize: size,
       status: formData.status !== undefined ? Number(formData.status) : undefined,
+      indicationComment: formData.indicationComment,
     };
     const res = await indicationApi.pageData(params);
     tableData.value = res.data?.list || [];
