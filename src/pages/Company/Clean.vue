@@ -458,7 +458,7 @@ const openEditModal = (record: CleanCompanyDto) => {
   editFormData.remark = record.remark || '';
 
   nextTick(() => {
-    if (!record.parentCompanyShortName || !record.parentCompanyId) return;
+    if (!record.parentCompanyShortName || !record.standardId) return;
     onSearchRelation(record.parentCompanyShortName!);
   });
 };
@@ -467,7 +467,7 @@ const onSearchRelation = async (keyword: string) => {
   if (!keyword) return;
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryByName({
+    const res = await companyApi.queryStandardWithoutParent({
       searchKey: keyword,
       pageNum: 1,
       pageSize: 50,

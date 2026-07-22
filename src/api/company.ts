@@ -56,6 +56,14 @@ export const companyApi = {
     );
   },
 
+  /** 获取标准公司信息(排除掉母公司) */
+  queryStandardWithoutParent(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: BasePageVo<CompanyShortDto>; msg: string }>(
+      '/admin/company/queryStandardWithoutParent',
+      data,
+    );
+  },
+
   /** 获取公司字典(标准名)列表 */
   queryStandardList(data: CompanyQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<StandardCompanyDto>; msg: string }>(
