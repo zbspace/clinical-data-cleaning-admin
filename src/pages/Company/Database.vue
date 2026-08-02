@@ -341,7 +341,7 @@ const onSearchRelation = async (keyword: string) => {
   if (!keyword) return;
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
+    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
     const opts = (res.data?.list || [])
       .filter((item: any) => item.parentCompanyId != null)
       .map((item: any) => ({

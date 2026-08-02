@@ -40,6 +40,16 @@ export const companyApi = {
     );
   },
 
+  /** 获取公司字典信息记录 */
+  queryParentData(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: BasePageVo<CompanyShortDto>; msg: string }>(
+      '/admin/company/queryParentData',
+      {
+        data,
+      },
+    );
+  },
+
   /** 公司信息查询 */
   pageData(data: CompanyQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<CleanCompanyDto>; msg: string }>(
@@ -84,18 +94,12 @@ export const companyApi = {
 
   /** 获取统计信息 */
   getStatData(data: CompanyQueryParam) {
-    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
-      '/admin/company/getStatData',
-      data,
-    );
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>('/admin/company/getStatData', data);
   },
 
   /** 修改清洗状态 */
   updateCleanStatus(data: UpdateCleanStatusDto) {
-    return request.post<any, { code: number; data: boolean; msg: string }>(
-      '/admin/company/updateCleanStatus',
-      data,
-    );
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/updateCleanStatus', data);
   },
 };
 //#endregion

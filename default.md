@@ -1229,6 +1229,90 @@
 }
 ```
 
+## 获取母公司数据
+
+**接口地址**:`/api/admin/company/queryParentData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                              |
+| ------ | ------------ | ----------------------------------- |
+| 200    | OK           | Result«BasePageVo«CompanyShortDto»» |
+| 201    | Created      |                                     |
+| 401    | Unauthorized |                                     |
+| 403    | Forbidden    |                                     |
+| 404    | Not Found    |                                     |
+
+**响应参数**:
+
+| 参数名称                                       | 参数说明     | 类型                        | schema                      |
+| ---------------------------------------------- | ------------ | --------------------------- | --------------------------- |
+| code                                           |              | integer(int32)              | integer(int32)              |
+| data                                           |              | BasePageVo«CompanyShortDto» | BasePageVo«CompanyShortDto» |
+| &emsp;&emsp;list                               |              | array                       | CompanyShortDto             |
+| &emsp;&emsp;&emsp;&emsp;companyShortName       | 简称         | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;companyStandardName    | 标准名       | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;companyType            | 类型         | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;parentCompanyId        | 父级ID       | integer                     |                             |
+| &emsp;&emsp;&emsp;&emsp;parentCompanyShortName | 父级公司简称 | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;standardId             | 标准库ID     | integer                     |                             |
+| &emsp;&emsp;pages                              |              | integer(int32)              |                             |
+| &emsp;&emsp;total                              |              | integer(int64)              |                             |
+| msg                                            |              | string                      |                             |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [
+			{
+				"companyShortName": "",
+				"companyStandardName": "",
+				"companyType": "",
+				"parentCompanyId": 0,
+				"parentCompanyShortName": "",
+				"standardId": 0
+			}
+		],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
 ## 获取公司字典(标准名)列表
 
 **接口地址**:`/api/admin/company/queryStandardList`
@@ -1476,6 +1560,78 @@
 | &emsp;&emsp;standardId             | 标准公司ID                             |          | false    | integer(int64)    |                 |
 | &emsp;&emsp;updateTime             | 操作时间                               |          | false    | string(date-time) |                 |
 | &emsp;&emsp;updater                | 操作人                                 |          | false    | string            |                 |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
+## 母公司信息保存
+
+**接口地址**:`/api/admin/company/saveParentCompany`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "cleanStatus": 0,
+  "companyShortName": "",
+  "companyStandardName": "",
+  "id": 0,
+  "parentCompanyId": 0,
+  "parentCompanyShortName": "",
+  "remark": "",
+  "updateTime": "",
+  "updater": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                           | 参数说明                               | 请求类型 | 是否必须 | 数据类型          | schema           |
+| ---------------------------------- | -------------------------------------- | -------- | -------- | ----------------- | ---------------- |
+| Authorization                      | 用户登录令牌                           | header   | true     |                   |                  |
+| dto                                | dto                                    | body     | true     | ParentCompanyDto  | ParentCompanyDto |
+| &emsp;&emsp;cleanStatus            | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)    |                  |
+| &emsp;&emsp;companyShortName       | 简称                                   |          | false    | string            |                  |
+| &emsp;&emsp;companyStandardName    | 标准名                                 |          | false    | string            |                  |
+| &emsp;&emsp;id                     | id                                     |          | false    | integer(int64)    |                  |
+| &emsp;&emsp;parentCompanyId        | 父级ID                                 |          | false    | integer(int64)    |                  |
+| &emsp;&emsp;parentCompanyShortName | 父级简称                               |          | false    | string            |                  |
+| &emsp;&emsp;remark                 | 备注                                   |          | false    | string            |                  |
+| &emsp;&emsp;updateTime             | 操作时间                               |          | false    | string(date-time) |                  |
+| &emsp;&emsp;updater                | 操作人                                 |          | false    | string            |                  |
 
 **响应状态**:
 
@@ -3661,7 +3817,8 @@
 | &emsp;&emsp;&emsp;&emsp;sourceList                         | 来源                                   | array                     | string                    |
 | &emsp;&emsp;&emsp;&emsp;statisticCount                     | 统计次数(相关受理号/备案号)            | integer                   |                           |
 | &emsp;&emsp;&emsp;&emsp;status                             | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 | integer                   |                           |
-| &emsp;&emsp;&emsp;&emsp;updateUser                         |                                        | string                    |                           |
+| &emsp;&emsp;&emsp;&emsp;updateTime                         | 更新时间                               | string                    |                           |
+| &emsp;&emsp;&emsp;&emsp;updateUser                         | 操作人                                 | string                    |                           |
 | &emsp;&emsp;pages                                          |                                        | integer(int32)            |                           |
 | &emsp;&emsp;total                                          |                                        | integer(int64)            |                           |
 | msg                                                        |                                        | string                    |                           |
@@ -3695,6 +3852,7 @@
 				"sourceList": [],
 				"statisticCount": 0,
 				"status": 0,
+				"updateTime": "",
 				"updateUser": ""
 			}
 		],
