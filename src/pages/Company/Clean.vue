@@ -80,7 +80,7 @@
       @sort-change="onSortChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
       </template>
       <template #cleanStatus="{ row }">
         <t-select
@@ -117,7 +117,7 @@
     <!--#region 编辑弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      header="编辑"
+      header="关联"
       width="600px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
@@ -126,7 +126,7 @@
       <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
           <!--#region 关联搜索 -->
-          <t-form-item label="关联：" name="relationId" style="margin-bottom: 0">
+          <t-form-item label="关联：" name="relationId" style="margin-bottom: 10px">
             <t-select
               v-model="editFormData.relationId"
               :options="relationOptions"
@@ -142,7 +142,7 @@
           </t-form-item>
           <!--#endregion-->
         </div>
-        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
+        <!-- <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
           <t-form-item label="公司名(标准名称)" name="companyStandardName">
             <t-input v-model="editFormData.companyStandardName" :disabled="!!editFormData.relationId" />
           </t-form-item>
@@ -166,7 +166,7 @@
           <t-button theme="primary" variant="outline" v-if="!editFormData.relationId" @click="confirmAddNewCompany">
             新增
           </t-button>
-        </div>
+        </div> -->
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -507,21 +507,21 @@ const onRelationChange = (val: any) => {
   }
 };
 
-const confirmAddNewCompany = () => {
-  if (!editFormData.companyStandardName) {
-    MessagePlugin.warning('请填写标准名');
-    return;
-  }
-  DialogPlugin.confirm({
-    header: '确认新增',
-    body: '确认要新增该公司标准名吗？',
-    confirmBtn: '确认新增',
-    cancelBtn: '取消',
-    onConfirm: () => {
-      handleAddNewCompany();
-    },
-  });
-};
+// const confirmAddNewCompany = () => {
+//   if (!editFormData.companyStandardName) {
+//     MessagePlugin.warning('请填写标准名');
+//     return;
+//   }
+//   DialogPlugin.confirm({
+//     header: '确认新增',
+//     body: '确认要新增该公司标准名吗？',
+//     confirmBtn: '确认新增',
+//     cancelBtn: '取消',
+//     onConfirm: () => {
+//       handleAddNewCompany();
+//     },
+//   });
+// };
 
 const handleAddNewCompany = async () => {
   if (!editFormData.companyStandardName) {
@@ -573,14 +573,15 @@ const submitEdit = async () => {
   editLoading.value = true;
   try {
     const submitData: CleanCompanyDto = {
-      ...currentEditRecord.value,
+      // ...currentEditRecord.value,
+      id: currentEditRecord.value.id,
       standardId: editFormData.relationId,
-      companyStandardName: editFormData.companyStandardName,
-      companyShortName: editFormData.companyShortName,
-      companyType: editFormData.companyType,
-      parentCompanyShortName: editFormData.parentCompanyShortName,
-      remark: editFormData.remark,
-      cleanStatus: 3,
+      // companyStandardName: editFormData.companyStandardName,
+      // companyShortName: editFormData.companyShortName,
+      // companyType: editFormData.companyType,
+      // parentCompanyShortName: editFormData.parentCompanyShortName,
+      // remark: editFormData.remark,
+      // cleanStatus: 3,
     };
     await companyApi.saveClean(submitData);
     MessagePlugin.success('保存成功');
