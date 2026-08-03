@@ -80,7 +80,11 @@
       @sort-change="onSortChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
+        <t-space size="4">
+          <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
+          &emsp;
+          <t-button theme="primary" @click="openSplitModal(row)"> 拆分 </t-button>
+        </t-space>
       </template>
       <template #cleanStatus="{ row }">
         <t-select
@@ -134,7 +138,7 @@
               :loading="searchLoading"
               placeholder="请输入搜索标准公司"
               style="width: 360px"
-              @search="onSearchRelation"
+              @search="(val: any) => onSearchRelation(val)"
               @change="onRelationChange"
               @clear="onRelationClear"
               clearable
@@ -142,7 +146,7 @@
           </t-form-item>
           <!--#endregion-->
         </div>
-        <!-- <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
+        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
           <t-form-item label="公司名(标准名称)" name="companyStandardName">
             <t-input v-model="editFormData.companyStandardName" :disabled="!!editFormData.relationId" />
           </t-form-item>
@@ -163,10 +167,43 @@
           <t-form-item label="备注" name="remark">
             <t-textarea v-model="editFormData.remark" />
           </t-form-item>
-          <t-button theme="primary" variant="outline" v-if="!editFormData.relationId" @click="confirmAddNewCompany">
-            新增
-          </t-button>
-        </div> -->
+        </div>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 拆分弹窗 -->
+    <t-dialog
+      v-model:visible="splitModalVisible"
+      header="源名称拆分"
+      width="600px"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: splitLoading }"
+      @confirm="submitSplit"
+      @close="onSplitModalClose"
+    >
+      <t-form label-width="120" label-align="left">
+        <t-form-item label="公司名(源数据)" name="companyOriginName">
+          <t-input v-model="splitFormData.companyOriginName" disabled />
+        </t-form-item>
+        <t-form-item label="拆分公司名称" name="spiltNames" style="align-items: flex-start">
+          <div style="width: 100%">
+            <div
+              v-for="(item, index) in splitFormData.spiltNames"
+              :key="index"
+              style="display: flex; gap: 8px; margin-bottom: 8px"
+            >
+              <t-input v-model="item.companyOriginName" placeholder="请输入拆分后的公司名称" style="flex: 1" />
+              <t-button theme="danger" variant="text" @click="removeSplitName(index)">
+                <template #icon><t-icon name="delete" /></template>
+                删除
+              </t-button>
+            </div>
+            <t-button theme="primary" variant="outline" @click="addSplitName">
+              <template #icon><t-icon name="add" /></template>
+              增加
+            </t-button>
+          </div>
+        </t-form-item>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -177,10 +214,10 @@
 <script setup lang="ts">
 //#region Imports
 import { ref, reactive, h, onMounted, nextTick } from 'vue';
-import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { companyApi } from '@/api';
-import type { CleanCompanyDto, StandardCompanyDto, CompanyShortDto } from '@/api/types/company';
+import type { CleanCompanyDto, StandardCompanyDto, CompanyShortDto, SplitCompanyDto } from '@/api/types/company';
 //#endregion
 
 //#region Constants
@@ -200,8 +237,6 @@ const companyTypeOptions = [
 //#endregion
 
 //#region State
-const formRef = ref();
-const editFormRef = ref();
 const loading = ref(false);
 
 // 表格最大高度，根据 .search-card 动态计算
@@ -250,6 +285,19 @@ const editFormData = reactive<Record<string, any>>({
   companyType: '',
   parentCompanyShortName: '',
   remark: '',
+});
+
+// 拆分弹窗
+const splitModalVisible = ref(false);
+const splitLoading = ref(false);
+const splitFormData = reactive<{
+  id?: number;
+  companyOriginName: string;
+  spiltNames: { companyOriginName: string }[];
+}>({
+  id: undefined,
+  companyOriginName: '',
+  spiltNames: [{ companyOriginName: '' }],
 });
 //#endregion
 
@@ -309,7 +357,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 160,
     fixed: 'right' as const,
   },
 ];
@@ -458,20 +506,19 @@ const openEditModal = (record: CleanCompanyDto) => {
   editFormData.remark = record.remark || '';
 
   nextTick(() => {
-    if (!record.parentCompanyShortName || !record.standardId) return;
-    onSearchRelation(record.parentCompanyShortName!);
+    if (!record.standardId) return;
+    onSearchRelation('', record.standardId);
   });
 };
 
-const onSearchRelation = async (keyword: string) => {
-  if (!keyword) return;
+const onSearchRelation = async (keyword = '', id?: number) => {
   searchLoading.value = true;
   try {
     const res = await companyApi.queryStandardWithoutParent({
-      searchKey: keyword,
+      searchKey: keyword || '',
       pageNum: 1,
       pageSize: 50,
-      id: null,
+      id: id || null,
     });
     const opts = (res.data?.list || [])
       .filter((item: CompanyShortDto) => item.parentCompanyId != null)
@@ -506,22 +553,6 @@ const onRelationChange = (val: any) => {
     editFormData.parentCompanyShortName = opt.item.parentCompanyShortName || '';
   }
 };
-
-// const confirmAddNewCompany = () => {
-//   if (!editFormData.companyStandardName) {
-//     MessagePlugin.warning('请填写标准名');
-//     return;
-//   }
-//   DialogPlugin.confirm({
-//     header: '确认新增',
-//     body: '确认要新增该公司标准名吗？',
-//     confirmBtn: '确认新增',
-//     cancelBtn: '取消',
-//     onConfirm: () => {
-//       handleAddNewCompany();
-//     },
-//   });
-// };
 
 const handleAddNewCompany = async () => {
   if (!editFormData.companyStandardName) {
@@ -573,15 +604,8 @@ const submitEdit = async () => {
   editLoading.value = true;
   try {
     const submitData: CleanCompanyDto = {
-      // ...currentEditRecord.value,
       id: currentEditRecord.value.id,
       standardId: editFormData.relationId,
-      // companyStandardName: editFormData.companyStandardName,
-      // companyShortName: editFormData.companyShortName,
-      // companyType: editFormData.companyType,
-      // parentCompanyShortName: editFormData.parentCompanyShortName,
-      // remark: editFormData.remark,
-      // cleanStatus: 3,
     };
     await companyApi.saveClean(submitData);
     MessagePlugin.success('保存成功');
@@ -597,6 +621,53 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
+};
+//#endregion
+
+//#region Split Modal
+const openSplitModal = (record: CleanCompanyDto) => {
+  splitFormData.id = record.id;
+  splitFormData.companyOriginName = record.companyOriginName || '';
+  splitFormData.spiltNames = [{ companyOriginName: '' }];
+  splitModalVisible.value = true;
+};
+
+const addSplitName = () => {
+  splitFormData.spiltNames.push({ companyOriginName: '' });
+};
+
+const removeSplitName = (index: number) => {
+  splitFormData.spiltNames.splice(index, 1);
+};
+
+const submitSplit = async () => {
+  const names = splitFormData.spiltNames
+    .map((item) => item.companyOriginName?.trim())
+    .filter((name): name is string => !!name);
+  if (!names.length) {
+    MessagePlugin.warning('请至少填写一个拆分公司名称');
+    return;
+  }
+  splitLoading.value = true;
+  try {
+    const submitData: SplitCompanyDto = {
+      id: splitFormData.id,
+      companyOriginName: splitFormData.companyOriginName,
+      spiltNames: names.map((name) => ({ companyOriginName: name })),
+    };
+    await companyApi.spiltNames(submitData);
+    MessagePlugin.success('拆分成功');
+    splitModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    splitLoading.value = false;
+  }
+};
+
+const onSplitModalClose = () => {
+  splitModalVisible.value = false;
 };
 //#endregion
 

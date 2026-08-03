@@ -100,41 +100,55 @@
     <t-dialog
       v-model:visible="editModalVisible"
       :header="currentEditRecord ? '编辑' : '新增'"
-      width="500px"
+      width="600px"
       :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left">
-        <t-form-item label="公司名(标准名称)" name="companyStandardName">
-          <t-input v-model="editFormData.companyStandardName" />
-        </t-form-item>
-        <t-form-item label="公司简称" name="companyShortName">
-          <t-input v-model="editFormData.companyShortName" />
-        </t-form-item>
-        <t-form-item label="公司类型" name="companyType">
-          <t-select v-model="editFormData.companyType" :options="companyTypeOptions" placeholder="请选择" />
-        </t-form-item>
-        <!--#region 关联搜索 -->
-        <t-form-item label="母公司简称" name="parentCompanyId">
-          <t-select
-            v-model="editFormData.parentCompanyId"
-            :options="relationOptions"
-            filterable
-            :loading="searchLoading"
-            placeholder="请输入搜索标准公司"
-            style="width: 360px"
-            @search="onSearchRelation"
-            @change="onRelationChange"
-            @clear="onRelationClear"
-            clearable
-          />
-        </t-form-item>
-        <!--#endregion-->
-        <t-form-item label="备注" name="remark">
-          <t-textarea v-model="editFormData.remark" />
-        </t-form-item>
-      </t-form>
+      <t-tabs v-model="editTabValue">
+        <t-tab-panel value="parent" label="母公司名修改" :disabled="!currentEditRecord || !parentFormData.id">
+          <t-form label-width="140" label-align="left" style="margin-top: 16px">
+            <t-form-item label="原名称" name="parentOriginalName">
+              <t-input :value="parentOriginalName" disabled />
+            </t-form-item>
+            <t-form-item label="修改后名称" name="companyShortName">
+              <t-input v-model="parentFormData.companyShortName" placeholder="请输入修改后名称" />
+            </t-form-item>
+          </t-form>
+        </t-tab-panel>
+        <t-tab-panel value="standard" label="标准公司名修改">
+          <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left" style="margin-top: 16px">
+            <t-form-item label="公司名(标准名称)" name="companyStandardName">
+              <t-input v-model="editFormData.companyStandardName" />
+            </t-form-item>
+            <t-form-item label="公司简称" name="companyShortName">
+              <t-input v-model="editFormData.companyShortName" />
+            </t-form-item>
+            <t-form-item label="公司类型" name="companyType">
+              <t-select v-model="editFormData.companyType" :options="companyTypeOptions" placeholder="请选择" />
+            </t-form-item>
+            <!--#region 关联搜索 -->
+            <t-form-item label="母公司简称" name="parentCompanyId">
+              <t-select
+                v-model="editFormData.parentCompanyId"
+                :options="relationOptions"
+                filterable
+                :loading="searchLoading"
+                placeholder="请输入搜索标准公司"
+                style="width: 360px"
+                @search="(keyword: string) => onSearchRelation(undefined, keyword)"
+                @change="onRelationChange"
+                @clear="onRelationClear"
+                clearable
+              />
+            </t-form-item>
+            <!--#endregion-->
+            <t-form-item label="备注" name="remark">
+              <t-textarea v-model="editFormData.remark" />
+            </t-form-item>
+          </t-form>
+        </t-tab-panel>
+      </t-tabs>
     </t-dialog>
     <!--#endregion-->
   </t-card>
@@ -200,6 +214,14 @@ const editLoading = ref(false);
 const currentEditRecord = ref<StandardCompanyDto | null>(null);
 const relationOptions = ref<{ label: string; value: number; item: any }[]>([]);
 const searchLoading = ref(false);
+
+// 编辑弹窗 Tab
+const editTabValue = ref('parent');
+const parentOriginalName = ref('');
+const parentFormData = reactive<Record<string, any>>({
+  id: undefined,
+  companyShortName: '',
+});
 
 const editFormData = reactive<Record<string, any>>({
   companyStandardName: '',
@@ -337,11 +359,10 @@ const onSourceModalClose = () => {
 //#endregion
 
 //#region Edit Modal
-const onSearchRelation = async (keyword: string) => {
-  if (!keyword) return;
+const onSearchRelation = async (id?: number, keyword = '') => {
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50, id: null });
+    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50, id });
     const opts = (res.data?.list || [])
       .filter((item: any) => item.parentCompanyId != null)
       .map((item: any) => ({
@@ -388,8 +409,13 @@ const openEditModal = async (record?: StandardCompanyDto) => {
         data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
       editFormData.parentCompanyId = data.parentCompanyId || undefined;
       editFormData.remark = data.remark || '';
+      // 母公司信息
+      parentFormData.id = data.parentCompanyId || undefined;
+      parentFormData.companyShortName = data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+      parentOriginalName.value = parentFormData.companyShortName;
+      editTabValue.value = parentFormData.id ? 'parent' : 'standard';
       if (data.parentCompanyShortName != null) {
-        nextTick(() => onSearchRelation(String(data.parentCompanyShortName)));
+        nextTick(() => onSearchRelation(record.parentCompanyId));
       }
     } catch (e) {
       console.error(e);
@@ -404,11 +430,49 @@ const openEditModal = async (record?: StandardCompanyDto) => {
     editFormData.companyType = '';
     editFormData.parentCompanyShortName = '';
     editFormData.remark = '';
+    parentFormData.id = undefined;
+    parentFormData.companyShortName = '';
+    parentOriginalName.value = '';
+    editTabValue.value = 'standard';
     editModalVisible.value = true;
   }
 };
 
 const submitEdit = async () => {
+  if (editTabValue.value === 'parent') {
+    await submitParentEdit();
+  } else {
+    await submitStandardEdit();
+  }
+};
+
+const submitParentEdit = async () => {
+  const newName = (parentFormData.companyShortName || '').trim();
+  if (!newName) {
+    MessagePlugin.warning('请填写修改后名称');
+    return;
+  }
+  if (!parentFormData.id) {
+    MessagePlugin.warning('无母公司可修改');
+    return;
+  }
+  editLoading.value = true;
+  try {
+    await companyApi.saveParentCompany({
+      id: parentFormData.id,
+      parentCompanyShortName: newName,
+    });
+    MessagePlugin.success('保存成功');
+    editModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    editLoading.value = false;
+  }
+};
+
+const submitStandardEdit = async () => {
   editLoading.value = true;
   try {
     const submitData: StandardCompanyDto = {

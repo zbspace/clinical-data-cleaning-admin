@@ -6,7 +6,9 @@ import type {
   CleanCompanyDto,
   CompanyQueryParam,
   CompanyShortDto,
+  ParentCompanyDto,
   StandardCompanyDto,
+  SplitCompanyDto,
   StatDataDto,
   UpdateCleanStatusDto,
 } from './types/company';
@@ -44,9 +46,7 @@ export const companyApi = {
   queryParentData(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<CompanyShortDto>; msg: string }>(
       '/admin/company/queryParentData',
-      {
-        data,
-      },
+      data
     );
   },
 
@@ -100,6 +100,16 @@ export const companyApi = {
   /** 修改清洗状态 */
   updateCleanStatus(data: UpdateCleanStatusDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/updateCleanStatus', data);
+  },
+
+  /** 源名称拆分 */
+  spiltNames(data: SplitCompanyDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/spiltNames', data);
+  },
+
+  /** 母公司信息保存 */
+  saveParentCompany(data: ParentCompanyDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/saveParentCompany', data);
   },
 };
 //#endregion

@@ -80,4 +80,15 @@ export interface UpdateCleanStatusDto {
   id: number;
   cleanStatus: number;
 }
+
+export interface SplitCompanyDto {
+  companyOriginName?: string;
+  id?: number;
+  spiltNames?: SplitCompanyDto[];
+}
+
+export interface ParentCompanyDto {
+  parentCompanyShortName?: string;
+  id?: number;
+}
 //#endregion
