@@ -47,7 +47,7 @@
           <t-form-item label="清洗状态" name="cleanStatus" style="margin-bottom: 0">
             <t-select
               v-model="formData.cleanStatus"
-              :options="statusOptions"
+              :options="statusOptions.map((item) => ({ ...item, disabled: false }))"
               placeholder="请选择状态"
               clearable
               style="width: 220px"
@@ -90,6 +90,7 @@
         <t-select
           :value="row.cleanStatus"
           :options="statusOptions"
+          :disabled="row.cleanStatus === 3"
           style="width: 100px"
           @change="(val: number) => onCleanStatusChange(row, val)"
         />
@@ -225,6 +226,7 @@ const statusOptions = [
   { label: '未清洗', value: 0 },
   { label: '已清洗', value: 1 },
   { label: '不用清洗', value: 2 },
+  { label: '已拆分', value: 3, disabled: true },
 ];
 
 const companyTypeOptions = [
