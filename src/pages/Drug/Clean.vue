@@ -35,28 +35,6 @@
               style="width: 220px"
             />
           </t-form-item>
-          <t-form-item label="公司名（清洗后）" name="companyId" style="margin-bottom: 0">
-            <t-select
-              v-model="formData.companyId"
-              :options="companyOptions"
-              placeholder="请选择公司"
-              clearable
-              filterable
-              style="width: 220px"
-              :keys="{ label: 'companyStandardName', value: 'id' }"
-            />
-          </t-form-item>
-          <t-form-item label="母公司" name="parentCompanyId" style="margin-bottom: 0">
-            <t-select
-              v-model="formData.parentCompanyId"
-              :options="companyOptions"
-              placeholder="请选择母公司"
-              clearable
-              filterable
-              style="width: 220px"
-              :keys="{ label: 'parentCompanyShortName', value: 'parentCompanyId' }"
-            />
-          </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
             <t-button theme="primary" type="submit"> 查询 </t-button>
@@ -213,8 +191,6 @@ const pagination = reactive({
 const formData = reactive({
   drugStandardName: '',
   status: 0 as number | undefined,
-  companyId: undefined as number | undefined,
-  parentCompanyId: undefined as number | undefined,
 });
 
 // 公司选项
@@ -366,8 +342,6 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
       pageSize: size,
       drugStandardName: formData.drugStandardName || undefined,
       status: formData.status !== undefined ? Number(formData.status) : undefined,
-      companyId: formData.companyId || undefined,
-      parentCompanyId: formData.parentCompanyId || undefined,
     });
     tableData.value = res.data?.list || [];
     pagination.current = curr;
@@ -385,8 +359,6 @@ const onSearch = () => fetchData(1);
 const onReset = () => {
   formData.drugStandardName = '';
   formData.status = undefined;
-  formData.companyId = undefined;
-  formData.parentCompanyId = undefined;
   fetchData(1);
 };
 
