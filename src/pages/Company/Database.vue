@@ -45,9 +45,10 @@
               style="width: 220px"
             />
           </t-form-item>
+          <t-button theme="primary" type="submit"> 查询 </t-button>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-space>
-              <t-button theme="primary" type="submit"> 搜索 </t-button>
+              <t-button theme="primary" variant="outline" @click="handleAdd"> 新增 </t-button>
             </t-space>
           </div>
         </t-form>
@@ -101,7 +102,7 @@
       v-model:visible="editModalVisible"
       :header="currentEditRecord ? '编辑' : '新增'"
       width="600px"
-      :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading || newCompanyLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
@@ -211,6 +212,7 @@ const currentCompanyId = ref<number>();
 // 编辑弹窗
 const editModalVisible = ref(false);
 const editLoading = ref(false);
+const newCompanyLoading = ref(false);
 const currentEditRecord = ref<StandardCompanyDto | null>(null);
 const relationOptions = ref<{ label: string; value: number; item: any }[]>([]);
 const searchLoading = ref(false);
@@ -438,7 +440,42 @@ const openEditModal = async (record?: StandardCompanyDto) => {
   }
 };
 
+const handleAdd = () => {
+  openEditModal();
+};
+
+const handleAddNewCompany = async () => {
+  if (!editFormData.companyStandardName) {
+    MessagePlugin.warning('请填写标准名');
+    return;
+  }
+  newCompanyLoading.value = true;
+  try {
+    const submitData: StandardCompanyDto = {
+      companyStandardName: editFormData.companyStandardName,
+      companyShortName: editFormData.companyShortName,
+      companyType: editFormData.companyType,
+      parentCompanyShortName: editFormData.parentCompanyShortName,
+      parentCompanyId: editFormData.parentCompanyId,
+      remark: editFormData.remark,
+      status: 0,
+    };
+    await companyApi.saveStandardCompany(submitData);
+    MessagePlugin.success('新增成功');
+    editModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    newCompanyLoading.value = false;
+  }
+};
+
 const submitEdit = async () => {
+  if (!currentEditRecord.value) {
+    await handleAddNewCompany();
+    return;
+  }
   if (editTabValue.value === 'parent') {
     await submitParentEdit();
   } else {
