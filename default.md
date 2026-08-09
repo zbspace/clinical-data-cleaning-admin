@@ -746,6 +746,7 @@
   "companyOriginName": "",
   "companyStandardName": "",
   "companyType": "",
+  "onlyParent": 0,
   "pageNum": 0,
   "pageSize": 0,
   "parentCompanyId": 0,
@@ -765,6 +766,7 @@
 | &emsp;&emsp;companyOriginName      | 原始名称                                |          | false    | string            |                   |
 | &emsp;&emsp;companyStandardName    | 标准名                                  |          | false    | string            |                   |
 | &emsp;&emsp;companyType            | 类型(申办方,CRO,第三方实验室,药企,其他) |          | false    | string            |                   |
+| &emsp;&emsp;onlyParent             | 只查询母公司,1-只查询母公司             |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageNum                | 当前页数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageSize               | 每页条数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;parentCompanyId        | 母公司ID                                |          | false    | integer(int64)    |                   |
@@ -827,6 +829,7 @@
   "companyOriginName": "",
   "companyStandardName": "",
   "companyType": "",
+  "onlyParent": 0,
   "pageNum": 0,
   "pageSize": 0,
   "parentCompanyId": 0,
@@ -846,6 +849,7 @@
 | &emsp;&emsp;companyOriginName      | 原始名称                                |          | false    | string            |                   |
 | &emsp;&emsp;companyStandardName    | 标准名                                  |          | false    | string            |                   |
 | &emsp;&emsp;companyType            | 类型(申办方,CRO,第三方实验室,药企,其他) |          | false    | string            |                   |
+| &emsp;&emsp;onlyParent             | 只查询母公司,1-只查询母公司             |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageNum                | 当前页数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageSize               | 每页条数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;parentCompanyId        | 母公司ID                                |          | false    | integer(int64)    |                   |
@@ -1052,6 +1056,7 @@
   "companyOriginName": "",
   "companyStandardName": "",
   "companyType": "",
+  "onlyParent": 0,
   "pageNum": 0,
   "pageSize": 0,
   "parentCompanyId": 0,
@@ -1071,6 +1076,7 @@
 | &emsp;&emsp;companyOriginName      | 原始名称                                |          | false    | string            |                   |
 | &emsp;&emsp;companyStandardName    | 标准名                                  |          | false    | string            |                   |
 | &emsp;&emsp;companyType            | 类型(申办方,CRO,第三方实验室,药企,其他) |          | false    | string            |                   |
+| &emsp;&emsp;onlyParent             | 只查询母公司,1-只查询母公司             |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageNum                | 当前页数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageSize               | 每页条数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;parentCompanyId        | 母公司ID                                |          | false    | integer(int64)    |                   |
@@ -1334,6 +1340,7 @@
   "companyOriginName": "",
   "companyStandardName": "",
   "companyType": "",
+  "onlyParent": 0,
   "pageNum": 0,
   "pageSize": 0,
   "parentCompanyId": 0,
@@ -1353,6 +1360,7 @@
 | &emsp;&emsp;companyOriginName      | 原始名称                                |          | false    | string            |                   |
 | &emsp;&emsp;companyStandardName    | 标准名                                  |          | false    | string            |                   |
 | &emsp;&emsp;companyType            | 类型(申办方,CRO,第三方实验室,药企,其他) |          | false    | string            |                   |
+| &emsp;&emsp;onlyParent             | 只查询母公司,1-只查询母公司             |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageNum                | 当前页数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;pageSize               | 每页条数                                |          | false    | integer(int32)    |                   |
 | &emsp;&emsp;parentCompanyId        | 母公司ID                                |          | false    | integer(int64)    |                   |
@@ -1605,19 +1613,19 @@
 
 ```javascript
 {
-  "companyShortName": "",
-  "id": 0
+  "id": 0,
+  "parentCompanyShortName": ""
 }
 ```
 
 **请求参数**:
 
-| 参数名称                     | 参数说明     | 请求类型 | 是否必须 | 数据类型         | schema           |
-| ---------------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
-| Authorization                | 用户登录令牌 | header   | true     |                  |                  |
-| dto                          | dto          | body     | true     | ParentCompanyDto | ParentCompanyDto |
-| &emsp;&emsp;companyShortName | 简称         |          | false    | string           |                  |
-| &emsp;&emsp;id               | id           |          | false    | integer(int64)   |                  |
+| 参数名称                           | 参数说明     | 请求类型 | 是否必须 | 数据类型         | schema           |
+| ---------------------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
+| Authorization                      | 用户登录令牌 | header   | true     |                  |                  |
+| dto                                | dto          | body     | true     | ParentCompanyDto | ParentCompanyDto |
+| &emsp;&emsp;id                     | id           |          | false    | integer(int64)   |                  |
+| &emsp;&emsp;parentCompanyShortName | 母公司简称   |          | false    | string           |                  |
 
 **响应状态**:
 
@@ -2722,108 +2730,21 @@
 
 ```javascript
 {
-  "acceptanceCount": 0,
-  "acceptanceNo": "",
-  "companyDtoList": [
-    {
-      "acceptanceNo": "",
-      "cleanStatus": 0,
-      "cnt": 0,
-      "companyOriginName": "",
-      "companyShortName": "",
-      "companyStandardName": "",
-      "companyType": "",
-      "id": 0,
-      "parentCompanyId": 0,
-      "parentCompanyShortName": "",
-      "remark": "",
-      "sources": [],
-      "standardId": 0,
-      "updateTime": "",
-      "updater": ""
-    }
-  ],
-  "companyName": "",
-  "companyNameOrigin": "",
-  "companyNameParent": "",
-  "dosageForm": "",
-  "drugCode": "",
   "drugComment": "",
   "drugCommentId": 0,
-  "drugGoodsNameCn": "",
-  "drugGoodsNameEn": "",
-  "drugNickName": "",
-  "drugNormalNameCn": "",
-  "drugNormalNameEn": "",
-  "drugSourceStr": "",
-  "drugStandardId": 0,
-  "drugStandardName": "",
-  "drugType": "",
-  "drugTypeOrigin": "",
-  "otherComment": "",
-  "refId": 0,
-  "registerType": "",
-  "registerTypeOrigin": "",
-  "remark": "",
-  "sourceRef": "",
-  "sourceType": 0,
-  "status": 0,
-  "updateTime": "",
-  "updateUser": ""
+  "drugStandardId": 0
 }
 ```
 
 **请求参数**:
 
-| 参数名称                                       | 参数说明                               | 请求类型 | 是否必须 | 数据类型          | schema          |
-| ---------------------------------------------- | -------------------------------------- | -------- | -------- | ----------------- | --------------- |
-| Authorization                                  | 用户登录令牌                           | header   | true     |                   |                 |
-| dto                                            | dto                                    | body     | true     | DrugCleanDto      | DrugCleanDto    |
-| &emsp;&emsp;acceptanceCount                    | 登记号统计次数                         |          | false    | integer(int32)    |                 |
-| &emsp;&emsp;acceptanceNo                       |                                        |          | false    | string            |                 |
-| &emsp;&emsp;companyDtoList                     |                                        |          | false    | array             | CleanCompanyDto |
-| &emsp;&emsp;&emsp;&emsp;acceptanceNo           |                                        |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;cleanStatus            | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer           |                 |
-| &emsp;&emsp;&emsp;&emsp;cnt                    | 统计次数                               |          | false    | integer           |                 |
-| &emsp;&emsp;&emsp;&emsp;companyOriginName      | 源名称                                 |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;companyShortName       | 简称                                   |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;companyStandardName    | 标准名                                 |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;companyType            | 类型                                   |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;id                     | id                                     |          | false    | integer           |                 |
-| &emsp;&emsp;&emsp;&emsp;parentCompanyId        | 父级ID                                 |          | false    | integer           |                 |
-| &emsp;&emsp;&emsp;&emsp;parentCompanyShortName | 父级简称                               |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;remark                 | 备注                                   |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;sources                | 来源                                   |          | false    | array             | string          |
-| &emsp;&emsp;&emsp;&emsp;standardId             | 标准公司ID                             |          | false    | integer           |                 |
-| &emsp;&emsp;&emsp;&emsp;updateTime             | 操作时间                               |          | false    | string            |                 |
-| &emsp;&emsp;&emsp;&emsp;updater                | 操作人                                 |          | false    | string            |                 |
-| &emsp;&emsp;companyName                        | 公司名称(清洗后)                       |          | false    | string            |                 |
-| &emsp;&emsp;companyNameOrigin                  |                                        |          | false    | string            |                 |
-| &emsp;&emsp;companyNameParent                  | 母公司名称                             |          | false    | string            |                 |
-| &emsp;&emsp;dosageForm                         | 剂型                                   |          | false    | string            |                 |
-| &emsp;&emsp;drugCode                           | 代号                                   |          | false    | string            |                 |
-| &emsp;&emsp;drugComment                        | 药品源数据                             |          | false    | string            |                 |
-| &emsp;&emsp;drugCommentId                      | 药品源数据ID                           |          | false    | integer(int64)    |                 |
-| &emsp;&emsp;drugGoodsNameCn                    |                                        |          | false    | string            |                 |
-| &emsp;&emsp;drugGoodsNameEn                    |                                        |          | false    | string            |                 |
-| &emsp;&emsp;drugNickName                       |                                        |          | false    | string            |                 |
-| &emsp;&emsp;drugNormalNameCn                   | 通用名(中文)                           |          | false    | string            |                 |
-| &emsp;&emsp;drugNormalNameEn                   | 通用名(英文)                           |          | false    | string            |                 |
-| &emsp;&emsp;drugSourceStr                      |                                        |          | false    | string            |                 |
-| &emsp;&emsp;drugStandardId                     | 药品标准名ID                           |          | false    | integer(int32)    |                 |
-| &emsp;&emsp;drugStandardName                   | 标准名                                 |          | false    | string            |                 |
-| &emsp;&emsp;drugType                           | 药品类型(清洗后)                       |          | false    | string            |                 |
-| &emsp;&emsp;drugTypeOrigin                     |                                        |          | false    | string            |                 |
-| &emsp;&emsp;otherComment                       | 其他(例如，药物结构描述)               |          | false    | string            |                 |
-| &emsp;&emsp;refId                              |                                        |          | false    | integer(int64)    |                 |
-| &emsp;&emsp;registerType                       | 药品注册分类(清洗后)                   |          | false    | string            |                 |
-| &emsp;&emsp;registerTypeOrigin                 |                                        |          | false    | string            |                 |
-| &emsp;&emsp;remark                             |                                        |          | false    | string            |                 |
-| &emsp;&emsp;sourceRef                          |                                        |          | false    | string            |                 |
-| &emsp;&emsp;sourceType                         |                                        |          | false    | integer(int32)    |                 |
-| &emsp;&emsp;status                             | 0-暂未匹配，1-已匹配，2-不需要清洗     |          | false    | integer(int32)    |                 |
-| &emsp;&emsp;updateTime                         | 更新时间                               |          | false    | string(date-time) |                 |
-| &emsp;&emsp;updateUser                         | 更新人                                 |          | false    | string            |                 |
+| 参数名称                   | 参数说明     | 请求类型 | 是否必须 | 数据类型        | schema          |
+| -------------------------- | ------------ | -------- | -------- | --------------- | --------------- |
+| Authorization              | 用户登录令牌 | header   | true     |                 |                 |
+| dto                        | dto          | body     | true     | DrugRelationDto | DrugRelationDto |
+| &emsp;&emsp;drugComment    | 药品源数据   |          | false    | string          |                 |
+| &emsp;&emsp;drugCommentId  | 药品源数据ID |          | false    | integer(int64)  |                 |
+| &emsp;&emsp;drugStandardId | 药品标准名ID |          | false    | integer(int32)  |                 |
 
 **响应状态**:
 

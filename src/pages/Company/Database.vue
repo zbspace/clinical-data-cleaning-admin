@@ -45,6 +45,9 @@
               style="width: 220px"
             />
           </t-form-item>
+          <t-form-item label="只查母公司" name="onlyParent" style="margin-bottom: 0">
+            <t-switch v-model="formData.onlyParent" :custom-value="[1, 0]" />
+          </t-form-item>
           <t-button theme="primary" type="submit"> 查询 </t-button>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-space>
@@ -196,6 +199,7 @@ const formData = reactive<Record<string, any>>({
   companyName: '',
   parentCompanyShortName: '',
   companyType: '',
+  onlyParent: 0,
 });
 
 // 源数据弹窗

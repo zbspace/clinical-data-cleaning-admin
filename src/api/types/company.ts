@@ -5,6 +5,7 @@ export interface CompanyQueryParam {
   companyOriginName?: string;
   companyStandardName?: string;
   companyType?: string;
+  onlyParent?: boolean;
   pageNum?: number;
   pageSize?: number;
   parentCompanyId?: number;
