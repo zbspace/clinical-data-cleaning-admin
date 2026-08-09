@@ -1,6 +1,7 @@
 dist.zip
 dist-electron/
 node_modules/
+dist/
 .trae/
 release/
 package-lock.json
@@ -11,4 +12,6 @@ package-lock.json
 .idea/
 .vscode/
 .git/
-dist/
+.env
+.env.local
+.env.*.local
