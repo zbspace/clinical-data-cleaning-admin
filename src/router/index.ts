@@ -82,6 +82,17 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+
+// 全局导航守卫：未登录访问受保护页面时，先跳转登录页（避免页面闪烁）
+router.beforeEach((to) => {
+  const token = localStorage.getItem('token');
+  if (!token && to.path !== '/login') {
+    return '/login';
+  }
+  if (token && to.path === '/login') {
+    return '/overview';
+  }
+});
 //#endregion
 
 export default router;

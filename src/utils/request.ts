@@ -1,6 +1,7 @@
 //#region Imports
 import axios from 'axios';
 import { MessagePlugin } from 'tdesign-vue-next';
+import router from '@/router';
 //#endregion
 
 //#region Instance
@@ -38,7 +39,8 @@ request.interceptors.response.use(
     if (error.response?.status === 401) {
       MessagePlugin.error('登录状态已过期，请重新登录');
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // window.location.href = '/login';
+      router.push('/login');
     } else {
       MessagePlugin.error(error.message || '网络请求失败，请稍后重试');
     }
