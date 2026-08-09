@@ -42,7 +42,7 @@ export default defineConfig({
     port: 5180,
     proxy: {
       '/api': {
-        target: 'https://test/shucangyiyao.com/api',
+        target: 'https://test.shucangyiyao.com',
         changeOrigin: true,
       },
     },
