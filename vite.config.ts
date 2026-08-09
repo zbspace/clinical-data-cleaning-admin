@@ -8,6 +8,8 @@ import path from 'path';
 
 //#region Config
 export default defineConfig({
+  // 部署子路径，生产构建后资源路径为 /admin/assets/...
+  base: '/admin/',
   plugins: [
     vue(),
     UnoCSS({
