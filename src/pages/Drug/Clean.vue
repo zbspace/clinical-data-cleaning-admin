@@ -59,7 +59,7 @@
       @page-change="onPageChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
       </template>
 
       <template #cleanStatus="{ row }">
@@ -113,26 +113,38 @@
         </p>
       </div>
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
+        <t-form-item label="关联标准药品名" name="drugStandardId">
+          <t-select
+            v-model="editFormData.drugStandardId"
+            :options="standardDrugOptions"
+            :keys="{ label: 'drugStandardName', value: 'standardId' }"
+            filterable
+            placeholder="请搜索选择标准药品名"
+            clearable
+            @change="onStandardDrugChange"
+            @clear="onStandardDrugClear"
+          />
+        </t-form-item>
         <t-form-item label="药品名（清洗后）" name="cleanedName">
-          <t-input v-model="editFormData.cleanedName" />
+          <t-input v-model="editFormData.cleanedName" disabled />
         </t-form-item>
         <t-form-item label="通用名（中文）" name="genericNameCn">
-          <t-input v-model="editFormData.genericNameCn" />
+          <t-input v-model="editFormData.genericNameCn" disabled />
         </t-form-item>
         <t-form-item label="通用名（英文）" name="genericNameEn">
-          <t-input v-model="editFormData.genericNameEn" />
+          <t-input v-model="editFormData.genericNameEn" disabled />
         </t-form-item>
         <t-form-item label="研发代号" name="rdCode">
-          <t-input v-model="editFormData.rdCode" />
+          <t-input v-model="editFormData.rdCode" disabled />
         </t-form-item>
         <t-form-item label="其他名（例如结构名称）" name="otherNames">
-          <t-input v-model="editFormData.otherNames" />
+          <t-input v-model="editFormData.otherNames" disabled />
         </t-form-item>
         <t-form-item label="剂型" name="dosageForm">
-          <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
+          <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" disabled />
         </t-form-item>
         <t-form-item label="药品类型" name="drugType">
-          <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
+          <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" disabled />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -208,7 +220,11 @@ const editModalVisible = ref(false);
 const editLoading = ref(false);
 const currentEditRecord = ref<any>(null);
 
+// 标准药品名选项
+const standardDrugOptions = ref<any[]>([]);
+
 const editFormData = reactive<Record<string, any>>({
+  drugStandardId: undefined,
   cleanedName: '',
   genericNameCn: '',
   genericNameEn: '',
@@ -384,8 +400,18 @@ const onCleanStatusChange = async (row: any, val: number) => {
 //#endregion
 
 //#region Edit Modal
+const fetchStandardDrugOptions = async () => {
+  try {
+    const res = await drugApi.standardPageData({ pageNum: 1, pageSize: 500 } as any);
+    standardDrugOptions.value = res.data?.list || [];
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 const openEditModal = (record: any) => {
   currentEditRecord.value = record;
+  editFormData.drugStandardId = record.drugStandardId || record.standardId || undefined;
   editFormData.cleanedName = record.drugStandardName || record.cleanedName || '';
   editFormData.genericNameCn = record.drugNormalNameCn || record.genericNameCn || '';
   editFormData.genericNameEn = record.drugNormalNameEn || record.genericNameEn || '';
@@ -394,6 +420,24 @@ const openEditModal = (record: any) => {
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
   editModalVisible.value = true;
+  fetchStandardDrugOptions();
+};
+
+const onStandardDrugChange = (val: number | undefined) => {
+  if (!val) return;
+  const selected = standardDrugOptions.value.find((o) => o.standardId === val);
+  if (!selected) return;
+  editFormData.cleanedName = selected.drugStandardName || '';
+  editFormData.genericNameCn = selected.genericNameCn || '';
+  editFormData.genericNameEn = selected.genericNameEn || '';
+  editFormData.rdCode = selected.developmentCode || '';
+  editFormData.otherNames = selected.otherInfo || '';
+  editFormData.dosageForm = selected.dosageForm || '';
+  editFormData.drugType = selected.drugType || '';
+};
+
+const onStandardDrugClear = () => {
+  editFormData.drugStandardId = undefined;
 };
 
 const submitEdit = async () => {
@@ -401,14 +445,8 @@ const submitEdit = async () => {
   try {
     if (currentEditRecord.value) {
       const submitData = {
-        ...currentEditRecord.value,
-        drugStandardName: editFormData.cleanedName,
-        drugNormalNameCn: editFormData.genericNameCn,
-        drugNormalNameEn: editFormData.genericNameEn,
-        drugCode: editFormData.rdCode,
-        otherComment: editFormData.otherNames,
-        dosageForm: editFormData.dosageForm,
-        drugType: editFormData.drugType,
+        drugCommentId: currentEditRecord.value.drugCommentId!,
+        drugStandardId: editFormData.drugStandardId,
       };
       await drugApi.saveRelation(submitData);
       MessagePlugin.success('保存成功');
@@ -425,6 +463,7 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
+  standardDrugOptions.value = [];
 };
 //#endregion
 

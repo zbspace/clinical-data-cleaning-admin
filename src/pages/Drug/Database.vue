@@ -33,6 +33,11 @@
             <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
             <t-button theme="primary" type="submit"> 查询 </t-button>
           </div>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-space>
+              <t-button theme="primary" variant="outline" @click="handleAdd"> 新增 </t-button>
+            </t-space>
+          </div>
         </t-form>
       </div>
       <!--#endregion-->
@@ -83,7 +88,7 @@
     <!--#region 编辑弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      header="编辑"
+      :header="currentEditRecord ? '编辑' : '新增'"
       width="600px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
@@ -110,11 +115,11 @@
             <t-input v-model="editFormData.dosageForm" />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
-            <t-input v-model="editFormData.drugType" />
+            <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
           </t-form-item>
-          <t-form-item label="相关公司" name="companyName">
+          <!-- <t-form-item label="相关公司" name="companyName">
             <t-input v-model="editFormData.companyName" disabled />
-          </t-form-item>
+          </t-form-item> -->
         </div>
       </t-form>
     </t-dialog>
@@ -163,6 +168,7 @@ const editLoading = ref(false);
 const currentEditRecord = ref<DrugStandardDto | null>(null);
 
 const editFormData = reactive<Record<string, any>>({
+  id: undefined,
   cleanedDrugName: '',
   genericNameCn: '',
   genericNameEn: '',
@@ -342,6 +348,12 @@ const onAliasModalClose = () => {
 //#endregion
 
 //#region Edit Modal
+const drugTypeOptions = [
+  { label: '化学药物', value: '化学药物' },
+  { label: '生物制品', value: '生物制品' },
+  { label: '中药', value: '中药' },
+];
+
 const openEditModal = (record: DrugStandardDto) => {
   currentEditRecord.value = record;
   editFormData.cleanedDrugName = record.drugStandardName || '';
@@ -356,12 +368,25 @@ const openEditModal = (record: DrugStandardDto) => {
   editModalVisible.value = true;
 };
 
+const handleAdd = () => {
+  currentEditRecord.value = null;
+  editFormData.cleanedDrugName = '';
+  editFormData.genericNameCn = '';
+  editFormData.genericNameEn = '';
+  editFormData.developmentCode = '';
+  editFormData.otherInfo = '';
+  editFormData.dosageForm = '';
+  editFormData.drugType = '';
+  editFormData.companyName = '';
+  editFormData.id = undefined;
+  editModalVisible.value = true;
+};
+
 const submitEdit = async () => {
-  if (!currentEditRecord.value) return;
   editLoading.value = true;
   try {
     const submitData: DrugStandardInfo = {
-      id: currentEditRecord.value.standardId,
+      id: editFormData.id || undefined,
       cleanedDrugName: editFormData.cleanedDrugName,
       genericNameCn: editFormData.genericNameCn,
       genericNameEn: editFormData.genericNameEn,
@@ -369,9 +394,9 @@ const submitEdit = async () => {
       otherInfo: editFormData.otherInfo,
       dosageForm: editFormData.dosageForm,
       drugType: editFormData.drugType,
-      status: currentEditRecord.value.status,
+      status: currentEditRecord.value?.status ?? 0,
     };
-    const res = await drugApi.standardSave(submitData);
+    await drugApi.standardSave(submitData);
     MessagePlugin.success('保存成功');
     editModalVisible.value = false;
     fetchData();
