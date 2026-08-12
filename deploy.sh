@@ -11,7 +11,7 @@ set -e
 # ---------- 服务器配置（按需修改） ----------
 SERVER_HOST="47.103.54.49"               # 服务器 IP/域名
 SERVER_USER="root"                        # SSH 用户
-SERVER_DIR="/var/www/web/admin/"               # 目标部署目录
+SERVER_DIR="/var/www/web/lyqAdmin/"               # 目标部署目录
 SSH_PORT=22                              # SSH 端口
 # ------------------------------------------
 
