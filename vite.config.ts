@@ -9,7 +9,7 @@ import path from 'path';
 //#region Config
 export default defineConfig({
   // 部署子路径，生产构建后资源路径为 /lyqAdmin/assets/...
-  base: '/lyqAdmin/',
+  base: '/lyqAdmin/admin/',
   plugins: [
     vue(),
     UnoCSS({
