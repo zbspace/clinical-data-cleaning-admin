@@ -44,7 +44,7 @@ export default defineConfig({
     port: 5180,
     proxy: {
       '/api': {
-        target: 'https://test.shucangyiyao.com',
+        target: 'https://test.shucangyiyao.com/lyqAdmin/api',
         changeOrigin: true,
       },
     },
