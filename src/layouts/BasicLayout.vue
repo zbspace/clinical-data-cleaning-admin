@@ -188,6 +188,41 @@
       </t-header>
       <!--#endregion -->
 
+      <!--#region Browsing History Tabs -->
+      <div
+        v-if="visitedTabs && visitedTabs.length"
+        :style="{
+          display: 'flex',
+          gap: '8px',
+          alignItems: 'center',
+          padding: '0 10px 8px',
+          overflowX: 'auto',
+          backgroundColor: 'var(--td-bg-color-page)',
+        }"
+      >
+        <div
+          v-for="tab in visitedTabs"
+          :key="tab.path"
+          :style="{
+            padding: '4px 14px',
+            borderRadius: '6px',
+            fontSize: '13px',
+            lineHeight: '20px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+            background: tab.path === activeValue ? 'var(--td-brand-color)' : '#fff',
+            color: tab.path === activeValue ? '#fff' : 'var(--td-text-color-secondary)',
+            border: '1px solid var(--td-border-level-1-color)',
+            transition: 'all 0.2s',
+          }"
+          @click="handleTabClick(tab.path)"
+        >
+          {{ tab.title }}
+        </div>
+      </div>
+      <!--#endregion -->
+
       <!--#region Content -->
       <t-content
         :style="{
@@ -203,7 +238,11 @@
             width: '100%',
           }"
         >
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </router-view>
         </div>
       </t-content>
       <!--#endregion -->
@@ -215,7 +254,7 @@
 
 <script setup lang="ts">
 //#region Imports
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { MessagePlugin } from 'tdesign-vue-next';
 import type { DropdownOption } from 'tdesign-vue-next';
@@ -241,6 +280,41 @@ const authStore = useAuthStore();
 
 //#region Computed
 const activeValue = computed(() => route.path);
+//#endregion
+
+//#region Browsing History Tabs
+const titleMap: Record<string, string> = {
+  '/overview': '总览',
+  '/company/clean': '公司名清洗',
+  '/company/database': '公司名库',
+  '/drug/clean': '药品名称清洗',
+  '/drug/database': '药品名库管理',
+  '/indication/clean': '适应症名称清洗',
+  '/indication/database': '适应症库管理',
+  '/center/clean': '研究中心名称清洗',
+  '/center/database': '研究中心库',
+  '/trial-phase/database': '试验分期库管理',
+};
+
+const visitedTabs = ref<{ path: string; title: string }[]>([]);
+
+// 记录浏览历史：路由变化时将页面加入记录（keep-alive 缓存该页面）
+watch(
+  () => route.path,
+  (path) => {
+    if (!path) return;
+    if (!visitedTabs.value.some((tab) => tab.path === path)) {
+      visitedTabs.value.push({ path, title: titleMap[path] || path });
+    }
+  },
+  { immediate: true },
+);
+
+function handleTabClick(path: string) {
+  if (path !== route.path) {
+    router.push(path);
+  }
+}
 //#endregion
 
 //#region Dropdown Options

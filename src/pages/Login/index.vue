@@ -170,6 +170,8 @@ const currentYear = computed(() => new Date().getFullYear());
 const fetchCaptcha = async () => {
   try {
     const res: any = await authApi.getCaptcha();
+    console.log(1111, res);
+
     const blob = res.data;
     const key = res.headers?.['captcha-key'] || res.headers?.['Captcha-Key'] || '';
 
