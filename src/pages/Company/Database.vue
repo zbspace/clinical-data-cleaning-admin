@@ -100,17 +100,78 @@
     </t-dialog>
     <!--#endregion-->
 
+    <!--#region 新增标准名公司弹窗 -->
+    <t-dialog
+      v-model:visible="addModalVisible"
+      header="新增标准名公司"
+      width="600px"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: addLoading }"
+      @confirm="submitAddCompany"
+    >
+      <t-form :data="addFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="公司名(标准名称)" name="companyStandardName">
+          <t-input v-model="addFormData.companyStandardName" placeholder="请输入标准名称" clearable />
+        </t-form-item>
+        <t-form-item label="公司简称" name="companyShortName">
+          <t-input v-model="addFormData.companyShortName" placeholder="请输入公司简称" clearable />
+        </t-form-item>
+        <t-form-item label="公司类型" name="companyType">
+          <t-select
+            v-model="addFormData.companyType"
+            :options="companyTypeOptions"
+            placeholder="请选择公司类型"
+            clearable
+          />
+        </t-form-item>
+        <t-form-item label="母公司简称" name="parentCompanyId">
+          <t-select
+            v-model="addFormData.parentCompanyId"
+            :options="relationOptions"
+            filterable
+            :loading="searchLoading"
+            placeholder="请输入搜索母公司"
+            style="width: 360px"
+            @search="(keyword: string) => onSearchRelation(undefined, keyword)"
+            @change="onAddRelationChange"
+            @clear="onAddRelationClear"
+            clearable
+          />
+          <t-button theme="primary" style="margin-left: 20px" @click="openParentModal"> 新增母公司 </t-button>
+        </t-form-item>
+        <t-form-item label="备注" name="remark">
+          <t-textarea v-model="addFormData.remark" placeholder="请输入备注" :maxlength="200" show-word-limit />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 新增母公司弹窗 -->
+    <t-dialog
+      v-model:visible="parentModalVisible"
+      header="新增母公司"
+      width="480px"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: parentLoading }"
+      @confirm="submitParentCompany"
+    >
+      <t-form :data="newParentFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="母公司简称" name="parentCompanyShortName">
+          <t-input v-model="newParentFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+
     <!--#region 编辑弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      :header="currentEditRecord ? '编辑' : '新增'"
+      header="编辑"
       width="600px"
-      :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading || newCompanyLoading }"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
       <t-tabs v-model="editTabValue">
-        <t-tab-panel value="parent" label="母公司名修改" :disabled="!currentEditRecord || !parentFormData.id">
+        <t-tab-panel value="parent" label="母公司名修改">
           <t-form label-width="140" label-align="left" style="margin-top: 16px">
             <t-form-item label="原名称" name="parentOriginalName">
               <t-input :value="parentOriginalName" disabled />
@@ -165,7 +226,7 @@ import { ref, reactive, h, onMounted, nextTick } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { companyApi } from '@/api';
-import type { StandardCompanyDto } from '@/api/types/company';
+import type { ParentCompanyDto, StandardCompanyDto } from '@/api/types/company';
 //#endregion
 
 //#region Constants
@@ -213,10 +274,28 @@ const sourcePagination = reactive({
 });
 const currentCompanyId = ref<number>();
 
+// 新增弹窗
+const addModalVisible = ref(false);
+const addLoading = ref(false);
+const addFormData = reactive<Record<string, any>>({
+  companyStandardName: '',
+  companyShortName: '',
+  companyType: '',
+  parentCompanyShortName: '',
+  parentCompanyId: undefined,
+  remark: '',
+});
+
+// 新增母公司弹窗
+const parentModalVisible = ref(false);
+const parentLoading = ref(false);
+const newParentFormData = reactive<Record<string, any>>({
+  parentCompanyShortName: '',
+});
+
 // 编辑弹窗
 const editModalVisible = ref(false);
 const editLoading = ref(false);
-const newCompanyLoading = ref(false);
 const currentEditRecord = ref<StandardCompanyDto | null>(null);
 const relationOptions = ref<{ label: string; value: number; item: any }[]>([]);
 const searchLoading = ref(false);
@@ -368,12 +447,12 @@ const onSourceModalClose = () => {
 const onSearchRelation = async (id?: number, keyword = '') => {
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50, id });
+    const res = await companyApi.queryStandardWithoutParent({ searchKey: keyword, pageNum: 1, pageSize: 50, id });
     const opts = (res.data?.list || [])
       .filter((item: any) => item.parentCompanyId != null)
       .map((item: any) => ({
-        label: item.parentCompanyShortName || '',
-        value: item.parentCompanyId as number,
+        label: item.companyStandardName || '',
+        value: item.standardId as number,
         item,
       }));
     relationOptions.value = opts;
@@ -398,88 +477,127 @@ const onRelationClear = () => {
   editFormData.parentCompanyShortName = '';
 };
 
-const openEditModal = async (record?: StandardCompanyDto) => {
-  if (record && record.id) {
-    relationOptions.value = [];
-    editLoading.value = true;
-    currentEditRecord.value = record;
-    editModalVisible.value = true;
-    try {
-      const res = await companyApi.getStandardCompany(record.id);
-      const data = res.data;
-      currentEditRecord.value = data;
-      editFormData.companyStandardName = data.companyStandardName || '';
-      editFormData.companyShortName = data.companyShortName || '';
-      editFormData.companyType = data.companyType || '';
-      editFormData.parentCompanyShortName =
-        data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
-      editFormData.parentCompanyId = data.parentCompanyId || undefined;
-      editFormData.remark = data.remark || '';
-      // 母公司信息
-      parentFormData.id = data.parentCompanyId || undefined;
-      parentFormData.companyShortName = data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
-      parentOriginalName.value = parentFormData.companyShortName;
-      editTabValue.value = parentFormData.id ? 'parent' : 'standard';
-      if (data.parentCompanyShortName != null) {
-        nextTick(() => onSearchRelation(record.parentCompanyId));
-      }
-    } catch (e) {
-      console.error(e);
-      editModalVisible.value = false;
-    } finally {
-      editLoading.value = false;
+const openEditModal = async (record: StandardCompanyDto) => {
+  if (!record || !record.id) return;
+  relationOptions.value = [];
+  editLoading.value = true;
+  currentEditRecord.value = record;
+  editModalVisible.value = true;
+  try {
+    const res = await companyApi.getStandardCompany(record.id);
+    const data = res.data;
+    currentEditRecord.value = data;
+    editFormData.companyStandardName = data.companyStandardName || '';
+    editFormData.companyShortName = data.companyShortName || '';
+    editFormData.companyType = data.companyType || '';
+    editFormData.parentCompanyShortName =
+      data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+    editFormData.parentCompanyId = data.parentCompanyId || undefined;
+    editFormData.remark = data.remark || '';
+    // 母公司信息
+    parentFormData.id = data.parentCompanyId || undefined;
+    parentFormData.companyShortName = data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+    parentOriginalName.value = parentFormData.companyShortName;
+    editTabValue.value = parentFormData.id ? 'parent' : 'standard';
+    if (data.parentCompanyShortName != null) {
+      nextTick(() => onSearchRelation(record.parentCompanyId));
     }
-  } else {
-    currentEditRecord.value = null;
-    editFormData.companyStandardName = '';
-    editFormData.companyShortName = '';
-    editFormData.companyType = '';
-    editFormData.parentCompanyShortName = '';
-    editFormData.remark = '';
-    parentFormData.id = undefined;
-    parentFormData.companyShortName = '';
-    parentOriginalName.value = '';
-    editTabValue.value = 'standard';
-    editModalVisible.value = true;
+  } catch (e) {
+    console.error(e);
+    editModalVisible.value = false;
+  } finally {
+    editLoading.value = false;
   }
 };
 
-const handleAdd = () => {
-  openEditModal();
+const openAddModal = () => {
+  addFormData.companyStandardName = '';
+  addFormData.companyShortName = '';
+  addFormData.companyType = '';
+  addFormData.parentCompanyShortName = '';
+  addFormData.parentCompanyId = undefined;
+  addFormData.remark = '';
+  addModalVisible.value = true;
 };
 
-const handleAddNewCompany = async () => {
-  if (!editFormData.companyStandardName) {
+const onAddRelationChange = (val: any) => {
+  const opt = relationOptions.value.find((o) => o.value === val);
+  if (opt && opt.item) {
+    addFormData.parentCompanyShortName = opt.item.parentCompanyShortName || '';
+  }
+};
+
+const onAddRelationClear = () => {
+  addFormData.parentCompanyShortName = '';
+};
+
+const openParentModal = () => {
+  newParentFormData.parentCompanyShortName = '';
+  parentModalVisible.value = true;
+};
+
+const submitParentCompany = async () => {
+  if (!newParentFormData.parentCompanyShortName?.trim()) {
+    MessagePlugin.warning('请填写母公司简称');
+    return;
+  }
+  parentLoading.value = true;
+  try {
+    const submitData: ParentCompanyDto = {
+      parentCompanyShortName: newParentFormData.parentCompanyShortName,
+    };
+    await companyApi.saveParentCompany(submitData);
+    MessagePlugin.success('新增成功');
+    parentModalVisible.value = false;
+
+    // 刷新母公司下拉选项，命中则自动选中新增的母公司
+    await onSearchRelation(undefined, newParentFormData.parentCompanyShortName);
+    const matched = (relationOptions.value as any).find(
+      (o: any) => o.item?.parentCompanyShortName === newParentFormData.parentCompanyShortName,
+    );
+    if (matched) {
+      addFormData.parentCompanyId = matched.value;
+      onAddRelationChange(matched.value);
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    parentLoading.value = false;
+  }
+};
+
+const submitAddCompany = async () => {
+  if (!addFormData.companyStandardName?.trim()) {
     MessagePlugin.warning('请填写标准名');
     return;
   }
-  newCompanyLoading.value = true;
+  addLoading.value = true;
   try {
     const submitData: StandardCompanyDto = {
-      companyStandardName: editFormData.companyStandardName,
-      companyShortName: editFormData.companyShortName,
-      companyType: editFormData.companyType,
-      parentCompanyShortName: editFormData.parentCompanyShortName,
-      parentCompanyId: editFormData.parentCompanyId,
-      remark: editFormData.remark,
+      companyStandardName: addFormData.companyStandardName,
+      companyShortName: addFormData.companyShortName,
+      companyType: addFormData.companyType,
+      parentCompanyShortName: addFormData.parentCompanyShortName,
+      parentCompanyId: addFormData.parentCompanyId || undefined,
+      remark: addFormData.remark,
       status: 0,
     };
     await companyApi.saveStandardCompany(submitData);
     MessagePlugin.success('新增成功');
-    editModalVisible.value = false;
+    addModalVisible.value = false;
     fetchData();
   } catch (e) {
     console.error(e);
   } finally {
-    newCompanyLoading.value = false;
+    addLoading.value = false;
   }
 };
 
+const handleAdd = () => {
+  openAddModal();
+};
+
 const submitEdit = async () => {
-  if (!currentEditRecord.value) {
-    await handleAddNewCompany();
-    return;
-  }
   if (editTabValue.value === 'parent') {
     await submitParentEdit();
   } else {
