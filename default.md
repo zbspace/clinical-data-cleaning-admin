@@ -2,7 +2,7 @@
 
 **简介**:lyq-admin管理端接口文档
 
-**HOST**:47.103.54.49:19080
+**HOST**:test.shucangyiyao.com
 
 **联系人**:
 
@@ -16,7 +16,7 @@
 
 ## getVal
 
-**接口地址**:`/api/admin/cache/getVal`
+**接口地址**:`/lyqAdmin/api/admin/cache/getVal`
 
 **请求方式**:`GET`
 
@@ -62,7 +62,7 @@
 
 ## setVal
 
-**接口地址**:`/api/admin/cache/setVal`
+**接口地址**:`/lyqAdmin/api/admin/cache/setVal`
 
 **请求方式**:`POST`
 
@@ -112,7 +112,7 @@
 
 ## 获取关联登记号
 
-**接口地址**:`/api/admin/hospital/getAcceptanceNos`
+**接口地址**:`/lyqAdmin/api/admin/hospital/getAcceptanceNos`
 
 **请求方式**:`POST`
 
@@ -185,7 +185,7 @@
 
 ## 获取中心信息处理统计量
 
-**接口地址**:`/api/admin/hospital/getStatData`
+**接口地址**:`/lyqAdmin/api/admin/hospital/getStatData`
 
 **请求方式**:`POST`
 
@@ -258,7 +258,7 @@
 
 ## 中心(源数据)信息获取
 
-**接口地址**:`/api/admin/hospital/pageData`
+**接口地址**:`/lyqAdmin/api/admin/hospital/pageData`
 
 **请求方式**:`POST`
 
@@ -352,7 +352,7 @@
 
 ## 获取中心别名列表
 
-**接口地址**:`/api/admin/hospital/queryOriginHospitalList`
+**接口地址**:`/lyqAdmin/api/admin/hospital/queryOriginHospitalList`
 
 **请求方式**:`POST`
 
@@ -425,7 +425,7 @@
 
 ## 获取中心字典(标准名)列表
 
-**接口地址**:`/api/admin/hospital/queryStandardList`
+**接口地址**:`/lyqAdmin/api/admin/hospital/queryStandardList`
 
 **请求方式**:`POST`
 
@@ -521,7 +521,7 @@
 
 ## 中心信息手动清洗
 
-**接口地址**:`/api/admin/hospital/saveClean`
+**接口地址**:`/lyqAdmin/api/admin/hospital/saveClean`
 
 **请求方式**:`POST`
 
@@ -593,7 +593,7 @@
 
 ## 中心(标准名)信息保存
 
-**接口地址**:`/api/admin/hospital/saveStandardHospital`
+**接口地址**:`/lyqAdmin/api/admin/hospital/saveStandardHospital`
 
 **请求方式**:`POST`
 
@@ -667,7 +667,7 @@
 
 ## 修改清洗状态
 
-**接口地址**:`/api/admin/hospital/updateCleanStatus`
+**接口地址**:`/lyqAdmin/api/admin/hospital/updateCleanStatus`
 
 **请求方式**:`POST`
 
@@ -727,7 +727,7 @@
 
 ## 获取关联登记号
 
-**接口地址**:`/api/admin/company/getAcceptanceNos`
+**接口地址**:`/lyqAdmin/api/admin/company/getAcceptanceNos`
 
 **请求方式**:`POST`
 
@@ -810,7 +810,7 @@
 
 ## 获取原始公司信息列表
 
-**接口地址**:`/api/admin/company/getOriginCompanies`
+**接口地址**:`/lyqAdmin/api/admin/company/getOriginCompanies`
 
 **请求方式**:`POST`
 
@@ -893,7 +893,7 @@
 
 ## 获取公司字典信息记录
 
-**接口地址**:`/api/admin/company/getStandardCompany`
+**接口地址**:`/lyqAdmin/api/admin/company/getStandardCompany`
 
 **请求方式**:`GET`
 
@@ -931,6 +931,7 @@
 | &emsp;&emsp;companyStandardName    | 标准名                                 | string             |                    |
 | &emsp;&emsp;companyType            | 类型                                   | string             |                    |
 | &emsp;&emsp;id                     | id                                     | integer(int64)     |                    |
+| &emsp;&emsp;isParent               | 是否母公司,1-是                        | integer(int32)     |                    |
 | &emsp;&emsp;parentCompanyId        | 父级ID                                 | integer(int64)     |                    |
 | &emsp;&emsp;parentCompanyShortName | 父级简称                               | string             |                    |
 | &emsp;&emsp;relation               | 关系                                   | string             |                    |
@@ -951,6 +952,7 @@
 		"companyStandardName": "",
 		"companyType": "",
 		"id": 0,
+		"isParent": 0,
 		"parentCompanyId": 0,
 		"parentCompanyShortName": "",
 		"relation": "",
@@ -964,7 +966,7 @@
 
 ## 获取公司信息处理统计量
 
-**接口地址**:`/api/admin/company/getStatData`
+**接口地址**:`/lyqAdmin/api/admin/company/getStatData`
 
 **请求方式**:`POST`
 
@@ -1037,7 +1039,7 @@
 
 ## 公司信息查询
 
-**接口地址**:`/api/admin/company/pageData`
+**接口地址**:`/lyqAdmin/api/admin/company/pageData`
 
 **请求方式**:`POST`
 
@@ -1153,7 +1155,7 @@
 
 ## 公司标准信息获取
 
-**接口地址**:`/api/admin/company/queryByName`
+**接口地址**:`/lyqAdmin/api/admin/company/queryByName`
 
 **请求方式**:`POST`
 
@@ -1237,7 +1239,7 @@
 
 ## 获取母公司数据
 
-**接口地址**:`/api/admin/company/queryParentData`
+**接口地址**:`/lyqAdmin/api/admin/company/queryParentData`
 
 **请求方式**:`POST`
 
@@ -1321,7 +1323,7 @@
 
 ## 获取公司字典(标准名)列表
 
-**接口地址**:`/api/admin/company/queryStandardList`
+**接口地址**:`/lyqAdmin/api/admin/company/queryStandardList`
 
 **请求方式**:`POST`
 
@@ -1390,6 +1392,7 @@
 | &emsp;&emsp;&emsp;&emsp;companyStandardName    | 标准名                                 | string                         |                                |
 | &emsp;&emsp;&emsp;&emsp;companyType            | 类型                                   | string                         |                                |
 | &emsp;&emsp;&emsp;&emsp;id                     | id                                     | integer                        |                                |
+| &emsp;&emsp;&emsp;&emsp;isParent               | 是否母公司,1-是                        | integer                        |                                |
 | &emsp;&emsp;&emsp;&emsp;parentCompanyId        | 父级ID                                 | integer                        |                                |
 | &emsp;&emsp;&emsp;&emsp;parentCompanyShortName | 父级简称                               | string                         |                                |
 | &emsp;&emsp;&emsp;&emsp;relation               | 关系                                   | string                         |                                |
@@ -1414,6 +1417,7 @@
 				"companyStandardName": "",
 				"companyType": "",
 				"id": 0,
+				"isParent": 0,
 				"parentCompanyId": 0,
 				"parentCompanyShortName": "",
 				"relation": "",
@@ -1431,7 +1435,7 @@
 
 ## 获取标准公司信息(排除掉母公司)
 
-**接口地址**:`/api/admin/company/queryStandardWithoutParent`
+**接口地址**:`/lyqAdmin/api/admin/company/queryStandardWithoutParent`
 
 **请求方式**:`POST`
 
@@ -1515,7 +1519,7 @@
 
 ## 公司信息手动清洗
 
-**接口地址**:`/api/admin/company/saveClean`
+**接口地址**:`/lyqAdmin/api/admin/company/saveClean`
 
 **请求方式**:`POST`
 
@@ -1599,7 +1603,7 @@
 
 ## 母公司信息保存
 
-**接口地址**:`/api/admin/company/saveParentCompany`
+**接口地址**:`/lyqAdmin/api/admin/company/saveParentCompany`
 
 **请求方式**:`POST`
 
@@ -1657,7 +1661,7 @@
 
 ## 公司字典(标准名)信息保存
 
-**接口地址**:`/api/admin/company/saveStandardCompany`
+**接口地址**:`/lyqAdmin/api/admin/company/saveStandardCompany`
 
 **请求方式**:`POST`
 
@@ -1677,6 +1681,7 @@
   "companyStandardName": "",
   "companyType": "",
   "id": 0,
+  "isParent": 0,
   "parentCompanyId": 0,
   "parentCompanyShortName": "",
   "relation": "",
@@ -1698,6 +1703,7 @@
 | &emsp;&emsp;companyStandardName    | 标准名                                 |          | false    | string             |                    |
 | &emsp;&emsp;companyType            | 类型                                   |          | false    | string             |                    |
 | &emsp;&emsp;id                     | id                                     |          | false    | integer(int64)     |                    |
+| &emsp;&emsp;isParent               | 是否母公司,1-是                        |          | false    | integer(int32)     |                    |
 | &emsp;&emsp;parentCompanyId        | 父级ID                                 |          | false    | integer(int64)     |                    |
 | &emsp;&emsp;parentCompanyShortName | 父级简称                               |          | false    | string             |                    |
 | &emsp;&emsp;relation               | 关系                                   |          | false    | string             |                    |
@@ -1735,7 +1741,7 @@
 
 ## 源名称拆分
 
-**接口地址**:`/api/admin/company/spiltNames`
+**接口地址**:`/lyqAdmin/api/admin/company/spiltNames`
 
 **请求方式**:`POST`
 
@@ -1801,7 +1807,7 @@
 
 ## 修改清洗状态
 
-**接口地址**:`/api/admin/company/updateCleanStatus`
+**接口地址**:`/lyqAdmin/api/admin/company/updateCleanStatus`
 
 **请求方式**:`POST`
 
@@ -1861,7 +1867,7 @@
 
 ## 获取用户信息
 
-**接口地址**:`/api/adminUser/info`
+**接口地址**:`/lyqAdmin/api/adminUser/info`
 
 **请求方式**:`GET`
 
@@ -1917,7 +1923,7 @@
 
 ## 修改密码
 
-**接口地址**:`/api/adminUser/updatePwd`
+**接口地址**:`/lyqAdmin/api/adminUser/updatePwd`
 
 **请求方式**:`POST`
 
@@ -1979,7 +1985,7 @@
 
 ## 获取验证码
 
-**接口地址**:`/api/adminLogin/captcha`
+**接口地址**:`/lyqAdmin/api/adminLogin/captcha`
 
 **请求方式**:`GET`
 
@@ -2016,7 +2022,7 @@
 
 ## 登录以后返回token
 
-**接口地址**:`/api/adminLogin/login`
+**接口地址**:`/lyqAdmin/api/adminLogin/login`
 
 **请求方式**:`POST`
 
@@ -2078,7 +2084,7 @@
 
 ## 登出功能
 
-**接口地址**:`/api/adminLogin/logout`
+**接口地址**:`/lyqAdmin/api/adminLogin/logout`
 
 **请求方式**:`GET`
 
@@ -2123,7 +2129,7 @@
 
 ## 刷新token
 
-**接口地址**:`/api/adminLogin/refreshToken`
+**接口地址**:`/lyqAdmin/api/adminLogin/refreshToken`
 
 **请求方式**:`GET`
 
@@ -2170,7 +2176,7 @@
 
 ## 登记号&企业列表
 
-**接口地址**:`/api/admin/drug/acceptanceNoList`
+**接口地址**:`/lyqAdmin/api/admin/drug/acceptanceNoList`
 
 **请求方式**:`POST`
 
@@ -2250,7 +2256,7 @@
 
 ## 药品清洗列表
 
-**接口地址**:`/api/admin/drug/cleanPageData`
+**接口地址**:`/lyqAdmin/api/admin/drug/cleanPageData`
 
 **请求方式**:`POST`
 
@@ -2425,7 +2431,7 @@
 
 ## 药品别名列表
 
-**接口地址**:`/api/admin/drug/commentDrugPageData`
+**接口地址**:`/lyqAdmin/api/admin/drug/commentDrugPageData`
 
 **请求方式**:`POST`
 
@@ -2494,7 +2500,7 @@
 
 ## 登记号名称列表
 
-**接口地址**:`/api/admin/drug/getAcceptanceNos`
+**接口地址**:`/lyqAdmin/api/admin/drug/getAcceptanceNos`
 
 **请求方式**:`POST`
 
@@ -2563,7 +2569,7 @@
 
 ## 获取药品信息处理统计量
 
-**接口地址**:`/api/admin/drug/getStatData`
+**接口地址**:`/lyqAdmin/api/admin/drug/getStatData`
 
 **请求方式**:`POST`
 
@@ -2636,7 +2642,7 @@
 
 ## 药品标准简称查询
 
-**接口地址**:`/api/admin/drug/queryByName`
+**接口地址**:`/lyqAdmin/api/admin/drug/queryByName`
 
 **请求方式**:`POST`
 
@@ -2716,7 +2722,7 @@
 
 ## 关联药品库信息
 
-**接口地址**:`/api/admin/drug/saveRelation`
+**接口地址**:`/lyqAdmin/api/admin/drug/saveRelation`
 
 **请求方式**:`POST`
 
@@ -2776,7 +2782,7 @@
 
 ## 药品标准库列表
 
-**接口地址**:`/api/admin/drug/standardPageData`
+**接口地址**:`/lyqAdmin/api/admin/drug/standardPageData`
 
 **请求方式**:`POST`
 
@@ -2878,7 +2884,7 @@
 
 ## 药品标准信息保存
 
-**接口地址**:`/api/admin/drug/standardSave`
+**接口地址**:`/lyqAdmin/api/admin/drug/standardSave`
 
 **请求方式**:`POST`
 
@@ -2960,7 +2966,7 @@
 
 ## 修改清洗状态
 
-**接口地址**:`/api/admin/drug/updateCleanStatus`
+**接口地址**:`/lyqAdmin/api/admin/drug/updateCleanStatus`
 
 **请求方式**:`POST`
 
@@ -3020,7 +3026,7 @@
 
 ## 获取实验分期基础枚举
 
-**接口地址**:`/api/admin/trialStagesMapping/getOptions`
+**接口地址**:`/lyqAdmin/api/admin/trialStagesMapping/getOptions`
 
 **请求方式**:`GET`
 
@@ -3065,7 +3071,7 @@
 
 ## 试验分期列表
 
-**接口地址**:`/api/admin/trialStagesMapping/pageData`
+**接口地址**:`/lyqAdmin/api/admin/trialStagesMapping/pageData`
 
 **请求方式**:`POST`
 
@@ -3157,7 +3163,7 @@
 
 ## 编辑保存
 
-**接口地址**:`/api/admin/trialStagesMapping/save`
+**接口地址**:`/lyqAdmin/api/admin/trialStagesMapping/save`
 
 **请求方式**:`POST`
 
@@ -3233,7 +3239,7 @@
 
 ## 适应症-分类列表
 
-**接口地址**:`/api/admin/indication/categoryPageData`
+**接口地址**:`/lyqAdmin/api/admin/indication/categoryPageData`
 
 **请求方式**:`POST`
 
@@ -3321,7 +3327,7 @@
 
 ## 适应症字典(标准信息)列表
 
-**接口地址**:`/api/admin/indication/dictPageData`
+**接口地址**:`/lyqAdmin/api/admin/indication/dictPageData`
 
 **请求方式**:`POST`
 
@@ -3409,7 +3415,7 @@
 
 ## 获取关联登记号
 
-**接口地址**:`/api/admin/indication/getAcceptanceNos`
+**接口地址**:`/lyqAdmin/api/admin/indication/getAcceptanceNos`
 
 **请求方式**:`POST`
 
@@ -3487,7 +3493,7 @@
 
 ## 通过适应症（标准信息）查询源数据名称
 
-**接口地址**:`/api/admin/indication/getIndicationCommentList`
+**接口地址**:`/lyqAdmin/api/admin/indication/getIndicationCommentList`
 
 **请求方式**:`POST`
 
@@ -3556,7 +3562,7 @@
 
 ## 适应症信息(源数据)详情
 
-**接口地址**:`/api/admin/indication/getIndicationDetail`
+**接口地址**:`/lyqAdmin/api/admin/indication/getIndicationDetail`
 
 **请求方式**:`GET`
 
@@ -3646,7 +3652,7 @@
 
 ## 获取适应症信息处理统计量
 
-**接口地址**:`/api/admin/indication/getStatData`
+**接口地址**:`/lyqAdmin/api/admin/indication/getStatData`
 
 **请求方式**:`POST`
 
@@ -3719,7 +3725,7 @@
 
 ## 适应症信息(源数据)查询
 
-**接口地址**:`/api/admin/indication/pageData`
+**接口地址**:`/lyqAdmin/api/admin/indication/pageData`
 
 **请求方式**:`POST`
 
@@ -3838,7 +3844,7 @@
 
 ## 适应症(源信息)信息保存
 
-**接口地址**:`/api/admin/indication/saveIndication`
+**接口地址**:`/lyqAdmin/api/admin/indication/saveIndication`
 
 **请求方式**:`POST`
 
@@ -3935,7 +3941,7 @@
 
 ## 适应症字典(标准信息)保存
 
-**接口地址**:`/api/admin/indication/saveIndicationDict`
+**接口地址**:`/lyqAdmin/api/admin/indication/saveIndicationDict`
 
 **请求方式**:`POST`
 
@@ -4003,7 +4009,7 @@
 
 ## 适应症名称(源数据)查询
 
-**接口地址**:`/api/admin/indication/shortNameData`
+**接口地址**:`/lyqAdmin/api/admin/indication/shortNameData`
 
 **请求方式**:`POST`
 
@@ -4079,7 +4085,7 @@
 
 ## 修改清洗状态
 
-**接口地址**:`/api/admin/indication/updateCleanStatus`
+**接口地址**:`/lyqAdmin/api/admin/indication/updateCleanStatus`
 
 **请求方式**:`POST`
 

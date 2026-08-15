@@ -44,6 +44,7 @@ export interface StandardCompanyDto {
   companyStandardName?: string;
   companyType?: string;
   id?: number;
+  isParent?: number;
   parentCompanyShortName?: number;
   parentCompanyId?: number;
   relation?: string;
