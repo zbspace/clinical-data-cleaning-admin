@@ -196,14 +196,12 @@
           <!-- <t-input v-model="addFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable /> -->
           <t-select
             v-model="addFormData.parentCompanyId"
-            :options="relationOptions"
+            :options="relationParentOptions"
             filterable
             :loading="searchLoading"
             placeholder="请输入搜索母公司"
             style="width: 360px"
-            @search="(keyword: string) => onSearchRelation(keyword, undefined)"
-            @change="onRelationChange"
-            @clear="onRelationClear"
+            @search="(keyword: string) => onSearchParentRelation(keyword, undefined)"
             clearable
           />
           <t-button theme="primary" style="margin-left: 20px" @click="openParentModal"> 新增母公司 </t-button>
@@ -341,6 +339,7 @@ const editModalVisible = ref(false);
 const editLoading = ref(false);
 const currentEditRecord = ref<CleanCompanyDto | null>(null);
 const relationOptions = ref<{ label: string; value: number }[]>([]);
+const relationParentOptions = ref<{ label: string; value: number }[]>([]);
 const searchLoading = ref(false);
 
 const editFormData = reactive<Record<string, any>>({
@@ -569,6 +568,7 @@ const onAccModalClose = () => {
 //#region Edit Modal
 const resetEditForm = () => {
   relationOptions.value = [];
+  relationParentOptions.value = [];
   editFormData.relationId = undefined;
   editFormData.companyStandardName = '';
   editFormData.companyShortName = '';
@@ -598,7 +598,7 @@ const openEditModal = (record: CleanCompanyDto) => {
 const onSearchRelation = async (keyword = '', id?: number) => {
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryParentData({
+    const res = await companyApi.queryStandardWithoutParent({
       searchKey: keyword || '',
       pageNum: 1,
       pageSize: 50,
@@ -613,6 +613,31 @@ const onSearchRelation = async (keyword = '', id?: number) => {
         item,
       }));
     relationOptions.value = opts;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    searchLoading.value = false;
+  }
+};
+
+const onSearchParentRelation = async (keyword = '', id?: number) => {
+  searchLoading.value = true;
+  try {
+    const res = await companyApi.queryParentData({
+      searchKey: keyword || '',
+      pageNum: 1,
+      pageSize: 50,
+      id: id || null,
+    });
+    const opts = (res.data?.list || [])
+      .filter((item: CompanyShortDto) => item.parentCompanyId != null)
+      .map((item: CompanyShortDto) => ({
+        label: item.companyStandardName || '',
+        // value: item.parentCompanyId as number,
+        value: item.standardId as number,
+        item,
+      }));
+    relationParentOptions.value = opts;
   } catch (e) {
     console.error(e);
   } finally {
@@ -662,7 +687,8 @@ const submitAddCompany = async () => {
       companyStandardName: addFormData.companyStandardName,
       companyShortName: addFormData.companyShortName,
       companyType: addFormData.companyType,
-      parentCompanyShortName: addFormData.parentCompanyShortName,
+      parentCompanyShortName:
+        relationParentOptions.value.find((o: any) => o.value === addFormData.parentCompanyId)?.label || '',
       parentCompanyId: addFormData.parentCompanyId || undefined,
       remark: addFormData.remark,
       status: 0,
@@ -708,7 +734,7 @@ const submitParentCompany = async () => {
 
     // 刷新母公司下拉选项，命中则自动选中新增的母公司
     await onSearchRelation(parentFormData.parentCompanyShortName);
-    const matched = (relationOptions.value as any).find(
+    const matched = (relationParentOptions.value as any).find(
       (o: any) =>
         o.item?.parentCompanyShortName === parentFormData.parentCompanyShortName ||
         o.item?.companyStandardName === parentFormData.parentCompanyShortName,
