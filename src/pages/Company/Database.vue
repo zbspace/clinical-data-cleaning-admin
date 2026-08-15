@@ -108,7 +108,7 @@
       :confirm-btn="{ content: '保存', theme: 'primary', loading: addLoading }"
       @confirm="submitAddCompany"
     >
-      <t-form :data="addFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+      <t-form :data="addFormData" label-width="120px" label-align="left" style="padding: 8px 0">
         <t-form-item label="公司名(标准名称)" name="companyStandardName">
           <t-input v-model="addFormData.companyStandardName" placeholder="请输入标准名称" clearable />
         </t-form-item>
@@ -153,7 +153,7 @@
       :confirm-btn="{ content: '保存', theme: 'primary', loading: parentLoading }"
       @confirm="submitParentCompany"
     >
-      <t-form :data="newParentFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+      <t-form :data="newParentFormData" label-width="100px" label-align="left" style="padding: 8px 0">
         <t-form-item label="母公司简称" name="parentCompanyShortName">
           <t-input v-model="newParentFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable />
         </t-form-item>
@@ -170,7 +170,7 @@
       @confirm="submitParentEdit"
       @close="onEditParentModalClose"
     >
-      <t-form label-width="140" label-align="left" style="padding: 8px 0">
+      <t-form label-width="100px" label-align="left" style="padding: 8px 0">
         <t-form-item label="原名称" name="parentOriginalName">
           <t-input :value="parentOriginalName" disabled />
         </t-form-item>
@@ -453,7 +453,7 @@ const onSourceModalClose = () => {
 const onSearchRelation = async (id?: number, keyword = '') => {
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryStandardWithoutParent({ searchKey: keyword, pageNum: 1, pageSize: 50, id });
+    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50, id });
     const opts = (res.data?.list || [])
       .filter((item: any) => item.parentCompanyId != null)
       .map((item: any) => ({

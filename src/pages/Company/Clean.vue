@@ -128,7 +128,7 @@
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left">
+      <t-form ref="editFormRef" :data="editFormData" label-width="120px" label-align="left">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
           <!--#region 关联搜索 -->
           <t-form-item label="关联：" name="relationId" style="margin-bottom: 10px">
@@ -177,7 +177,7 @@
       :confirm-btn="{ content: '保存', theme: 'primary', loading: addLoading }"
       @confirm="submitAddCompany"
     >
-      <t-form :data="addFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+      <t-form :data="addFormData" label-width="120px" label-align="left" style="padding: 8px 0">
         <t-form-item label="公司名(标准名称)" name="companyStandardName">
           <t-input v-model="addFormData.companyStandardName" placeholder="请输入标准名称" clearable />
         </t-form-item>
@@ -223,7 +223,7 @@
       :confirm-btn="{ content: '保存', theme: 'primary', loading: parentLoading }"
       @confirm="submitParentCompany"
     >
-      <t-form :data="parentFormData" label-width="140px" label-align="left" style="padding: 8px 0">
+      <t-form :data="parentFormData" label-width="100px" label-align="left" style="padding: 8px 0">
         <t-form-item label="母公司简称" name="parentCompanyShortName">
           <t-input v-model="parentFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable />
         </t-form-item>
@@ -240,7 +240,7 @@
       @confirm="submitSplit"
       @close="onSplitModalClose"
     >
-      <t-form label-width="120" label-align="left">
+      <t-form label-width="120px" label-align="left" style="padding: 8px 0">
         <t-form-item label="公司名(源数据)" name="companyOriginName">
           <t-input v-model="splitFormData.companyOriginName" disabled />
         </t-form-item>
@@ -598,7 +598,7 @@ const openEditModal = (record: CleanCompanyDto) => {
 const onSearchRelation = async (keyword = '', id?: number) => {
   searchLoading.value = true;
   try {
-    const res = await companyApi.queryStandardWithoutParent({
+    const res = await companyApi.queryParentData({
       searchKey: keyword || '',
       pageNum: 1,
       pageSize: 50,
