@@ -53,15 +53,15 @@ export interface DrugShortDto {
   drugStandardName?: string;
   drugType?: string;
   id?: number;
+  standardId?: number;
 }
 
 export interface DrugStandardParam {
-  companyId?: number;
   drugComment?: string;
   drugStandardName?: string;
   pageNum?: number;
   pageSize?: number;
-  parentCompanyId?: number;
+  standardId?: number;
 }
 
 export interface DrugStandardDto {

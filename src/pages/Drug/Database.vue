@@ -112,7 +112,7 @@
             <t-input v-model="editFormData.otherInfo" />
           </t-form-item>
           <t-form-item label="剂型" name="dosageForm">
-            <t-input v-model="editFormData.dosageForm" />
+            <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
@@ -178,6 +178,13 @@ const editFormData = reactive<Record<string, any>>({
   drugType: '',
   companyName: '',
 });
+
+const dosageFormOptions = [
+  { label: '注射液', value: '注射液' },
+  { label: '片剂', value: '片剂' },
+  { label: '胶囊', value: '胶囊' },
+  { label: '颗粒', value: '颗粒' },
+];
 //#endregion
 
 //#region Columns Definition

@@ -93,16 +93,25 @@
     </t-dialog>
     <!--#endregion-->
 
-    <!--#region 编辑弹窗 -->
+    <!--#region 关联弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
       header="编辑"
-      width="600px"
+      width="800px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <div style="background-color: #f3f4f6; padding: 16px; margin-bottom: 16px; border-radius: 4px">
+      <div
+        style="
+          background-color: #f3f4f6;
+          padding: 16px;
+          margin-bottom: 16px;
+          border-radius: 4px;
+          display: flex;
+          gap: 30px;
+        "
+      >
         <p style="margin: 0 0 8px 0">
           <strong>药品名（源数据）：</strong>
           {{ currentEditRecord?.drugNickName || currentEditRecord?.drugComment || currentEditRecord?.drugStandardName }}
@@ -113,18 +122,22 @@
         </p>
       </div>
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
-        <t-form-item label="关联标准药品名" name="drugStandardId">
-          <t-select
-            v-model="editFormData.drugStandardId"
-            :options="standardDrugOptions"
-            :keys="{ label: 'drugStandardName', value: 'standardId' }"
-            filterable
-            placeholder="请搜索选择标准药品名"
-            clearable
-            @change="onStandardDrugChange"
-            @clear="onStandardDrugClear"
-          />
-        </t-form-item>
+        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
+          <t-form-item label="关联标准药品名" name="drugStandardId" style="margin-bottom: 10px">
+            <t-select
+              v-model="editFormData.drugStandardId"
+              :options="standardDrugOptions"
+              filterable
+              :loading="searchLoading"
+              placeholder="请搜索选择标准药品名"
+              clearable
+              @change="onStandardDrugChange"
+              @clear="onStandardDrugClear"
+              @search="(val: any) => onSearchRelation(val)"
+            />
+            <t-button theme="primary" style="margin-left: 20px" @click="openAddModal"> 新增 </t-button>
+          </t-form-item>
+        </div>
         <t-form-item label="药品名（清洗后）" name="cleanedName">
           <t-input v-model="editFormData.cleanedName" disabled />
         </t-form-item>
@@ -149,16 +162,52 @@
       </t-form>
     </t-dialog>
     <!--#endregion-->
+
+    <!-- 新增标准名弹窗 -->
+    <t-dialog
+      v-model:visible="addModalVisible"
+      header="新增标准名"
+      width="600px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: addLoading }"
+      @confirm="submitAdd"
+    >
+      <t-form ref="addFormRef" :data="addFormData" label-width="180" label-align="left">
+        <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
+          <t-form-item label="药品名（清洗后）" name="cleanedDrugName">
+            <t-input v-model="addFormData.cleanedDrugName" />
+          </t-form-item>
+          <t-form-item label="通用名（中文）" name="genericNameCn">
+            <t-input v-model="addFormData.genericNameCn" />
+          </t-form-item>
+          <t-form-item label="通用名（英文）" name="genericNameEn">
+            <t-input v-model="addFormData.genericNameEn" />
+          </t-form-item>
+          <t-form-item label="研发代号" name="developmentCode">
+            <t-input v-model="addFormData.developmentCode" />
+          </t-form-item>
+          <t-form-item label="其他名（例如结构名称）" name="otherInfo">
+            <t-input v-model="addFormData.otherInfo" />
+          </t-form-item>
+          <t-form-item label="剂型" name="dosageForm">
+            <t-select v-model="addFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
+          </t-form-item>
+          <t-form-item label="药品类型" name="drugType">
+            <t-select v-model="addFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
+          </t-form-item>
+        </div>
+      </t-form>
+    </t-dialog>
   </t-card>
   <!--#endregion-->
 </template>
 
 <script setup lang="ts">
 //#region Imports
-import { ref, reactive, h, onMounted } from 'vue';
+import { ref, reactive, h, onMounted, nextTick } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { drugApi, companyApi } from '@/api';
+import type { DrugStandardDto, DrugStandardInfo } from '@/api/types/drug';
 //#endregion
 
 //#region Constants
@@ -217,13 +266,27 @@ const accPagination = reactive({ current: 1, pageSize: 20, total: 0 });
 
 // 编辑弹窗
 const editModalVisible = ref(false);
+const addModalVisible = ref(false);
 const editLoading = ref(false);
 const currentEditRecord = ref<any>(null);
+const searchLoading = ref(false);
+const addLoading = ref(false);
 
 // 标准药品名选项
 const standardDrugOptions = ref<any[]>([]);
 
 const editFormData = reactive<Record<string, any>>({
+  drugStandardId: undefined,
+  cleanedName: '',
+  genericNameCn: '',
+  genericNameEn: '',
+  rdCode: '',
+  otherNames: '',
+  dosageForm: '',
+  drugType: '',
+});
+
+const addFormData = reactive<Record<string, any>>({
   drugStandardId: undefined,
   cleanedName: '',
   genericNameCn: '',
@@ -400,12 +463,27 @@ const onCleanStatusChange = async (row: any, val: number) => {
 //#endregion
 
 //#region Edit Modal
-const fetchStandardDrugOptions = async () => {
+const onSearchRelation = async (keyword = '', id?: number) => {
+  searchLoading.value = true;
   try {
-    const res = await drugApi.standardPageData({ pageNum: 1, pageSize: 500 } as any);
-    standardDrugOptions.value = res.data?.list || [];
+    const res = await drugApi.standardPageData({
+      drugStandardName: keyword || '',
+      pageNum: 1,
+      pageSize: 50,
+      standardId: id || undefined,
+    });
+    const opts = (res.data?.list || [])
+      .filter((item: DrugStandardDto) => item.standardId != null)
+      .map((item: DrugStandardDto) => ({
+        label: item.drugStandardName || '',
+        value: item.standardId as number,
+        item,
+      }));
+    standardDrugOptions.value = opts;
   } catch (e) {
     console.error(e);
+  } finally {
+    searchLoading.value = false;
   }
 };
 
@@ -420,20 +498,25 @@ const openEditModal = (record: any) => {
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
   editModalVisible.value = true;
-  fetchStandardDrugOptions();
+
+  nextTick(() => {
+    if (editFormData.drugStandardId) {
+      onSearchRelation('', editFormData.drugStandardId);
+    }
+  });
 };
 
 const onStandardDrugChange = (val: number | undefined) => {
   if (!val) return;
-  const selected = standardDrugOptions.value.find((o) => o.standardId === val);
+  const selected = standardDrugOptions.value.find((o) => o.value === val);
   if (!selected) return;
-  editFormData.cleanedName = selected.drugStandardName || '';
-  editFormData.genericNameCn = selected.genericNameCn || '';
-  editFormData.genericNameEn = selected.genericNameEn || '';
-  editFormData.rdCode = selected.developmentCode || '';
-  editFormData.otherNames = selected.otherInfo || '';
-  editFormData.dosageForm = selected.dosageForm || '';
-  editFormData.drugType = selected.drugType || '';
+  editFormData.cleanedName = selected.item.drugStandardName || '';
+  editFormData.genericNameCn = selected.item.genericNameCn || '';
+  editFormData.genericNameEn = selected.item.genericNameEn || '';
+  editFormData.rdCode = selected.item.developmentCode || '';
+  editFormData.otherNames = selected.item.otherInfo || '';
+  editFormData.dosageForm = selected.item.dosageForm || '';
+  editFormData.drugType = selected.item.drugType || '';
 };
 
 const onStandardDrugClear = () => {
@@ -465,6 +548,58 @@ const onEditModalClose = () => {
   currentEditRecord.value = null;
   standardDrugOptions.value = [];
 };
+
+const openAddModal = () => {
+  addFormData.cleanedDrugName = '';
+  addFormData.genericNameCn = '';
+  addFormData.genericNameEn = '';
+  addFormData.developmentCode = '';
+  addFormData.otherInfo = '';
+  addFormData.dosageForm = '';
+  addFormData.drugType = '';
+  addFormData.companyName = '';
+  addFormData.id = undefined;
+  addModalVisible.value = true;
+};
+
+const submitAdd = async () => {
+  if (!addFormData.cleanedDrugName?.trim()) {
+    MessagePlugin.warning('请填写标准名');
+    return;
+  }
+  addLoading.value = true;
+  try {
+    const submitData: DrugStandardInfo = {
+      id: addFormData.id || undefined,
+      cleanedDrugName: addFormData.cleanedDrugName,
+      genericNameCn: addFormData.genericNameCn,
+      genericNameEn: addFormData.genericNameEn,
+      developmentCode: addFormData.developmentCode,
+      otherInfo: addFormData.otherInfo,
+      dosageForm: addFormData.dosageForm,
+      drugType: addFormData.drugType,
+      status: currentEditRecord.value?.status ?? 0,
+    };
+    await drugApi.standardSave(submitData);
+    MessagePlugin.success('新增成功');
+    addModalVisible.value = false;
+
+    // 刷新关联下拉选项，命中则自动选中新增的标准公司
+    await onSearchRelation(addFormData.cleanedDrugName);
+    const matched = (standardDrugOptions.value as any).find(
+      (o: any) => o.item?.drugStandardName === addFormData.cleanedDrugName,
+    );
+    if (matched) {
+      editFormData.drugStandardId = matched.value;
+      onStandardDrugChange(matched.value);
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    addLoading.value = false;
+  }
+};
+
 //#endregion
 
 //#region Acc Modal
@@ -495,6 +630,7 @@ const onAccPageChange = (pageInfo: any) => {
 const onAccModalClose = () => {
   accModalVisible.value = false;
 };
+
 //#endregion
 
 //#region Lifecycle
