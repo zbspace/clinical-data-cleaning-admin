@@ -189,7 +189,14 @@
             <t-input v-model="addFormData.otherInfo" />
           </t-form-item>
           <t-form-item label="剂型" name="dosageForm">
-            <t-select v-model="addFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
+            <t-select
+              v-model="addFormData.dosageForm"
+              :options="dosageFormOptions"
+              filterable
+              :loading="dosageFormLoading"
+              placeholder="请选择或输入搜索"
+              @search="(val: string) => onSearchDosageForm(val)"
+            />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="addFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
@@ -208,6 +215,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { drugApi, companyApi } from '@/api';
 import type { DrugStandardDto, DrugStandardInfo } from '@/api/types/drug';
+import { createEnumsToOptions, DRUG_TYPE } from '@/utils/enums';
 //#endregion
 
 //#region Constants
@@ -217,18 +225,10 @@ const statusOptions = [
   { label: '不用清洗', value: 2 },
 ];
 
-const dosageFormOptions = [
-  { label: '注射液', value: '注射液' },
-  { label: '片剂', value: '片剂' },
-  { label: '胶囊', value: '胶囊' },
-  { label: '颗粒', value: '颗粒' },
-];
+const dosageFormOptions = ref<{ label: string; value: string }[]>([]);
+const dosageFormLoading = ref(false);
 
-const drugTypeOptions = [
-  { label: '化学药物', value: '化学药物' },
-  { label: '生物制品', value: '生物制品' },
-  { label: '中药', value: '中药' },
-];
+const drugTypeOptions = createEnumsToOptions(DRUG_TYPE);
 //#endregion
 
 //#region State
@@ -446,6 +446,20 @@ const onPageChange = (pageInfo: any) => {
 };
 //#endregion
 
+//#region 剂型选项查询
+const onSearchDosageForm = async (keyword = '') => {
+  dosageFormLoading.value = true;
+  try {
+    const res = await drugApi.dosageFormList({ pageNum: 1, pageSize: 1000, searchKey: keyword });
+    dosageFormOptions.value = (res.data?.list || []).map((name: string) => ({ label: name, value: name }));
+  } catch (e) {
+    console.error(e);
+  } finally {
+    dosageFormLoading.value = false;
+  }
+};
+//#endregion
+
 //#region 清洗状态 select 切换
 const onCleanStatusChange = async (row: any, val: number) => {
   try {
@@ -642,6 +656,10 @@ onMounted(async () => {
   } catch (e) {
     console.error(e);
   }
+
+  // 获取剂型选项
+  await onSearchDosageForm();
+
   fetchData();
 
   // 初始化表格高度 + 监听 resize + 监听 search-card 尺寸变化

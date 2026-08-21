@@ -38,6 +38,14 @@ export const drugApi = {
     );
   },
 
+  /** 剂型列表(源数据) */
+  dosageFormList(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: BasePageVo<string>; msg: string }>(
+      '/admin/drug/dosageFormList',
+      data,
+    );
+  },
+
   /** 药品名称查询 */
   queryByName(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<DrugShortDto>; msg: string }>(

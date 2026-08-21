@@ -2498,6 +2498,75 @@
 }
 ```
 
+## 剂型列表(源数据)
+
+**接口地址**:`/lyqAdmin/api/admin/drug/dosageFormList`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                     |
+| ------ | ------------ | -------------------------- |
+| 200    | OK           | Result«BasePageVo«string»» |
+| 201    | Created      |                            |
+| 401    | Unauthorized |                            |
+| 403    | Forbidden    |                            |
+| 404    | Not Found    |                            |
+
+**响应参数**:
+
+| 参数名称          | 参数说明 | 类型               | schema             |
+| ----------------- | -------- | ------------------ | ------------------ |
+| code              |          | integer(int32)     | integer(int32)     |
+| data              |          | BasePageVo«string» | BasePageVo«string» |
+| &emsp;&emsp;list  |          | array              | string             |
+| &emsp;&emsp;pages |          | integer(int32)     |                    |
+| &emsp;&emsp;total |          | integer(int64)     |                    |
+| msg               |          | string             |                    |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
 ## 登记号名称列表
 
 **接口地址**:`/lyqAdmin/api/admin/drug/getAcceptanceNos`
