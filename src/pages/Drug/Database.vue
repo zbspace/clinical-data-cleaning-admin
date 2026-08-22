@@ -112,7 +112,14 @@
             <t-input v-model="editFormData.otherInfo" />
           </t-form-item>
           <t-form-item label="剂型" name="dosageForm">
-            <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" />
+            <t-select
+              v-model="editFormData.dosageForm"
+              :options="dosageFormOptions"
+              placeholder="请选择"
+              filterable
+              @search="(val: string) => onSearchDosageForm(val)"
+              :loading="dosageFormLoading"
+            />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
@@ -135,6 +142,8 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { drugApi } from '@/api';
 import type { DrugStandardDto, DrugStandardInfo } from '@/api/types/drug';
+import { DRUG_TYPE, createEnumsToOptions } from '@/utils/enums';
+
 //#endregion
 
 //#region State
@@ -179,12 +188,9 @@ const editFormData = reactive<Record<string, any>>({
   companyName: '',
 });
 
-const dosageFormOptions = [
-  { label: '注射液', value: '注射液' },
-  { label: '片剂', value: '片剂' },
-  { label: '胶囊', value: '胶囊' },
-  { label: '颗粒', value: '颗粒' },
-];
+const dosageFormOptions = ref<{ label: string; value: string }[]>([]);
+const dosageFormLoading = ref(false);
+
 //#endregion
 
 //#region Columns Definition
@@ -320,6 +326,20 @@ const onPageChange = (pageInfo: any) => {
 };
 //#endregion
 
+//#region 剂型选项查询
+const onSearchDosageForm = async (keyword = '') => {
+  dosageFormLoading.value = true;
+  try {
+    const res = await drugApi.dosageFormList({ pageNum: 1, pageSize: 1000, searchKey: keyword });
+    dosageFormOptions.value = (res.data?.list || []).map((name: string) => ({ label: name, value: name }));
+  } catch (e) {
+    console.error(e);
+  } finally {
+    dosageFormLoading.value = false;
+  }
+};
+//#endregion
+
 //#region Alias Modal
 const fetchAliasNos = async (drugId: number, curr = 1, size = 5) => {
   aliasLoading.value = true;
@@ -355,11 +375,7 @@ const onAliasModalClose = () => {
 //#endregion
 
 //#region Edit Modal
-const drugTypeOptions = [
-  { label: '化学药物', value: '化学药物' },
-  { label: '生物制品', value: '生物制品' },
-  { label: '中药', value: '中药' },
-];
+const drugTypeOptions = createEnumsToOptions(DRUG_TYPE);
 
 const openEditModal = (record: DrugStandardDto) => {
   currentEditRecord.value = record;
@@ -423,6 +439,8 @@ const onEditModalClose = () => {
 //#region Lifecycle
 onMounted(() => {
   fetchData();
+  // 获取剂型选项
+  onSearchDosageForm();
 });
 //#endregion
 </script>
