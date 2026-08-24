@@ -102,6 +102,11 @@
           <template #icon><time-icon /></template>
           <t-menu-item value="/trial-phase/database">试验分期库管理</t-menu-item>
         </t-submenu>
+
+        <t-submenu value="/client" title="客户端">
+          <template #icon><user-icon /></template>
+          <t-menu-item value="/client/user">用户管理</t-menu-item>
+        </t-submenu>
         <!--#endregion -->
       </t-menu>
     </t-aside>
@@ -229,6 +234,7 @@ import {
   LocationIcon,
   TimeIcon,
   ViewListIcon,
+  UserIcon,
 } from 'tdesign-icons-vue-next';
 //#endregion
 

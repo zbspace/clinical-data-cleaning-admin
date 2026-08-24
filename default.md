@@ -1981,6 +1981,239 @@
 }
 ```
 
+# 用户管理
+
+## 编辑VIP信息
+
+**接口地址**:`/lyqAdmin/api/admin/wxUserManage/editUserVIP`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "vipBeginTime": "",
+  "vipCode": 0,
+  "vipEndTime": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                 | 参数说明                                  | 请求类型 | 是否必须 | 数据类型          | schema       |
+| ------------------------ | ----------------------------------------- | -------- | -------- | ----------------- | ------------ |
+| Authorization            | 用户登录令牌                              | header   | true     |                   |              |
+| param                    | param                                     | body     | true     | EditVipParam      | EditVipParam |
+| &emsp;&emsp;id           | ID                                        |          | false    | integer(int64)    |              |
+| &emsp;&emsp;pageNum      | 当前页数                                  |          | false    | integer(int32)    |              |
+| &emsp;&emsp;pageSize     | 每页条数                                  |          | false    | integer(int32)    |              |
+| &emsp;&emsp;vipBeginTime | 会员开始时间                              |          | false    | string(date-time) |              |
+| &emsp;&emsp;vipCode      | 会员编码 0-普通用户 1-VIP试用,100-VIP用户 |          | false    | integer(int32)    |              |
+| &emsp;&emsp;vipEndTime   | 会员结束时间                              |          | false    | string(date-time) |              |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
+## 微信用户列表
+
+**接口地址**:`/lyqAdmin/api/admin/wxUserManage/pageData`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "nickname": "",
+  "pageNum": 0,
+  "pageSize": 0,
+  "phone": "",
+  "username": "",
+  "vipCode": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称             | 参数说明     | 请求类型 | 是否必须 | 数据类型         | schema           |
+| -------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
+| Authorization        | 用户登录令牌 | header   | true     |                  |                  |
+| param                | param        | body     | true     | WxUserQueryParam | WxUserQueryParam |
+| &emsp;&emsp;nickname | 微信昵称     |          | false    | string           |                  |
+| &emsp;&emsp;pageNum  | 当前页数     |          | false    | integer(int32)   |                  |
+| &emsp;&emsp;pageSize | 每页条数     |          | false    | integer(int32)   |                  |
+| &emsp;&emsp;phone    | 手机号       |          | false    | string           |                  |
+| &emsp;&emsp;username | 用户名称     |          | false    | string           |                  |
+| &emsp;&emsp;vipCode  | 会员编号     |          | false    | integer(int32)   |                  |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                        |
+| ------ | ------------ | ----------------------------- |
+| 200    | OK           | Result«BasePageVo«WxUserDto»» |
+| 201    | Created      |                               |
+| 401    | Unauthorized |                               |
+| 403    | Forbidden    |                               |
+| 404    | Not Found    |                               |
+
+**响应参数**:
+
+| 参数名称                                          | 参数说明                             | 类型                  | schema                |
+| ------------------------------------------------- | ------------------------------------ | --------------------- | --------------------- |
+| code                                              |                                      | integer(int32)        | integer(int32)        |
+| data                                              |                                      | BasePageVo«WxUserDto» | BasePageVo«WxUserDto» |
+| &emsp;&emsp;list                                  |                                      | array                 | WxUserDto             |
+| &emsp;&emsp;&emsp;&emsp;authDto                   | 单个小程序授权信息                   | WxUserAuthDto         | WxUserAuthDto         |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;authDtoList               | 多个小程序授权信息                   | array                 | WxUserAuthDto         |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                      | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;avatarUrl                 | 用户头像URL                          | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;city                      | 市                                   | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;createTime                | 创建时间(首次登录时间)               | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;enable                    | 是否可用 0-不可用，1-可用            | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;id                        | 主键ID                               | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;lastLoginTime             | 最后登录时间                         | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;levelCd                   | 会员等级                             | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;nickname                  | 用户昵称                             | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;openid                    | 微信小程序唯一标识（每个小程序独立） | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;phone                     | 用户手机号                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;province                  | 省                                   | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;unionid                   | 微信开放平台唯一标识（多端统一）     | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;userApps                  | 使用小程序信息                       | array                 | WxAppDto              |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appName       |                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;userRole                  | 用户角色                             | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;username                  | 账号                                 | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipBeginTime              | 会员开始时间                         | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipDesc                   | 会员描述                             | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipEndTime                | 会员结束时间                         | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;wxNickname                | 微信昵称                             | string                |                       |
+| &emsp;&emsp;pages                                 |                                      | integer(int32)        |                       |
+| &emsp;&emsp;total                                 |                                      | integer(int64)        |                       |
+| msg                                               |                                      | string                |                       |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [
+			{
+				"authDto": {
+					"appId": "",
+					"authBeginTime": "",
+					"authDays": 0,
+					"authEndTime": "",
+					"authLevel": "",
+					"id": 0,
+					"levelCd": 0,
+					"unionId": "",
+					"wxUserId": 0
+				},
+				"authDtoList": [
+					{
+						"appId": "",
+						"authBeginTime": "",
+						"authDays": 0,
+						"authEndTime": "",
+						"authLevel": "",
+						"id": 0,
+						"levelCd": 0,
+						"unionId": "",
+						"wxUserId": 0
+					}
+				],
+				"avatarUrl": "",
+				"city": "",
+				"createTime": "",
+				"enable": 0,
+				"id": 0,
+				"lastLoginTime": "",
+				"levelCd": 0,
+				"nickname": "",
+				"openid": "",
+				"phone": "",
+				"province": "",
+				"unionid": "",
+				"userApps": [
+					{
+						"appId": "",
+						"appName": ""
+					}
+				],
+				"userRole": "",
+				"username": "",
+				"vipBeginTime": "",
+				"vipDesc": "",
+				"vipEndTime": "",
+				"wxNickname": ""
+			}
+		],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
 # 登录管理
 
 ## 获取验证码
@@ -2501,6 +2734,75 @@
 ## 剂型列表(源数据)
 
 **接口地址**:`/lyqAdmin/api/admin/drug/dosageFormList`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                     |
+| ------ | ------------ | -------------------------- |
+| 200    | OK           | Result«BasePageVo«string»» |
+| 201    | Created      |                            |
+| 401    | Unauthorized |                            |
+| 403    | Forbidden    |                            |
+| 404    | Not Found    |                            |
+
+**响应参数**:
+
+| 参数名称          | 参数说明 | 类型               | schema             |
+| ----------------- | -------- | ------------------ | ------------------ |
+| code              |          | integer(int32)     | integer(int32)     |
+| data              |          | BasePageVo«string» | BasePageVo«string» |
+| &emsp;&emsp;list  |          | array              | string             |
+| &emsp;&emsp;pages |          | integer(int32)     |                    |
+| &emsp;&emsp;total |          | integer(int64)     |                    |
+| msg               |          | string             |                    |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
+## 药品类型(源数据)
+
+**接口地址**:`/lyqAdmin/api/admin/drug/drugTypeList`
 
 **请求方式**:`POST`
 

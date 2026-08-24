@@ -70,6 +70,11 @@ const routes: RouteRecordRaw[] = [
             name: 'TrialPhaseDatabase',
             component: () => import('@/pages/TrialPhase/Database.vue'),
           },
+          {
+            path: '/client/user',
+            name: 'ClientUser',
+            component: () => import('@/pages/Client/User.vue'),
+          },
         ],
       },
     ],
