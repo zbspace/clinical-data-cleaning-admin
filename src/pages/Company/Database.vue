@@ -74,7 +74,10 @@
       @page-change="onPageChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <div style="display: flex; gap: 8px">
+          <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+          <t-button theme="primary" @click="openMergeModal(row)"> 合并 </t-button>
+        </div>
       </template>
     </t-table>
     <!--#endregion-->
@@ -157,6 +160,40 @@
         <t-form-item label="母公司简称" name="parentCompanyShortName">
           <t-input v-model="newParentFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable />
         </t-form-item>
+        <t-form-item label="公司类型" name="companyType">
+          <t-select
+            v-model="newParentFormData.companyType"
+            :options="companyTypeOptions"
+            placeholder="请选择公司类型"
+            clearable
+          />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 合并弹窗 -->
+    <t-dialog
+      v-model:visible="mergeModalVisible"
+      header="公司合并"
+      width="520px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: mergeLoading }"
+      @confirm="submitMerge"
+    >
+      <t-form :data="mergeFormData" label-width="120px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="公司名" name="sourceParentName">
+          <t-input :value="mergeFormData.sourceParentName" disabled />
+        </t-form-item>
+        <t-form-item label="合并到" name="targetParentId">
+          <t-select
+            v-model="mergeFormData.targetParentId"
+            :options="mergeOptions"
+            filterable
+            :loading="mergeSearchLoading"
+            placeholder="请输入搜索合并到的公司"
+            @search="(keyword: string) => onSearchMerge(keyword)"
+          />
+        </t-form-item>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -176,6 +213,9 @@
         </t-form-item>
         <t-form-item label="修改后名称" name="companyShortName">
           <t-input v-model="parentFormData.companyShortName" placeholder="请输入修改后名称" />
+        </t-form-item>
+        <t-form-item label="公司类型" name="companyType">
+          <t-select v-model="parentFormData.companyType" :options="companyTypeOptions" placeholder="请选择公司类型" />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -231,16 +271,11 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { companyApi } from '@/api';
 import type { ParentCompanyDto, StandardCompanyDto } from '@/api/types/company';
+import { COMPANY_TYPE, createEnumsToOptions } from '@/utils/enums';
 //#endregion
 
 //#region Constants
-const companyTypeOptions = [
-  { label: '药企', value: '药企' },
-  { label: 'CRO', value: 'CRO' },
-  { label: '申办方', value: '申办方' },
-  { label: '第三方实验室', value: '第三方实验室' },
-  { label: '其他', value: '其他' },
-];
+const companyTypeOptions = createEnumsToOptions(COMPANY_TYPE);
 //#endregion
 
 //#region State
@@ -295,6 +330,7 @@ const parentModalVisible = ref(false);
 const parentLoading = ref(false);
 const newParentFormData = reactive<Record<string, any>>({
   parentCompanyShortName: '',
+  companyType: '',
 });
 
 // 编辑弹窗
@@ -303,12 +339,25 @@ const currentEditRecord = ref<StandardCompanyDto | null>(null);
 const relationOptions = ref<{ label: string; value: number; item: any }[]>([]);
 const searchLoading = ref(false);
 
+// 合并弹窗
+const mergeModalVisible = ref(false);
+const mergeLoading = ref(false);
+const mergeSearchLoading = ref(false);
+const mergeOptions = ref<{ label: string; value: number; item: any }[]>([]);
+const mergeFormData = reactive<Record<string, any>>({
+  sourceParentId: undefined,
+  sourceParentName: '',
+  targetParentId: undefined,
+  targetParentName: '',
+});
+
 // 母公司编辑弹窗
 const editParentModalVisible = ref(false);
 const parentOriginalName = ref('');
 const parentFormData = reactive<Record<string, any>>({
   id: undefined,
   companyShortName: '',
+  companyType: '',
 });
 
 // 非母公司编辑弹窗
@@ -360,8 +409,8 @@ const columns = [
   },
   {
     colKey: 'operation',
-    title: '编辑修正',
-    width: 100,
+    title: '操作',
+    width: 160,
     fixed: 'right' as const,
   },
 ];
@@ -496,6 +545,7 @@ const openEditModal = async (record: StandardCompanyDto) => {
       // 母公司：仅修改母公司简称
       parentFormData.id = data.id;
       parentFormData.companyShortName = data.parentCompanyShortName != null ? String(data.parentCompanyShortName) : '';
+      parentFormData.companyType = data.companyType || '';
       parentOriginalName.value = parentFormData.companyShortName;
       editParentModalVisible.value = true;
     } else {
@@ -542,6 +592,7 @@ const onAddRelationClear = () => {
 
 const openParentModal = () => {
   newParentFormData.parentCompanyShortName = '';
+  newParentFormData.companyType = '';
   parentModalVisible.value = true;
 };
 
@@ -554,6 +605,7 @@ const submitParentCompany = async () => {
   try {
     const submitData: ParentCompanyDto = {
       parentCompanyShortName: newParentFormData.parentCompanyShortName,
+      companyType: newParentFormData.companyType,
     };
     await companyApi.saveParentCompany(submitData);
     MessagePlugin.success('新增成功');
@@ -621,6 +673,7 @@ const submitParentEdit = async () => {
     await companyApi.saveParentCompany({
       id: parentFormData.id,
       parentCompanyShortName: newName,
+      companyType: parentFormData.companyType,
     });
     MessagePlugin.success('保存成功');
     editParentModalVisible.value = false;
@@ -663,6 +716,60 @@ const onEditParentModalClose = () => {
 const onEditStandardModalClose = () => {
   editStandardModalVisible.value = false;
   currentEditRecord.value = null;
+};
+//#endregion
+
+//#region Merge Modal
+const onSearchMerge = async (keyword = '') => {
+  mergeSearchLoading.value = true;
+  try {
+    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50 });
+    mergeOptions.value = (res.data?.list || [])
+      .filter((item: any) => item.standardId != null || item.id != null)
+      .map((item: any) => ({
+        label: item.companyStandardName || '',
+        value: (item.standardId ?? item.id) as number,
+        item,
+      }));
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeSearchLoading.value = false;
+  }
+};
+
+const openMergeModal = (record: StandardCompanyDto) => {
+  mergeFormData.sourceParentId = record.id;
+  mergeFormData.sourceParentName = record.companyStandardName || '';
+  mergeFormData.targetParentId = undefined;
+  mergeFormData.targetParentName = '';
+  mergeOptions.value = [];
+  mergeModalVisible.value = true;
+};
+
+const submitMerge = async () => {
+  if (!mergeFormData.targetParentId) {
+    MessagePlugin.warning('请选择合并到的公司');
+    return;
+  }
+  const target = mergeOptions.value.find((o) => o.value === mergeFormData.targetParentId);
+  if (!target) return;
+  mergeLoading.value = true;
+  try {
+    await companyApi.parentCompanyMerge({
+      sourceParentId: mergeFormData.sourceParentId,
+      sourceParentName: mergeFormData.sourceParentName,
+      targetParentId: target.value,
+      targetParentName: target.label,
+    });
+    MessagePlugin.success('合并成功');
+    mergeModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeLoading.value = false;
+  }
 };
 //#endregion
 

@@ -7,6 +7,7 @@ import type {
   CompanyQueryParam,
   CompanyShortDto,
   ParentCompanyDto,
+  ParentCompanyMergeDto,
   StandardCompanyDto,
   SplitCompanyDto,
   StatDataDto,
@@ -46,7 +47,7 @@ export const companyApi = {
   queryParentData(data: BaseQueryParam) {
     return request.post<any, { code: number; data: BasePageVo<CompanyShortDto>; msg: string }>(
       '/admin/company/queryParentData',
-      data
+      data,
     );
   },
 
@@ -110,6 +111,11 @@ export const companyApi = {
   /** 母公司信息保存 */
   saveParentCompany(data: ParentCompanyDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/saveParentCompany', data);
+  },
+
+  /** 母公司合并(转移) */
+  parentCompanyMerge(data: ParentCompanyMergeDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/company/parentCompanyMerge', data);
   },
 };
 //#endregion

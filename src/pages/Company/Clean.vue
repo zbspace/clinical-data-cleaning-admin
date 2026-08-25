@@ -225,6 +225,14 @@
         <t-form-item label="母公司简称" name="parentCompanyShortName">
           <t-input v-model="parentFormData.parentCompanyShortName" placeholder="请输入母公司简称" clearable />
         </t-form-item>
+        <t-form-item label="公司类型" name="companyType">
+          <t-select
+            v-model="parentFormData.companyType"
+            :options="companyTypeOptions"
+            placeholder="请选择公司类型"
+            clearable
+          />
+        </t-form-item>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -281,23 +289,13 @@ import type {
   SplitCompanyDto,
   ParentCompanyDto,
 } from '@/api/types/company';
+import { COMPANY_TYPE, createEnumsToOptions, CLEANING_STATUS } from '@/utils/enums';
 //#endregion
 
 //#region Constants
-const statusOptions = [
-  { label: '未清洗', value: 0 },
-  { label: '已清洗', value: 1 },
-  { label: '不用清洗', value: 2 },
-  { label: '已拆分', value: 3, disabled: true },
-];
+const statusOptions = createEnumsToOptions(CLEANING_STATUS, [CLEANING_STATUS.已拆分]);
 
-const companyTypeOptions = [
-  { label: '药企', value: '药企' },
-  { label: 'CRO', value: 'CRO' },
-  { label: '申办方', value: '申办方' },
-  { label: '第三方实验室', value: '第三方实验室' },
-  { label: '其他', value: '其他' },
-];
+const companyTypeOptions = createEnumsToOptions(COMPANY_TYPE);
 //#endregion
 
 //#region State
@@ -368,6 +366,7 @@ const parentModalVisible = ref(false);
 const parentLoading = ref(false);
 const parentFormData = reactive<Record<string, any>>({
   parentCompanyShortName: '',
+  companyType: '',
 });
 
 // 拆分弹窗
@@ -715,6 +714,7 @@ const submitAddCompany = async () => {
 
 const openParentModal = () => {
   parentFormData.parentCompanyShortName = '';
+  parentFormData.companyType = '';
   parentModalVisible.value = true;
 };
 
@@ -727,6 +727,7 @@ const submitParentCompany = async () => {
   try {
     const submitData: ParentCompanyDto = {
       parentCompanyShortName: parentFormData.parentCompanyShortName,
+      companyType: parentFormData.companyType,
     };
     await companyApi.saveParentCompany(submitData);
     MessagePlugin.success('新增成功');

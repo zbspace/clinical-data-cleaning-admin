@@ -91,6 +91,14 @@ export interface SplitCompanyDto {
 
 export interface ParentCompanyDto {
   parentCompanyShortName?: string;
+  companyType?: string;
   id?: number;
+}
+
+export interface ParentCompanyMergeDto {
+  sourceParentId?: number;
+  sourceParentName?: string;
+  targetParentId?: number;
+  targetParentName?: string;
 }
 //#endregion
