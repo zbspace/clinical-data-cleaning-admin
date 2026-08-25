@@ -1153,6 +1153,68 @@
 }
 ```
 
+## 母公司合并(转移)
+
+**接口地址**:`/lyqAdmin/api/admin/company/parentCompanyMerge`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "sourceParentId": 0,
+  "sourceParentName": "",
+  "targetParentId": 0,
+  "targetParentName": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                     | 参数说明                       | 请求类型 | 是否必须 | 数据类型              | schema                |
+| ---------------------------- | ------------------------------ | -------- | -------- | --------------------- | --------------------- |
+| Authorization                | 用户登录令牌                   | header   | true     |                       |                       |
+| dto                          | dto                            | body     | true     | ParentCompanyMergeDto | ParentCompanyMergeDto |
+| &emsp;&emsp;sourceParentId   | 来源ID(需要合并的公司)         |          | false    | integer(int64)        |                       |
+| &emsp;&emsp;sourceParentName | 来源母公司名称(需要合并的公司) |          | false    | string                |                       |
+| &emsp;&emsp;targetParentId   | 目的ID(合并后的公司)           |          | false    | integer(int64)        |                       |
+| &emsp;&emsp;targetParentName | 目的母公司名称(合并后的公司)   |          | false    | string                |                       |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 ## 公司标准信息获取
 
 **接口地址**:`/lyqAdmin/api/admin/company/queryByName`
@@ -1617,6 +1679,7 @@
 
 ```javascript
 {
+  "companyType": "",
   "id": 0,
   "parentCompanyShortName": ""
 }
@@ -1628,6 +1691,7 @@
 | ---------------------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
 | Authorization                      | 用户登录令牌 | header   | true     |                  |                  |
 | dto                                | dto          | body     | true     | ParentCompanyDto | ParentCompanyDto |
+| &emsp;&emsp;companyType            | 公司类型     |          | false    | string           |                  |
 | &emsp;&emsp;id                     | id           |          | false    | integer(int64)   |                  |
 | &emsp;&emsp;parentCompanyShortName | 母公司简称   |          | false    | string           |                  |
 
@@ -2205,6 +2269,178 @@
 				"vipDesc": "",
 				"vipEndTime": "",
 				"wxNickname": ""
+			}
+		],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
+# 申请试用管理
+
+## 申请审批
+
+**接口地址**:`/lyqAdmin/api/admin/vipApplication/approval`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:<p>只需填id,审批状态(2审批通过,3审批不通过),审批备注</p>
+
+**请求示例**:
+
+```javascript
+{
+  "applicateDate": "",
+  "approvalDate": "",
+  "approvalRemark": "",
+  "approvalStatus": 0,
+  "id": 0,
+  "userCompany": "",
+  "userId": 0,
+  "userName": "",
+  "userPhone": "",
+  "userPosition": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                   | 参数说明                                 | 请求类型 | 是否必须 | 数据类型          | schema         |
+| -------------------------- | ---------------------------------------- | -------- | -------- | ----------------- | -------------- |
+| Authorization              | 用户登录令牌                             | header   | true     |                   |                |
+| vipApplication             | vipApplication                           | body     | true     | VipApplication    | VipApplication |
+| &emsp;&emsp;applicateDate  | 申请日期                                 |          | false    | string(date-time) |                |
+| &emsp;&emsp;approvalDate   | 审批日期                                 |          | false    | string(date-time) |                |
+| &emsp;&emsp;approvalRemark | 审批备注                                 |          | false    | string            |                |
+| &emsp;&emsp;approvalStatus | 审批状态(1:待审批,2审批通过,3审批不通过) |          | false    | integer(int32)    |                |
+| &emsp;&emsp;id             | 申请记录id                               |          | false    | integer(int32)    |                |
+| &emsp;&emsp;userCompany    | 用户公司                                 |          | false    | string            |                |
+| &emsp;&emsp;userId         | 用户id                                   |          | false    | integer(int64)    |                |
+| &emsp;&emsp;userName       | 用户姓名                                 |          | false    | string            |                |
+| &emsp;&emsp;userPhone      | 用户手机号                               |          | false    | string            |                |
+| &emsp;&emsp;userPosition   | 用户职位                                 |          | false    | string            |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema    |
+| ------ | ------------ | --------- |
+| 200    | OK           | Result«T» |
+| 201    | Created      |           |
+| 401    | Unauthorized |           |
+| 403    | Forbidden    |           |
+| 404    | Not Found    |           |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | T              | T              |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {},
+	"msg": ""
+}
+```
+
+## 查询审批记录
+
+**接口地址**:`/lyqAdmin/api/admin/vipApplication/getVipApplicationList`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "approvalStatus": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "userCompany": "",
+  "userName": "",
+  "userPhone": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                   | 参数说明                                 | 请求类型 | 是否必须 | 数据类型                 | schema                   |
+| -------------------------- | ---------------------------------------- | -------- | -------- | ------------------------ | ------------------------ |
+| Authorization              | 用户登录令牌                             | header   | true     |                          |                          |
+| vipApplicationReq          | vipApplicationReq                        | body     | true     | 申请试用审批记录请求对象 | 申请试用审批记录请求对象 |
+| &emsp;&emsp;approvalStatus | 审批状态(1:待审批,2审批通过,3审批不通过) |          | false    | integer(int32)           |                          |
+| &emsp;&emsp;pageNum        | 当前页数                                 |          | false    | integer(int32)           |                          |
+| &emsp;&emsp;pageSize       | 每页条数                                 |          | false    | integer(int32)           |                          |
+| &emsp;&emsp;userCompany    | 用户公司                                 |          | false    | string                   |                          |
+| &emsp;&emsp;userName       | 用户姓名                                 |          | false    | string                   |                          |
+| &emsp;&emsp;userPhone      | 用户手机号                               |          | false    | string                   |                          |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                             |
+| ------ | ------------ | ---------------------------------- |
+| 200    | OK           | Result«BasePageVo«VipApplication»» |
+| 201    | Created      |                                    |
+| 401    | Unauthorized |                                    |
+| 403    | Forbidden    |                                    |
+| 404    | Not Found    |                                    |
+
+**响应参数**:
+
+| 参数名称                               | 参数说明                                 | 类型                       | schema                     |
+| -------------------------------------- | ---------------------------------------- | -------------------------- | -------------------------- |
+| code                                   |                                          | integer(int32)             | integer(int32)             |
+| data                                   |                                          | BasePageVo«VipApplication» | BasePageVo«VipApplication» |
+| &emsp;&emsp;list                       |                                          | array                      | VipApplication             |
+| &emsp;&emsp;&emsp;&emsp;applicateDate  | 申请日期                                 | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;approvalDate   | 审批日期                                 | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;approvalRemark | 审批备注                                 | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;approvalStatus | 审批状态(1:待审批,2审批通过,3审批不通过) | integer                    |                            |
+| &emsp;&emsp;&emsp;&emsp;id             | 申请记录id                               | integer                    |                            |
+| &emsp;&emsp;&emsp;&emsp;userCompany    | 用户公司                                 | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;userId         | 用户id                                   | integer                    |                            |
+| &emsp;&emsp;&emsp;&emsp;userName       | 用户姓名                                 | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;userPhone      | 用户手机号                               | string                     |                            |
+| &emsp;&emsp;&emsp;&emsp;userPosition   | 用户职位                                 | string                     |                            |
+| &emsp;&emsp;pages                      |                                          | integer(int32)             |                            |
+| &emsp;&emsp;total                      |                                          | integer(int64)             |                            |
+| msg                                    |                                          | string                     |                            |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [
+			{
+				"applicateDate": "",
+				"approvalDate": "",
+				"approvalRemark": "",
+				"approvalStatus": 0,
+				"id": 0,
+				"userCompany": "",
+				"userId": 0,
+				"userName": "",
+				"userPhone": "",
+				"userPosition": ""
 			}
 		],
 		"pages": 0,

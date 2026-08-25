@@ -106,6 +106,7 @@
         <t-submenu value="/client" title="客户端">
           <template #icon><user-icon /></template>
           <t-menu-item value="/client/user">用户管理</t-menu-item>
+          <t-menu-item value="/client/trial-apply">试用申请</t-menu-item>
         </t-submenu>
         <!--#endregion -->
       </t-menu>

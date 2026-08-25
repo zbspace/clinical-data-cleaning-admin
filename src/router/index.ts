@@ -75,6 +75,11 @@ const routes: RouteRecordRaw[] = [
             name: 'ClientUser',
             component: () => import('@/pages/Client/User.vue'),
           },
+          {
+            path: '/client/trial-apply',
+            name: 'ClientTrialApply',
+            component: () => import('@/pages/Client/TrialApply.vue'),
+          },
         ],
       },
     ],

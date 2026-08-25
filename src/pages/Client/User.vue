@@ -24,19 +24,13 @@
           @submit="onSearch"
         >
           <t-form-item label="用户名" name="username" style="margin-bottom: 0">
-            <t-input v-model="formData.username" placeholder="请输入用户名" clearable style="width: 200px" />
+            <t-input v-model="formData.username" placeholder="请输入用户名" clearable />
           </t-form-item>
           <t-form-item label="手机号" name="phone" style="margin-bottom: 0">
             <t-input v-model="formData.phone" placeholder="请输入手机号" clearable style="width: 200px" />
           </t-form-item>
           <t-form-item label="用户类型" name="vipCode" style="margin-bottom: 0">
-            <t-select
-              v-model="formData.vipCode"
-              :options="vipCodeOptions"
-              placeholder="请选择用户类型"
-              clearable
-              style="width: 200px"
-            />
+            <t-select v-model="formData.vipCode" :options="vipCodeOptions" placeholder="请选择用户类型" clearable />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
