@@ -66,7 +66,11 @@
       @sort-change="onSortChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <t-space size="4">
+          <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
+          &emsp;
+          <t-button theme="primary" @click="openSplitModal(row)"> 拆分 </t-button>
+        </t-space>
       </template>
 
       <template #cleanStatus="{ row }">
@@ -154,7 +158,44 @@
       </t-form>
     </t-dialog>
     <!--#endregion-->
+
+    <!--#region 拆分弹窗 -->
+    <t-dialog
+      v-model:visible="splitModalVisible"
+      header="源名称拆分"
+      width="600px"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: splitLoading }"
+      @confirm="submitSplit"
+      @close="onSplitModalClose"
+    >
+      <t-form label-width="120px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="研究中心名(源数据)" name="companyOriginName">
+          <t-input v-model="splitFormData.companyOriginName" disabled />
+        </t-form-item>
+        <t-form-item label="拆分研究中心名称" name="spiltNames" style="align-items: flex-start">
+          <div style="width: 100%">
+            <div
+              v-for="(item, index) in splitFormData.spiltNames"
+              :key="index"
+              style="display: flex; gap: 8px; margin-bottom: 8px"
+            >
+              <t-input v-model="item.companyOriginName" placeholder="请输入拆分后的研究中心名称" style="flex: 1" />
+              <t-button theme="danger" variant="text" @click="removeSplitName(index)">
+                <template #icon><t-icon name="delete" /></template>
+                删除
+              </t-button>
+            </div>
+            <t-button theme="primary" variant="outline" @click="addSplitName">
+              <template #icon><t-icon name="add" /></template>
+              增加
+            </t-button>
+          </div>
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
   </t-card>
+
   <!--#endregion-->
 </template>
 
@@ -163,8 +204,9 @@
 import { ref, reactive, h, onMounted, nextTick } from 'vue';
 import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next';
 import moment from 'moment';
-import { hospitalApi } from '@/api';
+import { hospitalApi, companyApi } from '@/api';
 import type { HospitalCleanDto, StandardHospitalDto } from '@/api/types/hospital';
+import type { CleanCompanyDto, SplitCompanyDto } from '@/api/types/company';
 //#endregion
 
 //#region Constants
@@ -278,7 +320,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 160,
     fixed: 'right' as const,
   },
 ];
@@ -546,6 +588,64 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
+};
+//#endregion
+
+//#region 拆分
+const splitModalVisible = ref(false);
+const splitLoading = ref(false);
+const splitFormData = reactive<{
+  id?: number;
+  companyOriginName: string;
+  spiltNames: { companyOriginName: string }[];
+}>({
+  id: undefined,
+  companyOriginName: '',
+  spiltNames: [{ companyOriginName: '' }],
+});
+const openSplitModal = (record: CleanCompanyDto) => {
+  splitFormData.id = record.id;
+  splitFormData.companyOriginName = record.companyOriginName || '';
+  splitFormData.spiltNames = [{ companyOriginName: '' }];
+  splitModalVisible.value = true;
+};
+
+const addSplitName = () => {
+  splitFormData.spiltNames.push({ companyOriginName: '' });
+};
+
+const removeSplitName = (index: number) => {
+  splitFormData.spiltNames.splice(index, 1);
+};
+
+const submitSplit = async () => {
+  const names = splitFormData.spiltNames
+    .map((item) => item.companyOriginName?.trim())
+    .filter((name): name is string => !!name);
+  if (!names.length) {
+    MessagePlugin.warning('请至少填写一个拆分研究中心名称');
+    return;
+  }
+  splitLoading.value = true;
+  try {
+    const submitData: SplitCompanyDto = {
+      id: splitFormData.id,
+      companyOriginName: splitFormData.companyOriginName,
+      spiltNames: names.map((name) => ({ companyOriginName: name })),
+    };
+    await companyApi.spiltNames(submitData);
+    MessagePlugin.success('拆分成功');
+    splitModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    splitLoading.value = false;
+  }
+};
+
+const onSplitModalClose = () => {
+  splitModalVisible.value = false;
 };
 //#endregion
 
