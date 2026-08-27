@@ -665,6 +665,72 @@
 }
 ```
 
+## 源名称拆分
+
+**接口地址**:`/lyqAdmin/api/admin/hospital/spiltNames`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "hosOriginName": "",
+  "id": 0,
+  "spiltNames": [
+    {
+      "hosOriginName": "",
+      "id": 0,
+      "spiltNames": []
+    }
+  ]
+}
+```
+
+**请求参数**:
+
+| 参数名称                  | 参数说明     | 请求类型 | 是否必须 | 数据类型         | schema           |
+| ------------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
+| Authorization             | 用户登录令牌 | header   | true     |                  |                  |
+| dto                       | dto          | body     | true     | SplitHospitalDto | SplitHospitalDto |
+| &emsp;&emsp;hosOriginName | 医院原始名称 |          | false    | string           |                  |
+| &emsp;&emsp;id            | id           |          | false    | integer(int64)   |                  |
+| &emsp;&emsp;spiltNames    | 医院拆分名称 |          | false    | array            | SplitHospitalDto |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 ## 修改清洗状态
 
 **接口地址**:`/lyqAdmin/api/admin/hospital/updateCleanStatus`
@@ -1169,23 +1235,23 @@
 
 ```javascript
 {
-  "sourceParentId": 0,
-  "sourceParentName": "",
-  "targetParentId": 0,
-  "targetParentName": ""
+  "sourceStandardId": 0,
+  "sourceStandardName": "",
+  "targetStandardId": 0,
+  "targetStandardName": ""
 }
 ```
 
 **请求参数**:
 
-| 参数名称                     | 参数说明                       | 请求类型 | 是否必须 | 数据类型              | schema                |
-| ---------------------------- | ------------------------------ | -------- | -------- | --------------------- | --------------------- |
-| Authorization                | 用户登录令牌                   | header   | true     |                       |                       |
-| dto                          | dto                            | body     | true     | ParentCompanyMergeDto | ParentCompanyMergeDto |
-| &emsp;&emsp;sourceParentId   | 来源ID(需要合并的公司)         |          | false    | integer(int64)        |                       |
-| &emsp;&emsp;sourceParentName | 来源母公司名称(需要合并的公司) |          | false    | string                |                       |
-| &emsp;&emsp;targetParentId   | 目的ID(合并后的公司)           |          | false    | integer(int64)        |                       |
-| &emsp;&emsp;targetParentName | 目的母公司名称(合并后的公司)   |          | false    | string                |                       |
+| 参数名称                       | 参数说明                     | 请求类型 | 是否必须 | 数据类型              | schema                |
+| ------------------------------ | ---------------------------- | -------- | -------- | --------------------- | --------------------- |
+| Authorization                  | 用户登录令牌                 | header   | true     |                       |                       |
+| dto                            | dto                          | body     | true     | ParentCompanyMergeDto | ParentCompanyMergeDto |
+| &emsp;&emsp;sourceStandardId   | 来源ID(需要合并的公司)       |          | false    | integer(int64)        |                       |
+| &emsp;&emsp;sourceStandardName | 来源公司名称(需要合并的公司) |          | false    | string                |                       |
+| &emsp;&emsp;targetStandardId   | 目的ID(合并后的公司)         |          | false    | integer(int64)        |                       |
+| &emsp;&emsp;targetStandardName | 目的公司名称(合并后的公司)   |          | false    | string                |                       |
 
 **响应状态**:
 

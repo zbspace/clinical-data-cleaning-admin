@@ -32,6 +32,11 @@
               <t-button theme="primary" type="submit"> 搜索 </t-button>
             </t-space>
           </div>
+          <div style="display: flex; align-items: center; margin-left: auto">
+            <t-space>
+              <t-button theme="primary" variant="outline" @click="openEditModal()"> 新增 </t-button>
+            </t-space>
+          </div>
         </t-form>
       </div>
       <!--#endregion-->
@@ -94,6 +99,9 @@
         <t-form-item label="简称" name="hosShortName">
           <t-input v-model="editFormData.hosShortName" />
         </t-form-item>
+        <t-form-item label="国家" name="country">
+          <t-input v-model="editFormData.country" />
+        </t-form-item>
         <t-form-item label="省份" name="province">
           <t-input v-model="editFormData.province" />
         </t-form-item>
@@ -155,6 +163,7 @@ const currentEditRecord = ref<StandardHospitalDto | null>(null);
 const editFormData = reactive<Record<string, any>>({
   hosStandardName: '',
   hosShortName: '',
+  country: '',
   province: '',
   city: '',
   remark: '',
@@ -170,6 +179,7 @@ const columns = [
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
   { colKey: 'hosStandardName', title: '中心名称（标准名）', width: 300, ellipsis: true },
+  { colKey: 'country', title: '国家', width: 100 },
   { colKey: 'province', title: '省份', width: 150 },
   { colKey: 'city', title: '城市', width: 150 },
   {
@@ -281,6 +291,7 @@ const openEditModal = (record?: StandardHospitalDto) => {
     currentEditRecord.value = record;
     editFormData.hosStandardName = record.hosStandardName || '';
     editFormData.hosShortName = record.hosShortName || '';
+    editFormData.country = record.country || '';
     editFormData.province = record.province || '';
     editFormData.city = record.city || '';
     editFormData.remark = record.remark || '';
@@ -289,6 +300,7 @@ const openEditModal = (record?: StandardHospitalDto) => {
     currentEditRecord.value = null;
     editFormData.hosStandardName = '';
     editFormData.hosShortName = '';
+    editFormData.country = '';
     editFormData.province = '';
     editFormData.city = '';
     editFormData.remark = '';
@@ -303,6 +315,7 @@ const submitEdit = async () => {
       ...currentEditRecord.value,
       hosStandardName: editFormData.hosStandardName,
       hosShortName: editFormData.hosShortName,
+      country: editFormData.country,
       province: editFormData.province,
       city: editFormData.city,
       remark: editFormData.remark,

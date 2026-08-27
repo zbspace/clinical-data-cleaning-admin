@@ -24,6 +24,7 @@ export interface StandardHospitalDto {
   city?: string;
   cleanStatus?: number;
   cnt?: number;
+  country?: string;
   hosShortName?: string;
   hosStandardName?: string;
   id?: number;
@@ -31,5 +32,11 @@ export interface StandardHospitalDto {
   remark?: string;
   updateTime?: string;
   updater?: string;
+}
+
+export interface SplitHospitalDto {
+  hosOriginName?: string;
+  id?: number;
+  spiltNames?: SplitHospitalDto[];
 }
 //#endregion

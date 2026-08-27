@@ -105,10 +105,10 @@
     </t-dialog>
     <!--#endregion-->
 
-    <!--#region 编辑弹窗 -->
+    <!--#region 关联弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      header="编辑"
+      header="关联"
       width="600px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
@@ -133,12 +133,25 @@
               @clear="onRelationClear"
               clearable
             />
+            <t-button theme="primary" style="margin-left: 20px" @click="openAddModal"> 新增 </t-button>
           </t-form-item>
           <!--#endregion-->
         </div>
         <div style="margin-top: 16px">
           <t-form-item label="标准名称" name="hosStandardName">
             <t-input v-model="editFormData.hosStandardName" :disabled="!!editFormData.hosStandardId" />
+          </t-form-item>
+          <t-form-item label="简称" name="hosShortName">
+            <t-input v-model="editFormData.hosShortName" disabled />
+          </t-form-item>
+          <t-form-item label="国家" name="country">
+            <t-input v-model="editFormData.country" disabled />
+          </t-form-item>
+          <t-form-item label="省份" name="province">
+            <t-input v-model="editFormData.province" disabled />
+          </t-form-item>
+          <t-form-item label="城市" name="city">
+            <t-input v-model="editFormData.city" disabled />
           </t-form-item>
           <t-form-item label="清洗状态" name="cleanStatus">
             <t-select
@@ -151,10 +164,38 @@
           <t-form-item label="备注" name="remark">
             <t-textarea v-model="editFormData.remark" />
           </t-form-item>
-          <t-button theme="primary" variant="outline" v-if="!editFormData.hosStandardId" @click="confirmAddNewStandard">
-            新增
-          </t-button>
         </div>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 新增标准名中心弹窗 -->
+    <t-dialog
+      v-model:visible="addModalVisible"
+      header="新增标准名中心"
+      width="600px"
+      :confirm-btn="{ content: '保存', theme: 'primary', loading: addLoading }"
+      @confirm="submitAddStandard"
+    >
+      <t-form :data="addFormData" label-width="120px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="标准名称" name="hosStandardName">
+          <t-input v-model="addFormData.hosStandardName" placeholder="请输入标准名称" clearable />
+        </t-form-item>
+        <t-form-item label="简称" name="hosShortName">
+          <t-input v-model="addFormData.hosShortName" placeholder="请输入简称" clearable />
+        </t-form-item>
+        <t-form-item label="国家" name="country">
+          <t-input v-model="addFormData.country" placeholder="请输入国家" clearable />
+        </t-form-item>
+        <t-form-item label="省份" name="province">
+          <t-input v-model="addFormData.province" placeholder="请输入省份" clearable />
+        </t-form-item>
+        <t-form-item label="城市" name="city">
+          <t-input v-model="addFormData.city" placeholder="请输入城市" clearable />
+        </t-form-item>
+        <t-form-item label="备注" name="remark">
+          <t-textarea v-model="addFormData.remark" placeholder="请输入备注" :maxlength="200" show-word-limit />
+        </t-form-item>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -169,8 +210,8 @@
       @close="onSplitModalClose"
     >
       <t-form label-width="120px" label-align="left" style="padding: 8px 0">
-        <t-form-item label="研究中心名(源数据)" name="companyOriginName">
-          <t-input v-model="splitFormData.companyOriginName" disabled />
+        <t-form-item label="研究中心名(源数据)" name="hosOriginName">
+          <t-input v-model="splitFormData.hosOriginName" disabled />
         </t-form-item>
         <t-form-item label="拆分研究中心名称" name="spiltNames" style="align-items: flex-start">
           <div style="width: 100%">
@@ -179,7 +220,7 @@
               :key="index"
               style="display: flex; gap: 8px; margin-bottom: 8px"
             >
-              <t-input v-model="item.companyOriginName" placeholder="请输入拆分后的研究中心名称" style="flex: 1" />
+              <t-input v-model="item.hosOriginName" placeholder="请输入拆分后的研究中心名称" style="flex: 1" />
               <t-button theme="danger" variant="text" @click="removeSplitName(index)">
                 <template #icon><t-icon name="delete" /></template>
                 删除
@@ -204,9 +245,8 @@
 import { ref, reactive, h, onMounted, nextTick } from 'vue';
 import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next';
 import moment from 'moment';
-import { hospitalApi, companyApi } from '@/api';
-import type { HospitalCleanDto, StandardHospitalDto } from '@/api/types/hospital';
-import type { CleanCompanyDto, SplitCompanyDto } from '@/api/types/company';
+import { hospitalApi } from '@/api';
+import type { HospitalCleanDto, StandardHospitalDto, SplitHospitalDto } from '@/api/types/hospital';
 //#endregion
 
 //#region Constants
@@ -262,8 +302,24 @@ const searchLoading = ref(false);
 const editFormData = reactive<Record<string, any>>({
   hosStandardId: undefined,
   hosStandardName: '',
+  hosShortName: '',
+  country: '',
+  province: '',
+  city: '',
   remark: '',
   cleanStatus: undefined,
+});
+
+// 新增标准名中心弹窗
+const addModalVisible = ref(false);
+const addLoading = ref(false);
+const addFormData = reactive<Record<string, any>>({
+  hosStandardName: '',
+  hosShortName: '',
+  country: '',
+  province: '',
+  city: '',
+  remark: '',
 });
 //#endregion
 
@@ -448,6 +504,10 @@ const resetEditForm = () => {
   relationOptions.value = [];
   editFormData.hosStandardId = undefined;
   editFormData.hosStandardName = '';
+  editFormData.hosShortName = '';
+  editFormData.country = '';
+  editFormData.province = '';
+  editFormData.city = '';
   editFormData.remark = '';
   editFormData.cleanStatus = undefined;
 };
@@ -459,6 +519,13 @@ const openEditModal = (record: HospitalCleanDto) => {
   editFormData.hosStandardName = record.hosStandardName || '';
   editFormData.remark = record.remark || '';
   editFormData.cleanStatus = record.cleanStatus;
+
+  // 若原数据已关联标准中心，回显其简称/国家/省市信息
+  const recordAny = record as any;
+  editFormData.hosShortName = recordAny.hosShortName || '';
+  editFormData.country = recordAny.country || '';
+  editFormData.province = recordAny.province || '';
+  editFormData.city = recordAny.city || '';
 
   if (record.hosStandardId) {
     editFormData.hosStandardId = record.hosStandardId;
@@ -503,63 +570,65 @@ const onSearchRelation = async (keyword: string) => {
 
 const onRelationClear = () => {
   editFormData.hosStandardName = '';
+  editFormData.hosShortName = '';
+  editFormData.country = '';
+  editFormData.province = '';
+  editFormData.city = '';
 };
 
 const onRelationChange = (val: any) => {
   const opt = relationOptions.value.find((o) => o.value === val);
   if (opt && opt.item) {
     editFormData.hosStandardName = opt.item.hosStandardName || '';
+    editFormData.hosShortName = opt.item.hosShortName || '';
+    editFormData.country = opt.item.country || '';
+    editFormData.province = opt.item.province || '';
+    editFormData.city = opt.item.city || '';
   }
 };
 
-const confirmAddNewStandard = () => {
-  if (!editFormData.hosStandardName) {
-    MessagePlugin.warning('请填写标准名称');
-    return;
-  }
-  DialogPlugin.confirm({
-    header: '确认新增',
-    body: '确认要新增该研究中心标准名吗？',
-    confirmBtn: '确认新增',
-    cancelBtn: '取消',
-    onConfirm: () => {
-      handleAddNewStandard();
-    },
-  });
+const openAddModal = () => {
+  addFormData.hosStandardName = '';
+  addFormData.hosShortName = '';
+  addFormData.country = '';
+  addFormData.province = '';
+  addFormData.city = '';
+  addFormData.remark = '';
+  addModalVisible.value = true;
 };
 
-const handleAddNewStandard = async () => {
-  if (!editFormData.hosStandardName) {
+const submitAddStandard = async () => {
+  if (!addFormData.hosStandardName?.trim()) {
     MessagePlugin.warning('请填写标准名称');
     return;
   }
+  addLoading.value = true;
   try {
     const submitData: StandardHospitalDto = {
-      hosStandardName: editFormData.hosStandardName,
-      remark: editFormData.remark,
+      hosStandardName: addFormData.hosStandardName,
+      hosShortName: addFormData.hosShortName,
+      country: addFormData.country,
+      province: addFormData.province,
+      city: addFormData.city,
+      remark: addFormData.remark,
     };
     await hospitalApi.saveStandardHospital(submitData);
     MessagePlugin.success('新增成功');
+    addModalVisible.value = false;
 
-    // 刷新关联选项并选中新增的标准
-    const res = await hospitalApi.queryStandardList({
-      hosStandardName: editFormData.hosStandardName,
-      pageNum: 1,
-      pageSize: 50,
-    });
-    const opts = (res.data?.list || []).map((item: StandardHospitalDto) => ({
-      label: item.hosStandardName || '',
-      value: item.id as number,
-      item,
-    }));
-    relationOptions.value = opts;
-    const matched = opts.find((o: any) => o.item.hosStandardName === editFormData.hosStandardName);
+    // 刷新关联下拉选项，命中则自动选中新增的标准中心
+    await onSearchRelation(addFormData.hosStandardName);
+    const matched = (relationOptions.value as any).find(
+      (o: any) => o.item?.hosStandardName === addFormData.hosStandardName,
+    );
     if (matched) {
       editFormData.hosStandardId = matched.value;
       onRelationChange(matched.value);
     }
   } catch (e) {
     console.error(e);
+  } finally {
+    addLoading.value = false;
   }
 };
 
@@ -596,22 +665,22 @@ const splitModalVisible = ref(false);
 const splitLoading = ref(false);
 const splitFormData = reactive<{
   id?: number;
-  companyOriginName: string;
-  spiltNames: { companyOriginName: string }[];
+  hosOriginName: string;
+  spiltNames: { hosOriginName: string }[];
 }>({
   id: undefined,
-  companyOriginName: '',
-  spiltNames: [{ companyOriginName: '' }],
+  hosOriginName: '',
+  spiltNames: [{ hosOriginName: '' }],
 });
-const openSplitModal = (record: CleanCompanyDto) => {
+const openSplitModal = (record: HospitalCleanDto) => {
   splitFormData.id = record.id;
-  splitFormData.companyOriginName = record.companyOriginName || '';
-  splitFormData.spiltNames = [{ companyOriginName: '' }];
+  splitFormData.hosOriginName = record.hosOriginName || '';
+  splitFormData.spiltNames = [{ hosOriginName: '' }];
   splitModalVisible.value = true;
 };
 
 const addSplitName = () => {
-  splitFormData.spiltNames.push({ companyOriginName: '' });
+  splitFormData.spiltNames.push({ hosOriginName: '' });
 };
 
 const removeSplitName = (index: number) => {
@@ -620,7 +689,7 @@ const removeSplitName = (index: number) => {
 
 const submitSplit = async () => {
   const names = splitFormData.spiltNames
-    .map((item) => item.companyOriginName?.trim())
+    .map((item) => item.hosOriginName?.trim())
     .filter((name): name is string => !!name);
   if (!names.length) {
     MessagePlugin.warning('请至少填写一个拆分研究中心名称');
@@ -628,12 +697,12 @@ const submitSplit = async () => {
   }
   splitLoading.value = true;
   try {
-    const submitData: SplitCompanyDto = {
+    const submitData: SplitHospitalDto = {
       id: splitFormData.id,
-      companyOriginName: splitFormData.companyOriginName,
-      spiltNames: names.map((name) => ({ companyOriginName: name })),
+      hosOriginName: splitFormData.hosOriginName,
+      spiltNames: names.map((name) => ({ hosOriginName: name })),
     };
-    await companyApi.spiltNames(submitData);
+    await hospitalApi.spiltNames(submitData);
     MessagePlugin.success('拆分成功');
     splitModalVisible.value = false;
     fetchData();

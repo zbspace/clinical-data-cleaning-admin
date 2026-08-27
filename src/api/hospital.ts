@@ -5,6 +5,7 @@ import type {
   HospitalQueryParam,
   HospitalCleanDto,
   StandardHospitalDto,
+  SplitHospitalDto,
 } from './types/hospital';
 //#endregion
 
@@ -68,6 +69,11 @@ export const hospitalApi = {
       '/admin/hospital/updateCleanStatus',
       data,
     );
+  },
+
+  /** 源名称拆分 */
+  spiltNames(data: SplitHospitalDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/hospital/spiltNames', data);
   },
 };
 //#endregion
