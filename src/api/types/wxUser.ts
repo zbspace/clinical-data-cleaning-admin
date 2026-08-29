@@ -47,6 +47,7 @@ export interface WxUserDto {
   vipDesc?: string;
   vipEndTime?: string;
   wxNickname?: string;
+  vipCode?: number;
 }
 
 export interface EditVipParam {

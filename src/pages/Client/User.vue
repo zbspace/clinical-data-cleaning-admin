@@ -245,7 +245,7 @@ const openEditModal = (record: WxUserDto) => {
   currentEditRecord.value = record;
   editFormData.id = record.id;
   // 响应无 vipCode 字段，根据是否存在到期时间推断用户类型
-  editFormData.vipCode = record.vipEndTime ? 100 : 0;
+  editFormData.vipCode = record.vipCode;
   editFormData.vipBeginTime = record.vipBeginTime ? moment(record.vipBeginTime).format('YYYY-MM-DD HH:mm:ss') : '';
   editFormData.vipEndTime = record.vipEndTime ? moment(record.vipEndTime).format('YYYY-MM-DD HH:mm:ss') : '';
   editModalVisible.value = true;
