@@ -18,6 +18,9 @@ export interface HospitalCleanDto {
   remark?: string;
   updateTime?: string;
   updater?: string;
+  country?: string;
+  province?: string;
+  city?: string;
 }
 
 export interface StandardHospitalDto {

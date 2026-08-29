@@ -311,12 +311,15 @@
 | code                                    |                                        | integer(int32)               | integer(int32)               |
 | data                                    |                                        | BasePageVo«HospitalCleanDto» | BasePageVo«HospitalCleanDto» |
 | &emsp;&emsp;list                        |                                        | array                        | HospitalCleanDto             |
+| &emsp;&emsp;&emsp;&emsp;city            | 市                                     | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;cleanStatus     | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 | integer                      |                              |
 | &emsp;&emsp;&emsp;&emsp;cnt             | 统计次数                               | integer                      |                              |
+| &emsp;&emsp;&emsp;&emsp;country         | 国家                                   | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;hosOriginName   | 原始名称                               | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;hosStandardId   | 标准公司ID                             | integer                      |                              |
 | &emsp;&emsp;&emsp;&emsp;hosStandardName | 标准名                                 | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;id              | id                                     | integer                      |                              |
+| &emsp;&emsp;&emsp;&emsp;province        | 省                                     | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;remark          | 备注                                   | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;updateTime      | 操作时间                               | string                       |                              |
 | &emsp;&emsp;&emsp;&emsp;updater         | 操作人                                 | string                       |                              |
@@ -332,12 +335,15 @@
 	"data": {
 		"list": [
 			{
+				"city": "",
 				"cleanStatus": 0,
 				"cnt": 0,
+				"country": "",
 				"hosOriginName": "",
 				"hosStandardId": 0,
 				"hosStandardName": "",
 				"id": 0,
+				"province": "",
 				"remark": "",
 				"updateTime": "",
 				"updater": ""
@@ -481,6 +487,7 @@
 | &emsp;&emsp;&emsp;&emsp;city            | 市                                     | string                          |                                 |
 | &emsp;&emsp;&emsp;&emsp;cleanStatus     | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 | integer                         |                                 |
 | &emsp;&emsp;&emsp;&emsp;cnt             | 统计次数                               | integer                         |                                 |
+| &emsp;&emsp;&emsp;&emsp;country         | 国家                                   | string                          |                                 |
 | &emsp;&emsp;&emsp;&emsp;hosShortName    | 简称                                   | string                          |                                 |
 | &emsp;&emsp;&emsp;&emsp;hosStandardName | 标准名                                 | string                          |                                 |
 | &emsp;&emsp;&emsp;&emsp;id              | id                                     | integer                         |                                 |
@@ -503,6 +510,7 @@
 				"city": "",
 				"cleanStatus": 0,
 				"cnt": 0,
+				"country": "",
 				"hosShortName": "",
 				"hosStandardName": "",
 				"id": 0,
@@ -535,12 +543,15 @@
 
 ```javascript
 {
+  "city": "",
   "cleanStatus": 0,
   "cnt": 0,
+  "country": "",
   "hosOriginName": "",
   "hosStandardId": 0,
   "hosStandardName": "",
   "id": 0,
+  "province": "",
   "remark": "",
   "updateTime": "",
   "updater": ""
@@ -553,12 +564,15 @@
 | --------------------------- | -------------------------------------- | -------- | -------- | ----------------- | ---------------- |
 | Authorization               | 用户登录令牌                           | header   | true     |                   |                  |
 | dto                         | dto                                    | body     | true     | HospitalCleanDto  | HospitalCleanDto |
+| &emsp;&emsp;city            | 市                                     |          | false    | string            |                  |
 | &emsp;&emsp;cleanStatus     | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)    |                  |
 | &emsp;&emsp;cnt             | 统计次数                               |          | false    | integer(int32)    |                  |
+| &emsp;&emsp;country         | 国家                                   |          | false    | string            |                  |
 | &emsp;&emsp;hosOriginName   | 原始名称                               |          | false    | string            |                  |
 | &emsp;&emsp;hosStandardId   | 标准公司ID                             |          | false    | integer(int64)    |                  |
 | &emsp;&emsp;hosStandardName | 标准名                                 |          | false    | string            |                  |
 | &emsp;&emsp;id              | id                                     |          | false    | integer(int64)    |                  |
+| &emsp;&emsp;province        | 省                                     |          | false    | string            |                  |
 | &emsp;&emsp;remark          | 备注                                   |          | false    | string            |                  |
 | &emsp;&emsp;updateTime      | 操作时间                               |          | false    | string(date-time) |                  |
 | &emsp;&emsp;updater         | 操作人                                 |          | false    | string            |                  |
@@ -610,6 +624,7 @@
   "city": "",
   "cleanStatus": 0,
   "cnt": 0,
+  "country": "",
   "hosShortName": "",
   "hosStandardName": "",
   "id": 0,
@@ -629,6 +644,7 @@
 | &emsp;&emsp;city            | 市                                     |          | false    | string              |                     |
 | &emsp;&emsp;cleanStatus     | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)      |                     |
 | &emsp;&emsp;cnt             | 统计次数                               |          | false    | integer(int32)      |                     |
+| &emsp;&emsp;country         | 国家                                   |          | false    | string              |                     |
 | &emsp;&emsp;hosShortName    | 简称                                   |          | false    | string              |                     |
 | &emsp;&emsp;hosStandardName | 标准名                                 |          | false    | string              |                     |
 | &emsp;&emsp;id              | id                                     |          | false    | integer(int64)      |                     |
@@ -636,72 +652,6 @@
 | &emsp;&emsp;remark          | 备注                                   |          | false    | string              |                     |
 | &emsp;&emsp;updateTime      | 操作时间                               |          | false    | string(date-time)   |                     |
 | &emsp;&emsp;updater         | 操作人                                 |          | false    | string              |                     |
-
-**响应状态**:
-
-| 状态码 | 说明         | schema          |
-| ------ | ------------ | --------------- |
-| 200    | OK           | Result«boolean» |
-| 201    | Created      |                 |
-| 401    | Unauthorized |                 |
-| 403    | Forbidden    |                 |
-| 404    | Not Found    |                 |
-
-**响应参数**:
-
-| 参数名称 | 参数说明 | 类型           | schema         |
-| -------- | -------- | -------------- | -------------- |
-| code     |          | integer(int32) | integer(int32) |
-| data     |          | boolean        |                |
-| msg      |          | string         |                |
-
-**响应示例**:
-
-```javascript
-{
-	"code": 0,
-	"data": true,
-	"msg": ""
-}
-```
-
-## 源名称拆分
-
-**接口地址**:`/lyqAdmin/api/admin/hospital/spiltNames`
-
-**请求方式**:`POST`
-
-**请求数据类型**:`application/json`
-
-**响应数据类型**:`*/*`
-
-**接口描述**:
-
-**请求示例**:
-
-```javascript
-{
-  "hosOriginName": "",
-  "id": 0,
-  "spiltNames": [
-    {
-      "hosOriginName": "",
-      "id": 0,
-      "spiltNames": []
-    }
-  ]
-}
-```
-
-**请求参数**:
-
-| 参数名称                  | 参数说明     | 请求类型 | 是否必须 | 数据类型         | schema           |
-| ------------------------- | ------------ | -------- | -------- | ---------------- | ---------------- |
-| Authorization             | 用户登录令牌 | header   | true     |                  |                  |
-| dto                       | dto          | body     | true     | SplitHospitalDto | SplitHospitalDto |
-| &emsp;&emsp;hosOriginName | 医院原始名称 |          | false    | string           |                  |
-| &emsp;&emsp;id            | id           |          | false    | integer(int64)   |                  |
-| &emsp;&emsp;spiltNames    | 医院拆分名称 |          | false    | array            | SplitHospitalDto |
 
 **响应状态**:
 

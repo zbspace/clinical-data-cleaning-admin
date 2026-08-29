@@ -87,30 +87,47 @@
     <t-dialog
       v-model:visible="editModalVisible"
       :header="currentEditRecord ? '编辑' : '新增'"
-      width="500px"
+      width="720px"
       :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <t-form ref="editFormRef" :data="editFormData" label-width="120" label-align="left">
-        <t-form-item label="标准名称" name="hosStandardName">
-          <t-input v-model="editFormData.hosStandardName" />
-        </t-form-item>
-        <t-form-item label="简称" name="hosShortName">
-          <t-input v-model="editFormData.hosShortName" />
-        </t-form-item>
-        <t-form-item label="国家" name="country">
-          <t-input v-model="editFormData.country" />
-        </t-form-item>
-        <t-form-item label="省份" name="province">
-          <t-input v-model="editFormData.province" />
-        </t-form-item>
-        <t-form-item label="城市" name="city">
-          <t-input v-model="editFormData.city" />
-        </t-form-item>
-        <t-form-item label="备注" name="remark">
-          <t-textarea v-model="editFormData.remark" />
-        </t-form-item>
+      <t-form ref="editFormRef" :data="editFormData" label-width="calc(2em + 40px)">
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; align-items: start">
+          <t-form-item label="标准名称" name="hosStandardName" style="grid-column: 1 / -1">
+            <t-input v-model="editFormData.hosStandardName" />
+          </t-form-item>
+          <t-form-item label="简称" name="hosShortName" style="grid-column: 1 / -1">
+            <t-input v-model="editFormData.hosShortName" />
+          </t-form-item>
+          <t-form-item label="国家" name="country">
+            <t-select
+              v-model="editFormData.country"
+              placeholder="请选择"
+              :options="countryOptions"
+              filterable
+              creatable
+            >
+            </t-select>
+          </t-form-item>
+          <t-form-item label="省份" name="province">
+            <t-select
+              v-model="editFormData.province"
+              placeholder="请选择"
+              :options="provinceOptions"
+              filterable
+              creatable
+            >
+            </t-select>
+          </t-form-item>
+          <t-form-item label="城市" name="city">
+            <t-select v-model="editFormData.city" placeholder="请选择" :options="cityOptions" filterable creatable>
+            </t-select>
+          </t-form-item>
+          <t-form-item label="备注" name="remark" style="grid-column: 1 / -1">
+            <t-textarea v-model="editFormData.remark" />
+          </t-form-item>
+        </div>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -125,6 +142,9 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { hospitalApi } from '@/api';
 import type { StandardHospitalDto } from '@/api/types/hospital';
+import { createEnumsToOptions } from '@/utils/enums';
+import { COUNTRY_LIST, PROVINCE_LIST, CITY_LIST } from '@/utils/address';
+
 //#endregion
 
 //#region State
@@ -143,6 +163,10 @@ const pagination = reactive({
 const formData = reactive<Record<string, any>>({
   hosStandardName: '',
 });
+
+const countryOptions = createEnumsToOptions(COUNTRY_LIST);
+const provinceOptions = createEnumsToOptions(PROVINCE_LIST);
+const cityOptions = createEnumsToOptions(CITY_LIST);
 
 // 源数据弹窗
 const sourceModalVisible = ref(false);

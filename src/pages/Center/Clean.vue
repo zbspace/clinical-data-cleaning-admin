@@ -68,8 +68,6 @@
       <template #operation="{ row }">
         <t-space size="4">
           <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
-          &emsp;
-          <t-button theme="primary" @click="openSplitModal(row)"> 拆分 </t-button>
         </t-space>
       </template>
 
@@ -109,37 +107,52 @@
     <t-dialog
       v-model:visible="editModalVisible"
       header="关联"
-      width="600px"
+      width="760px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
       @close="onEditModalClose"
     >
-      <t-form ref="editFormRef" :data="editFormData" label-width="140" label-align="left">
+      <t-form ref="editFormRef" :data="editFormData" label-width="calc(2em + 40px)">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
           <p style="margin: 0 0 8px 0"><strong>原始名称：</strong>{{ currentEditRecord?.hosOriginName }}</p>
+          <div style="display: flex; gap: 10px">
+            <span> {{ currentEditRecord?.country || '-' }} </span>
+            <span> {{ currentEditRecord?.province || '-' }} </span>
+            <span> {{ currentEditRecord?.city || '-' }} </span>
+          </div>
         </div>
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
           <!--#region 关联搜索 -->
-          <t-form-item label="关联标准研究中心：" name="hosStandardId" style="margin-bottom: 0">
+          <t-form-item
+            label="关联标准研究中心："
+            name="hosStandardId"
+            style="margin-bottom: 0"
+            label-width="calc(2em + 100px)"
+          >
             <t-select
               v-model="editFormData.hosStandardId"
               :options="relationOptions"
               filterable
               :loading="searchLoading"
               placeholder="请输入搜索标准研究中心"
-              style="width: 360px"
               @search="onSearchRelation"
               @change="onRelationChange"
               @clear="onRelationClear"
               clearable
             />
-            <t-button theme="primary" style="margin-left: 20px" @click="openAddModal"> 新增 </t-button>
+            <t-button
+              theme="primary"
+              style="margin-left: 20px"
+              @click="openAddModal(currentEditRecord || ({} as HospitalCleanDto))"
+            >
+              新增
+            </t-button>
           </t-form-item>
           <!--#endregion-->
         </div>
-        <div style="margin-top: 16px">
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; align-items: start">
           <t-form-item label="标准名称" name="hosStandardName">
-            <t-input v-model="editFormData.hosStandardName" :disabled="!!editFormData.hosStandardId" />
+            <t-input v-model="editFormData.hosStandardName" disabled />
           </t-form-item>
           <t-form-item label="简称" name="hosShortName">
             <t-input v-model="editFormData.hosShortName" disabled />
@@ -161,8 +174,8 @@
               clearable
             />
           </t-form-item>
-          <t-form-item label="备注" name="remark">
-            <t-textarea v-model="editFormData.remark" />
+          <t-form-item label="备注" name="remark" style="grid-column: 1 / -1">
+            <t-textarea v-model="editFormData.remark" placeholder="请输入备注" />
           </t-form-item>
         </div>
       </t-form>
@@ -173,65 +186,44 @@
     <t-dialog
       v-model:visible="addModalVisible"
       header="新增标准名中心"
-      width="600px"
+      width="700px"
       :confirm-btn="{ content: '保存', theme: 'primary', loading: addLoading }"
       @confirm="submitAddStandard"
+      placement="center"
     >
-      <t-form :data="addFormData" label-width="120px" label-align="left" style="padding: 8px 0">
-        <t-form-item label="标准名称" name="hosStandardName">
-          <t-input v-model="addFormData.hosStandardName" placeholder="请输入标准名称" clearable />
-        </t-form-item>
-        <t-form-item label="简称" name="hosShortName">
-          <t-input v-model="addFormData.hosShortName" placeholder="请输入简称" clearable />
-        </t-form-item>
-        <t-form-item label="国家" name="country">
-          <t-input v-model="addFormData.country" placeholder="请输入国家" clearable />
-        </t-form-item>
-        <t-form-item label="省份" name="province">
-          <t-input v-model="addFormData.province" placeholder="请输入省份" clearable />
-        </t-form-item>
-        <t-form-item label="城市" name="city">
-          <t-input v-model="addFormData.city" placeholder="请输入城市" clearable />
-        </t-form-item>
-        <t-form-item label="备注" name="remark">
-          <t-textarea v-model="addFormData.remark" placeholder="请输入备注" :maxlength="200" show-word-limit />
-        </t-form-item>
-      </t-form>
-    </t-dialog>
-    <!--#endregion-->
-
-    <!--#region 拆分弹窗 -->
-    <t-dialog
-      v-model:visible="splitModalVisible"
-      header="源名称拆分"
-      width="600px"
-      :confirm-btn="{ content: '保存', theme: 'primary', loading: splitLoading }"
-      @confirm="submitSplit"
-      @close="onSplitModalClose"
-    >
-      <t-form label-width="120px" label-align="left" style="padding: 8px 0">
-        <t-form-item label="研究中心名(源数据)" name="hosOriginName">
-          <t-input v-model="splitFormData.hosOriginName" disabled />
-        </t-form-item>
-        <t-form-item label="拆分研究中心名称" name="spiltNames" style="align-items: flex-start">
-          <div style="width: 100%">
-            <div
-              v-for="(item, index) in splitFormData.spiltNames"
-              :key="index"
-              style="display: flex; gap: 8px; margin-bottom: 8px"
+      <t-form :data="addFormData" label-width="70px" style="padding: 8px 0">
+        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; align-items: start">
+          <t-form-item label="标准名称" name="hosStandardName" style="grid-column: 1 / -1">
+            <t-input v-model="addFormData.hosStandardName" placeholder="请输入标准名称" clearable />
+          </t-form-item>
+          <t-form-item label="简称" name="hosShortName">
+            <t-input v-model="addFormData.hosShortName" placeholder="请输入简称" clearable />
+          </t-form-item>
+          <t-form-item label="国家" name="country">
+            <!-- <t-input v-model="addFormData.country" placeholder="请输入国家" clearable /> -->
+            <t-select v-model="addFormData.country" placeholder="请选择" :options="countryOptions" filterable creatable>
+            </t-select>
+          </t-form-item>
+          <t-form-item label="省份" name="province">
+            <!-- <t-input v-model="addFormData.province" placeholder="请输入省份" clearable /> -->
+            <t-select
+              v-model="addFormData.province"
+              placeholder="请选择"
+              :options="provinceOptions"
+              filterable
+              creatable
             >
-              <t-input v-model="item.hosOriginName" placeholder="请输入拆分后的研究中心名称" style="flex: 1" />
-              <t-button theme="danger" variant="text" @click="removeSplitName(index)">
-                <template #icon><t-icon name="delete" /></template>
-                删除
-              </t-button>
-            </div>
-            <t-button theme="primary" variant="outline" @click="addSplitName">
-              <template #icon><t-icon name="add" /></template>
-              增加
-            </t-button>
-          </div>
-        </t-form-item>
+            </t-select>
+          </t-form-item>
+          <t-form-item label="城市" name="city">
+            <!-- <t-input v-model="addFormData.city" placeholder="请输入城市" clearable /> -->
+            <t-select v-model="addFormData.city" placeholder="请选择" :options="cityOptions" filterable creatable>
+            </t-select>
+          </t-form-item>
+          <t-form-item label="备注" name="remark" style="grid-column: 1 / -1">
+            <t-textarea v-model="addFormData.remark" placeholder="请输入备注" />
+          </t-form-item>
+        </div>
       </t-form>
     </t-dialog>
     <!--#endregion-->
@@ -247,6 +239,8 @@ import { MessagePlugin, DialogPlugin } from 'tdesign-vue-next';
 import moment from 'moment';
 import { hospitalApi } from '@/api';
 import type { HospitalCleanDto, StandardHospitalDto, SplitHospitalDto } from '@/api/types/hospital';
+import { COUNTRY_LIST, PROVINCE_LIST, CITY_LIST } from '@/utils/address';
+import { createEnumsToOptions } from '@/utils/enums';
 //#endregion
 
 //#region Constants
@@ -261,6 +255,10 @@ const statusOptions = [
 const formRef = ref();
 const editFormRef = ref();
 const loading = ref(false);
+
+const countryOptions = createEnumsToOptions(COUNTRY_LIST);
+const provinceOptions = createEnumsToOptions(PROVINCE_LIST);
+const cityOptions = createEnumsToOptions(CITY_LIST);
 
 // 表格最大高度，根据 .search-card 动态计算
 const tableMaxHeight = ref('calc(100vh - 320px)');
@@ -376,7 +374,8 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 160,
+    align: 'center' as const,
+    width: 100,
     fixed: 'right' as const,
   },
 ];
@@ -587,12 +586,12 @@ const onRelationChange = (val: any) => {
   }
 };
 
-const openAddModal = () => {
-  addFormData.hosStandardName = '';
-  addFormData.hosShortName = '';
-  addFormData.country = '';
-  addFormData.province = '';
-  addFormData.city = '';
+const openAddModal = (record?: HospitalCleanDto) => {
+  addFormData.hosStandardName = record?.hosOriginName || '';
+  addFormData.hosShortName = record?.hosOriginName || '';
+  addFormData.country = record?.country || '';
+  addFormData.province = record?.province || '';
+  addFormData.city = record?.city || '';
   addFormData.remark = '';
   addModalVisible.value = true;
 };
@@ -657,64 +656,6 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
-};
-//#endregion
-
-//#region 拆分
-const splitModalVisible = ref(false);
-const splitLoading = ref(false);
-const splitFormData = reactive<{
-  id?: number;
-  hosOriginName: string;
-  spiltNames: { hosOriginName: string }[];
-}>({
-  id: undefined,
-  hosOriginName: '',
-  spiltNames: [{ hosOriginName: '' }],
-});
-const openSplitModal = (record: HospitalCleanDto) => {
-  splitFormData.id = record.id;
-  splitFormData.hosOriginName = record.hosOriginName || '';
-  splitFormData.spiltNames = [{ hosOriginName: '' }];
-  splitModalVisible.value = true;
-};
-
-const addSplitName = () => {
-  splitFormData.spiltNames.push({ hosOriginName: '' });
-};
-
-const removeSplitName = (index: number) => {
-  splitFormData.spiltNames.splice(index, 1);
-};
-
-const submitSplit = async () => {
-  const names = splitFormData.spiltNames
-    .map((item) => item.hosOriginName?.trim())
-    .filter((name): name is string => !!name);
-  if (!names.length) {
-    MessagePlugin.warning('请至少填写一个拆分研究中心名称');
-    return;
-  }
-  splitLoading.value = true;
-  try {
-    const submitData: SplitHospitalDto = {
-      id: splitFormData.id,
-      hosOriginName: splitFormData.hosOriginName,
-      spiltNames: names.map((name) => ({ hosOriginName: name })),
-    };
-    await hospitalApi.spiltNames(submitData);
-    MessagePlugin.success('拆分成功');
-    splitModalVisible.value = false;
-    fetchData();
-  } catch (e) {
-    console.error(e);
-  } finally {
-    splitLoading.value = false;
-  }
-};
-
-const onSplitModalClose = () => {
-  splitModalVisible.value = false;
 };
 //#endregion
 
