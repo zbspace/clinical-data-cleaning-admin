@@ -520,15 +520,14 @@ const openEditModal = (record: HospitalCleanDto) => {
   editFormData.cleanStatus = record.cleanStatus;
 
   // 若原数据已关联标准中心，回显其简称/国家/省市信息
-  const recordAny = record as any;
-  editFormData.hosShortName = recordAny.hosShortName || '';
-  editFormData.country = recordAny.country || '';
-  editFormData.province = recordAny.province || '';
-  editFormData.city = recordAny.city || '';
-
-  if (record.hosStandardId) {
-    editFormData.hosStandardId = record.hosStandardId;
-  }
+  // if (record.hosStandardId) {
+  //   const recordAny = record as any;
+  //   editFormData.hosShortName = recordAny.hosShortName || '';
+  //   editFormData.country = recordAny.country || '';
+  //   editFormData.province = recordAny.province || '';
+  //   editFormData.city = recordAny.city || '';
+  //   editFormData.hosStandardId = record.hosStandardId;
+  // }
 
   if (record.hosStandardName) {
     nextTick(() => {
