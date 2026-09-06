@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build:prod": "NODE_OPTIONS=--max-old-space-size=1024 vue-tsc --noEmit && vite build",
-    "build:dev": "NODE_OPTIONS=--max-old-space-size=1024 vue-tsc --noEmit && vite build --mode development",
+    "build:dev": "NODE_OPTIONS=--max-old-space-size=1024 vue-tsc --noEmit && vite build --mode test",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,ts,vue,css,md,json}\""
   },

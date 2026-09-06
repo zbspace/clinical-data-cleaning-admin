@@ -723,7 +723,7 @@ const onEditStandardModalClose = () => {
 const onSearchMerge = async (keyword = '') => {
   mergeSearchLoading.value = true;
   try {
-    const res = await companyApi.queryParentData({ searchKey: keyword, pageNum: 1, pageSize: 50 });
+    const res = await companyApi.queryByName({ searchKey: keyword, pageNum: 1, pageSize: 50 });
     mergeOptions.value = (res.data?.list || [])
       .filter((item: any) => item.standardId != null || item.id != null)
       .map((item: any) => ({
@@ -757,10 +757,14 @@ const submitMerge = async () => {
   mergeLoading.value = true;
   try {
     await companyApi.parentCompanyMerge({
-      sourceParentId: mergeFormData.sourceParentId,
-      sourceParentName: mergeFormData.sourceParentName,
-      targetParentId: target.value,
-      targetParentName: target.label,
+      // sourceParentId: mergeFormData.sourceParentId,
+      // sourceParentName: mergeFormData.sourceParentName,
+      // targetParentId: target.value,
+      // targetParentName: target.label,
+      sourceStandardId: mergeFormData.sourceParentId,
+      sourceStandardName: mergeFormData.sourceParentName,
+      targetStandardId: target.value,
+      targetStandardName: target.label,
     });
     MessagePlugin.success('合并成功');
     mergeModalVisible.value = false;

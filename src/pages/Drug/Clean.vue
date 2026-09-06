@@ -118,7 +118,7 @@
         </p>
         <p style="margin: 0">
           <strong>药品类型：</strong>
-          {{ currentEditRecord?.drugType || '化学药物' }}
+          {{ currentEditRecord?.drugType || '-' }}
         </p>
       </div>
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">

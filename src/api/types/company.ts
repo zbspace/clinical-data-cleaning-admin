@@ -96,9 +96,9 @@ export interface ParentCompanyDto {
 }
 
 export interface ParentCompanyMergeDto {
-  sourceParentId?: number;
-  sourceParentName?: string;
-  targetParentId?: number;
-  targetParentName?: string;
+  sourceStandardId?: number;
+  sourceStandardName?: string;
+  targetStandardId?: number;
+  targetStandardName?: string;
 }
 //#endregion
