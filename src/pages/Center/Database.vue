@@ -57,7 +57,10 @@
       @page-change="onPageChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <div style="display: flex; gap: 8px">
+          <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+          <t-button theme="primary" @click="openMergeModal(row)"> 合并 </t-button>
+        </div>
       </template>
     </t-table>
     <!--#endregion-->
@@ -131,6 +134,32 @@
       </t-form>
     </t-dialog>
     <!--#endregion-->
+
+    <!--#region 合并弹窗 -->
+    <t-dialog
+      v-model:visible="mergeModalVisible"
+      header="中心合并"
+      width="520px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: mergeLoading }"
+      @confirm="submitMerge"
+    >
+      <t-form :data="mergeFormData" label-width="120px" label-align="left" style="padding: 8px 0">
+        <t-form-item label="中心名称" name="sourceStandardName">
+          <t-input :value="mergeFormData.sourceStandardName" disabled />
+        </t-form-item>
+        <t-form-item label="合并到" name="targetStandardId">
+          <t-select
+            v-model="mergeFormData.targetStandardId"
+            :options="mergeOptions"
+            filterable
+            :loading="mergeSearchLoading"
+            placeholder="请输入搜索合并到的中心"
+            @search="(keyword: string) => onSearchMerge(keyword)"
+          />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
   </t-card>
   <!--#endregion-->
 </template>
@@ -192,6 +221,19 @@ const editFormData = reactive<Record<string, any>>({
   city: '',
   remark: '',
 });
+
+// 合并弹窗
+const mergeModalVisible = ref(false);
+const mergeLoading = ref(false);
+const mergeSearchLoading = ref(false);
+const mergeOptions = ref<{ label: string; value: number; item: any }[]>([]);
+const mergeFormData = reactive<Record<string, any>>({
+  sourceStandardId: undefined,
+  sourceStandardName: '',
+  targetStandardId: undefined,
+  targetStandardName: '',
+});
+
 //#endregion
 
 //#region Columns Definition
@@ -232,7 +274,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 170,
     fixed: 'right' as const,
   },
 ];
@@ -358,6 +400,64 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
+};
+//#endregion
+
+//#region Merge Modal
+const onSearchMerge = async (keyword = '') => {
+  mergeSearchLoading.value = true;
+  try {
+    const res = await hospitalApi.queryStandardList({
+      hosStandardName: keyword,
+      pageNum: 1,
+      pageSize: 50,
+    });
+    mergeOptions.value = (res.data?.list || [])
+      .filter((item: StandardHospitalDto) => item.id !== mergeFormData.sourceStandardId)
+      .map((item: StandardHospitalDto) => ({
+        label: item.hosStandardName || '',
+        value: item.id as number,
+        item,
+      }));
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeSearchLoading.value = false;
+  }
+};
+
+const openMergeModal = (record: StandardHospitalDto) => {
+  mergeFormData.sourceStandardId = record.id;
+  mergeFormData.sourceStandardName = record.hosStandardName || '';
+  mergeFormData.targetStandardId = undefined;
+  mergeFormData.targetStandardName = '';
+  mergeOptions.value = [];
+  mergeModalVisible.value = true;
+};
+
+const submitMerge = async () => {
+  if (!mergeFormData.targetStandardId) {
+    MessagePlugin.warning('请选择合并到的中心');
+    return;
+  }
+  const target = mergeOptions.value.find((o) => o.value === mergeFormData.targetStandardId);
+  if (!target) return;
+  mergeLoading.value = true;
+  try {
+    await hospitalApi.standardHospitalMerge({
+      sourceStandardId: mergeFormData.sourceStandardId,
+      sourceStandardName: mergeFormData.sourceStandardName,
+      targetStandardId: target.value,
+      targetStandardName: target.label,
+    });
+    MessagePlugin.success('合并成功');
+    mergeModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeLoading.value = false;
+  }
 };
 //#endregion
 

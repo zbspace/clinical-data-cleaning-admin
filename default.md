@@ -681,6 +681,68 @@
 }
 ```
 
+## 标准中心合并(转移)
+
+**接口地址**:`/lyqAdmin/api/admin/hospital/standardHospitalMerge`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "sourceStandardId": 0,
+  "sourceStandardName": "",
+  "targetStandardId": 0,
+  "targetStandardName": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                       | 参数说明                     | 请求类型 | 是否必须 | 数据类型                 | schema                   |
+| ------------------------------ | ---------------------------- | -------- | -------- | ------------------------ | ------------------------ |
+| Authorization                  | 用户登录令牌                 | header   | true     |                          |                          |
+| dto                            | dto                          | body     | true     | StandardHospitalMergeDto | StandardHospitalMergeDto |
+| &emsp;&emsp;sourceStandardId   | 来源ID(需要合并的中心)       |          | false    | integer(int64)           |                          |
+| &emsp;&emsp;sourceStandardName | 来源公司名称(需要合并的中心) |          | false    | string                   |                          |
+| &emsp;&emsp;targetStandardId   | 目的ID(合并后的中心)         |          | false    | integer(int64)           |                          |
+| &emsp;&emsp;targetStandardName | 目的公司名称(合并后的中心)   |          | false    | string                   |                          |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 ## 修改清洗状态
 
 **接口地址**:`/lyqAdmin/api/admin/hospital/updateCleanStatus`
@@ -2179,55 +2241,55 @@
 
 **响应参数**:
 
-| 参数名称                                          | 参数说明                             | 类型                  | schema                |
-| ------------------------------------------------- | ------------------------------------ | --------------------- | --------------------- |
-| code                                              |                                      | integer(int32)        | integer(int32)        |
-| data                                              |                                      | BasePageVo«WxUserDto» | BasePageVo«WxUserDto» |
-| &emsp;&emsp;list                                  |                                      | array                 | WxUserDto             |
-| &emsp;&emsp;&emsp;&emsp;authDto                   | 单个小程序授权信息                   | WxUserAuthDto         | WxUserAuthDto         |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;authDtoList               | 多个小程序授权信息                   | array                 | WxUserAuthDto         |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                      | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;avatarUrl                 | 用户头像URL                          | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;city                      | 市                                   | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;createTime                | 创建时间(首次登录时间)               | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;enable                    | 是否可用 0-不可用，1-可用            | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;id                        | 主键ID                               | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;lastLoginTime             | 最后登录时间                         | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;levelCd                   | 会员等级                             | integer               |                       |
-| &emsp;&emsp;&emsp;&emsp;nickname                  | 用户昵称                             | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;openid                    | 微信小程序唯一标识（每个小程序独立） | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;phone                     | 用户手机号                           | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;province                  | 省                                   | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;unionid                   | 微信开放平台唯一标识（多端统一）     | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;userApps                  | 使用小程序信息                       | array                 | WxAppDto              |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appName       |                                      | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;userRole                  | 用户角色                             | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;username                  | 账号                                 | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;vipBeginTime              | 会员开始时间                         | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;vipDesc                   | 会员描述                             | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;vipEndTime                | 会员结束时间                         | string                |                       |
-| &emsp;&emsp;&emsp;&emsp;wxNickname                | 微信昵称                             | string                |                       |
-| &emsp;&emsp;pages                                 |                                      | integer(int32)        |                       |
-| &emsp;&emsp;total                                 |                                      | integer(int64)        |                       |
-| msg                                               |                                      | string                |                       |
+| 参数名称                                          | 参数说明                                  | 类型                  | schema                |
+| ------------------------------------------------- | ----------------------------------------- | --------------------- | --------------------- |
+| code                                              |                                           | integer(int32)        | integer(int32)        |
+| data                                              |                                           | BasePageVo«WxUserDto» | BasePageVo«WxUserDto» |
+| &emsp;&emsp;list                                  |                                           | array                 | WxUserDto             |
+| &emsp;&emsp;&emsp;&emsp;authDto                   | 单个小程序授权信息                        | WxUserAuthDto         | WxUserAuthDto         |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;authDtoList               | 多个小程序授权信息                        | array                 | WxUserAuthDto         |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authBeginTime |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authDays      |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authEndTime   |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;authLevel     |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;id            |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;levelCd       |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;unionId       |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;wxUserId      |                                           | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;avatarUrl                 | 用户头像URL                               | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;city                      | 市                                        | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;createTime                | 创建时间(首次登录时间)                    | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;enable                    | 是否可用 0-不可用，1-可用                 | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;id                        | 主键ID                                    | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;lastLoginTime             | 最后登录时间                              | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;nickname                  | 用户昵称                                  | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;openid                    | 微信小程序唯一标识（每个小程序独立）      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;phone                     | 用户手机号                                | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;province                  | 省                                        | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;unionid                   | 微信开放平台唯一标识（多端统一）          | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;userApps                  | 使用小程序信息                            | array                 | WxAppDto              |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appId         |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;appName       |                                           | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;userRole                  | 用户角色                                  | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;username                  | 账号                                      | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipBeginTime              | 会员开始时间                              | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipCode                   | 会员编码 0-普通用户 1-VIP试用,100-VIP用户 | integer               |                       |
+| &emsp;&emsp;&emsp;&emsp;vipDesc                   | 会员描述                                  | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;vipEndTime                | 会员结束时间                              | string                |                       |
+| &emsp;&emsp;&emsp;&emsp;wxNickname                | 微信昵称                                  | string                |                       |
+| &emsp;&emsp;pages                                 |                                           | integer(int32)        |                       |
+| &emsp;&emsp;total                                 |                                           | integer(int64)        |                       |
+| msg                                               |                                           | string                |                       |
 
 **响应示例**:
 
@@ -2267,7 +2329,6 @@
 				"enable": 0,
 				"id": 0,
 				"lastLoginTime": "",
-				"levelCd": 0,
 				"nickname": "",
 				"openid": "",
 				"phone": "",
@@ -2282,6 +2343,7 @@
 				"userRole": "",
 				"username": "",
 				"vipBeginTime": "",
+				"vipCode": 0,
 				"vipDesc": "",
 				"vipEndTime": "",
 				"wxNickname": ""
@@ -2338,7 +2400,7 @@
 | &emsp;&emsp;id             | 申请记录id                               |          | false    | integer(int32)    |                |
 | &emsp;&emsp;userCompany    | 用户公司                                 |          | false    | string            |                |
 | &emsp;&emsp;userId         | 用户id                                   |          | false    | integer(int64)    |                |
-| &emsp;&emsp;userName       | 用户姓名                                 |          | false    | string            |                |
+| &emsp;&emsp;userName       | 申请填写的用户姓名                       |          | false    | string            |                |
 | &emsp;&emsp;userPhone      | 用户手机号                               |          | false    | string            |                |
 | &emsp;&emsp;userPosition   | 用户职位                                 |          | false    | string            |                |
 
@@ -2410,34 +2472,35 @@
 
 **响应状态**:
 
-| 状态码 | 说明         | schema                             |
-| ------ | ------------ | ---------------------------------- |
-| 200    | OK           | Result«BasePageVo«VipApplication»» |
-| 201    | Created      |                                    |
-| 401    | Unauthorized |                                    |
-| 403    | Forbidden    |                                    |
-| 404    | Not Found    |                                    |
+| 状态码 | 说明         | schema                               |
+| ------ | ------------ | ------------------------------------ |
+| 200    | OK           | Result«BasePageVo«VipApplicationVo»» |
+| 201    | Created      |                                      |
+| 401    | Unauthorized |                                      |
+| 403    | Forbidden    |                                      |
+| 404    | Not Found    |                                      |
 
 **响应参数**:
 
-| 参数名称                               | 参数说明                                 | 类型                       | schema                     |
-| -------------------------------------- | ---------------------------------------- | -------------------------- | -------------------------- |
-| code                                   |                                          | integer(int32)             | integer(int32)             |
-| data                                   |                                          | BasePageVo«VipApplication» | BasePageVo«VipApplication» |
-| &emsp;&emsp;list                       |                                          | array                      | VipApplication             |
-| &emsp;&emsp;&emsp;&emsp;applicateDate  | 申请日期                                 | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;approvalDate   | 审批日期                                 | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;approvalRemark | 审批备注                                 | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;approvalStatus | 审批状态(1:待审批,2审批通过,3审批不通过) | integer                    |                            |
-| &emsp;&emsp;&emsp;&emsp;id             | 申请记录id                               | integer                    |                            |
-| &emsp;&emsp;&emsp;&emsp;userCompany    | 用户公司                                 | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;userId         | 用户id                                   | integer                    |                            |
-| &emsp;&emsp;&emsp;&emsp;userName       | 用户姓名                                 | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;userPhone      | 用户手机号                               | string                     |                            |
-| &emsp;&emsp;&emsp;&emsp;userPosition   | 用户职位                                 | string                     |                            |
-| &emsp;&emsp;pages                      |                                          | integer(int32)             |                            |
-| &emsp;&emsp;total                      |                                          | integer(int64)             |                            |
-| msg                                    |                                          | string                     |                            |
+| 参数名称                               | 参数说明                                 | 类型                         | schema                       |
+| -------------------------------------- | ---------------------------------------- | ---------------------------- | ---------------------------- |
+| code                                   |                                          | integer(int32)               | integer(int32)               |
+| data                                   |                                          | BasePageVo«VipApplicationVo» | BasePageVo«VipApplicationVo» |
+| &emsp;&emsp;list                       |                                          | array                        | VipApplicationVo             |
+| &emsp;&emsp;&emsp;&emsp;appletUsername | 小程序用户名                             | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;applicateDate  | 申请日期                                 | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;approvalDate   | 审批日期                                 | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;approvalRemark | 审批备注                                 | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;approvalStatus | 审批状态(1:待审批,2审批通过,3审批不通过) | integer                      |                              |
+| &emsp;&emsp;&emsp;&emsp;id             | 申请记录id                               | integer                      |                              |
+| &emsp;&emsp;&emsp;&emsp;userCompany    | 用户公司                                 | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;userId         | 用户id                                   | integer                      |                              |
+| &emsp;&emsp;&emsp;&emsp;userName       | 申请填写的用户姓名                       | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;userPhone      | 用户手机号                               | string                       |                              |
+| &emsp;&emsp;&emsp;&emsp;userPosition   | 用户职位                                 | string                       |                              |
+| &emsp;&emsp;pages                      |                                          | integer(int32)               |                              |
+| &emsp;&emsp;total                      |                                          | integer(int64)               |                              |
+| msg                                    |                                          | string                       |                              |
 
 **响应示例**:
 
@@ -2447,6 +2510,7 @@
 	"data": {
 		"list": [
 			{
+				"appletUsername": "",
 				"applicateDate": "",
 				"approvalDate": "",
 				"approvalRemark": "",

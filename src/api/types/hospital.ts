@@ -42,4 +42,11 @@ export interface SplitHospitalDto {
   id?: number;
   spiltNames?: SplitHospitalDto[];
 }
+
+export interface StandardHospitalMergeDto {
+  sourceStandardId?: number;
+  sourceStandardName?: string;
+  targetStandardId?: number;
+  targetStandardName?: string;
+}
 //#endregion

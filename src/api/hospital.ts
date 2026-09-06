@@ -5,6 +5,7 @@ import type {
   HospitalQueryParam,
   HospitalCleanDto,
   StandardHospitalDto,
+  StandardHospitalMergeDto,
   SplitHospitalDto,
 } from './types/hospital';
 //#endregion
@@ -58,22 +59,24 @@ export const hospitalApi = {
 
   /** 获取统计信息 */
   getStatData(data: HospitalQueryParam) {
-    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
-      '/admin/hospital/getStatData',
-      data,
-    );
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>('/admin/hospital/getStatData', data);
   },
   /** 修改清洗状态 */
   updateCleanStatus(data: UpdateCleanStatusDto) {
-    return request.post<any, { code: number; data: boolean; msg: string }>(
-      '/admin/hospital/updateCleanStatus',
-      data,
-    );
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/hospital/updateCleanStatus', data);
   },
 
   /** 源名称拆分 */
   spiltNames(data: SplitHospitalDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/hospital/spiltNames', data);
+  },
+
+  /** 标准中心合并(转移) */
+  standardHospitalMerge(data: StandardHospitalMergeDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>(
+      '/admin/hospital/standardHospitalMerge',
+      data,
+    );
   },
 };
 //#endregion
