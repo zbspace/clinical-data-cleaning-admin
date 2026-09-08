@@ -84,7 +84,7 @@ const handleCommand = (command: string) => {
 const toLastView = () => {
   const { visitedViews } = tagsViewStore
   const last = visitedViews[visitedViews.length - 1]
-  router.push(last ? last.fullPath : '/dashboard')
+  router.push(last ? last.fullPath : '/overview')
 }
 
 /** 鼠标滚轮横向滚动标签列表 */

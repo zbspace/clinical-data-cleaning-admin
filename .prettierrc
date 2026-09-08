@@ -1,9 +1,13 @@
 {
-  "semi": true,
+  "$schema": "https://json.schemastore.org/prettierrc",
+  "semi": false,
   "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 120,
+  "printWidth": 100,
   "tabWidth": 2,
+  "trailingComma": "all",
   "arrowParens": "always",
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "ignore",
+  "vueIndentScriptAndStyle": false,
+  "quoteProps": "preserve"
 }
