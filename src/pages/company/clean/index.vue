@@ -73,7 +73,7 @@
         <!-- 关联搜索（可新增标准名公司） -->
         <div class="dialog-tip-block mb-16px">
           <el-form-item label="关联：">
-            <div class="flex items-center w-full">
+            <div class="flex items-center w-full justify-between">
               <el-select
                 v-model="editFormData.relationId"
                 filterable
@@ -797,17 +797,6 @@ onMounted(() => {
 // #region 页面样式
 .company-clean-page {
   padding: 10px;
-}
-
-// 弹窗内浅蓝提示块
-.dialog-tip-block {
-  background-color: #e6f7ff;
-  padding: 4px 16px 0;
-  border-radius: 6px;
-
-  .el-form-item {
-    margin-bottom: 18px;
-  }
 }
 // #endregion
 </style>

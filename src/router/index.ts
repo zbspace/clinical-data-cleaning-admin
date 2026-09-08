@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import type { RouteRecordRaw } from 'vue-router';
-import Layout from '@/layouts/index.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import Layout from '@/layout/index.vue'
 
 export const menuRoutes: RouteRecordRaw[] = [
   {
@@ -117,7 +117,7 @@ export const menuRoutes: RouteRecordRaw[] = [
       },
     ],
   },
-];
+]
 
 const routes: RouteRecordRaw[] = [
   {
@@ -139,22 +139,22 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/error/notFound.vue'),
     meta: { title: '404' },
   },
-];
+]
 
 const router = createRouter({
   // base 需与 vite.config.ts 的 base: '/admin/' 保持一致
   history: createWebHistory('/admin/'),
   routes,
-});
+})
 
 router.beforeEach((to) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token')
   if (!token && to.path !== '/login') {
-    return '/login';
+    return '/login'
   }
   if (token && to.path === '/login') {
-    return '/overview';
+    return '/overview'
   }
-});
+})
 
-export default router;
+export default router
