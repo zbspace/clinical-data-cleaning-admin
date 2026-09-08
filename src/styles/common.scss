@@ -1,0 +1,51 @@
+// 全局基础样式
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  overscroll-behavior: none;
+}
+
+// 滚动条
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+
+  &:hover {
+    background: #a0a0a0;
+  }
+}
+
+// 暗黑模式滚动条
+.dark {
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+
+    &:hover {
+      background: #666;
+    }
+  }
+}
+
+// 暗黑模式全局背景
+html.dark {
+  background-color: #121212;
+}

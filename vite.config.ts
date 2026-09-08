@@ -2,7 +2,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import UnoCSS from '@unocss/vite';
-import presetWind from '@unocss/preset-wind';
 import path from 'path';
 //#endregion
 
@@ -10,16 +9,7 @@ import path from 'path';
 export default defineConfig({
   // 部署子路径，生产构建后资源路径为 /lyqAdmin/assets/...
   base: '/admin/',
-  plugins: [
-    vue(),
-    UnoCSS({
-      presets: [presetWind()],
-      shortcuts: {
-        'flex-center': 'flex items-center justify-center',
-        'flex-between': 'flex items-center justify-between',
-      },
-    }),
-  ],
+  plugins: [vue(), UnoCSS()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

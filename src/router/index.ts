@@ -1,99 +1,152 @@
-//#region Imports
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-import AuthRoute from '@/components/AuthRoute.vue';
-import BasicLayout from '@/layouts/BasicLayout.vue';
-//#endregion
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+import Layout from '@/layouts/index.vue';
 
-//#region Routes Configuration
-const routes: RouteRecordRaw[] = [
+export const menuRoutes: RouteRecordRaw[] = [
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/Login/index.vue'),
+    path: '/overview',
+    name: 'Overview',
+    component: () => import('@/pages/overview/index.vue'),
+    meta: { title: '概览', icon: 'DataAnalysis', affix: true },
   },
   {
-    path: '/',
-    component: AuthRoute,
+    path: '/company',
+    name: 'Company',
+    meta: { title: '公司', icon: 'OfficeBuilding' },
     children: [
       {
-        path: '',
-        component: BasicLayout,
-        children: [
-          { path: '', redirect: '/overview' },
-          {
-            path: '/overview',
-            name: 'Overview',
-            component: () => import('@/pages/Overview/index.vue'),
-          },
-          {
-            path: '/company/clean',
-            name: 'CompanyClean',
-            component: () => import('@/pages/Company/Clean.vue'),
-          },
-          {
-            path: '/company/database',
-            name: 'CompanyDatabase',
-            component: () => import('@/pages/Company/Database.vue'),
-          },
-          {
-            path: '/drug/clean',
-            name: 'DrugClean',
-            component: () => import('@/pages/Drug/Clean.vue'),
-          },
-          {
-            path: '/drug/database',
-            name: 'DrugDatabase',
-            component: () => import('@/pages/Drug/Database.vue'),
-          },
-          {
-            path: '/indication/clean',
-            name: 'IndicationClean',
-            component: () => import('@/pages/Indication/Clean.vue'),
-          },
-          {
-            path: '/indication/database',
-            name: 'IndicationDatabase',
-            component: () => import('@/pages/Indication/Database.vue'),
-          },
-          {
-            path: '/center/clean',
-            name: 'CenterClean',
-            component: () => import('@/pages/Center/Clean.vue'),
-          },
-          {
-            path: '/center/database',
-            name: 'CenterDatabase',
-            component: () => import('@/pages/Center/Database.vue'),
-          },
-          {
-            path: '/trial-phase/database',
-            name: 'TrialPhaseDatabase',
-            component: () => import('@/pages/TrialPhase/Database.vue'),
-          },
-          {
-            path: '/client/user',
-            name: 'ClientUser',
-            component: () => import('@/pages/Client/User.vue'),
-          },
-          {
-            path: '/client/trial-apply',
-            name: 'ClientTrialApply',
-            component: () => import('@/pages/Client/TrialApply.vue'),
-          },
-        ],
+        path: '/company/clean',
+        name: 'CompanyClean',
+        component: () => import('@/pages/company/clean/index.vue'),
+        meta: { title: '公司名清洗' },
+      },
+      {
+        path: '/company/database',
+        name: 'CompanyDatabase',
+        component: () => import('@/pages/company/database/index.vue'),
+        meta: { title: '公司名库' },
+      },
+    ],
+  },
+  {
+    path: '/drug',
+    name: 'Drug',
+    meta: { title: '药品', icon: 'Sugar' },
+    children: [
+      {
+        path: '/drug/clean',
+        name: 'DrugClean',
+        component: () => import('@/pages/drug/clean/index.vue'),
+        meta: { title: '药品名清洗' },
+      },
+      {
+        path: '/drug/database',
+        name: 'DrugDatabase',
+        component: () => import('@/pages/drug/database/index.vue'),
+        meta: { title: '药品名库' },
+      },
+    ],
+  },
+  {
+    path: '/indication',
+    name: 'Indication',
+    meta: { title: '适应症', icon: 'Memo' },
+    children: [
+      {
+        path: '/indication/clean',
+        name: 'IndicationClean',
+        component: () => import('@/pages/indication/clean/index.vue'),
+        meta: { title: '适应症清洗' },
+      },
+      {
+        path: '/indication/database',
+        name: 'IndicationDatabase',
+        component: () => import('@/pages/indication/database/index.vue'),
+        meta: { title: '适应症库' },
+      },
+    ],
+  },
+  {
+    path: '/center',
+    name: 'Center',
+    meta: { title: '研究中心', icon: 'FirstAidKit' },
+    children: [
+      {
+        path: '/center/clean',
+        name: 'CenterClean',
+        component: () => import('@/pages/indication/clean/index.vue'),
+        meta: { title: '研究中心清洗' },
+      },
+      {
+        path: '/center/database',
+        name: 'CenterDatabase',
+        component: () => import('@/pages/center/database/index.vue'),
+        meta: { title: '研究中心库' },
+      },
+    ],
+  },
+  {
+    path: '/trial-phase',
+    name: 'TrialPhase',
+    meta: { title: '试验分期', icon: 'Calendar' },
+    children: [
+      {
+        path: '/trial-phase/database',
+        name: 'TrialPhaseDatabase',
+        component: () => import('@/pages/trial-phase/database/index.vue'),
+        meta: { title: '试验分期库' },
+      },
+    ],
+  },
+  {
+    path: '/client',
+    name: 'Client',
+    meta: { title: '客户端', icon: 'User' },
+    children: [
+      {
+        path: '/client/user',
+        name: 'ClientUser',
+        component: () => import('@/pages/client/user/index.vue'),
+        meta: { title: '用户管理' },
+      },
+      {
+        path: '/client/trial-apply',
+        name: 'ClientTrialApply',
+        component: () => import('@/pages/client/trial-apply/index.vue'),
+        meta: { title: '试用申请' },
       },
     ],
   },
 ];
-//#endregion
 
-//#region Router Instance
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/login/index.vue'),
+    meta: { title: '登录' },
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/overview',
+    name: 'Layout',
+    children: menuRoutes,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/pages/error/notFound.vue'),
+    meta: { title: '404' },
+  },
+];
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  // base 需与 vite.config.ts 的 base: '/admin/' 保持一致
+  history: createWebHistory('/admin/'),
   routes,
 });
 
-// 全局导航守卫：未登录访问受保护页面时，先跳转登录页（避免页面闪烁）
 router.beforeEach((to) => {
   const token = localStorage.getItem('token');
   if (!token && to.path !== '/login') {
@@ -103,6 +156,5 @@ router.beforeEach((to) => {
     return '/overview';
   }
 });
-//#endregion
 
 export default router;
