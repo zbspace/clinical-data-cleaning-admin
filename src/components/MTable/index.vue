@@ -54,6 +54,16 @@
                   :style="selectWidthStyle(item)"
                 />
               </template>
+
+              <!-- 开关 -->
+              <el-switch
+                v-else-if="item.type === 'switch'"
+                v-model="searchConfig.form[item.id]"
+                :active-value="1"
+                :inactive-value="0"
+                :style="selectWidthStyle(item)"
+                v-bind="item.switchConfig || {}"
+              />
             </el-form-item>
           </template>
 
@@ -222,6 +232,7 @@ interface SearchItem {
   options?: { label: string; value: any }[]
   inputConfig?: Record<string, any>
   selectConfig?: Record<string, any>
+  switchConfig?: Record<string, any>
   format?: string
 }
 
