@@ -34,16 +34,16 @@
 
       <!-- 操作列 -->
       <template #tableRowOperation="{ row }">
-        <div class="flex gap-8px justify-center">
-          <el-button type="primary" size="small" @click="openEditModal(row)">关联</el-button>
-          <el-button type="primary" size="small" @click="openSplitModal(row)">拆分</el-button>
+        <div class="flex justify-center">
+          <el-button type="primary" @click="openEditModal(row)">关联</el-button>
+          <el-button type="primary" @click="openSplitModal(row)">拆分</el-button>
         </div>
       </template>
     </MTable>
     <!-- #endregion -->
 
     <!-- #region 相关备案/登记号弹窗 -->
-    <el-dialog v-model="accModalVisible" title="相关备案/登记号" width="640px">
+    <el-dialog v-model="accModalVisible" title="相关备案/登记号" width="680px">
       <el-table v-loading="accLoading" :data="accData" border stripe :max-height="400">
         <el-table-column type="index" label="序号" width="80" align="center" :index="accIndexFn" />
         <el-table-column prop="acceptanceNo" label="相关登记号/备案号" align="center" />
@@ -57,6 +57,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="accPagination.total"
           :page-sizes="[5, 10, 20, 50]"
+          :pager-count="4"
           v-model:current-page="accPagination.current"
           v-model:page-size="accPagination.pageSize"
           @size-change="onAccSizeChange"
@@ -68,7 +69,7 @@
 
     <!-- #region 关联弹窗 -->
     <el-dialog v-model="editModalVisible" title="关联" width="620px" @closed="onEditModalClose">
-      <el-form :model="editFormData" label-width="120px" label-position="left">
+      <el-form :model="editFormData" label-width="123px">
         <!-- 关联搜索（可新增标准名公司） -->
         <div class="dialog-tip-block mb-16px">
           <el-form-item label="关联：">
@@ -130,7 +131,7 @@
 
     <!-- #region 新增标准名公司弹窗 -->
     <el-dialog v-model="addModalVisible" title="新增标准名公司" width="620px">
-      <el-form :model="addFormData" label-width="120px" label-position="left">
+      <el-form :model="addFormData" label-width="130px">
         <el-form-item label="公司名(标准名称)">
           <el-input
             v-model="addFormData.companyStandardName"
@@ -200,7 +201,7 @@
 
     <!-- #region 新增母公司弹窗 -->
     <el-dialog v-model="parentModalVisible" title="新增母公司" width="480px">
-      <el-form :model="parentFormData" label-width="110px" label-position="left">
+      <el-form :model="parentFormData" label-width="100px">
         <el-form-item label="母公司简称">
           <el-input
             v-model="parentFormData.parentCompanyShortName"
@@ -234,10 +235,10 @@
     <!-- #endregion -->
 
     <!-- #region 拆分弹窗 -->
-    <el-dialog v-model="splitModalVisible" title="源名称拆分" width="620px">
-      <el-form :model="splitFormData" label-width="120px" label-position="left">
+    <el-dialog v-model="splitModalVisible" title="源名称拆分" width="600px">
+      <el-form :model="splitFormData" label-width="120px">
         <el-form-item label="公司名(源数据)">
-          <el-input v-model="splitFormData.companyOriginName" disabled />
+          <span>{{ splitFormData.companyOriginName }}</span>
         </el-form-item>
         <el-form-item label="拆分公司名称">
           <div class="w-full">
@@ -310,29 +311,29 @@ const searchConfig = reactive({
       label: '公司名(源数据)',
       type: 'input',
       width: 220,
-      placeholder: '请输入关键字',
+      placeholder: '请输入',
     },
     {
       id: 'parentCompanyShortName',
       label: '母公司简称',
       type: 'input',
       width: 220,
-      placeholder: '请输入关键字',
+      placeholder: '请输入',
     },
     {
       id: 'companyType',
       label: '公司类型',
       type: 'select',
-      width: 220,
-      placeholder: '请选择公司类型',
+      width: 140,
+      placeholder: '请选择',
       options: companyTypeOptions,
     },
     {
       id: 'cleanStatus',
       label: '清洗状态',
       type: 'select',
-      width: 220,
-      placeholder: '请选择状态',
+      width: 120,
+      placeholder: '请选择',
       options: statusOptions,
     },
   ],
@@ -349,14 +350,11 @@ const tableConfig = ref<{ data: CleanCompanyDto[]; total: number; columns: Recor
         type: 'index',
         label: '序号',
         width: 60,
-        index: (index: number) =>
-          index +
-          1 +
-          (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+        index: (index: number) => index + 1,
       },
       { id: 'companyOriginName', label: '公司名(源数据)', width: 280, align: 'left' },
       { id: 'cnt', label: '相关备案/登记号', width: 130, align: 'center' },
-      { id: 'cleanStatus', label: '清洗状态', width: 130, align: 'center' },
+      { id: 'cleanStatus', label: '清洗状态', width: 140, align: 'center' },
       { id: 'companyStandardName', label: '清洗后公司名称(标准名)', width: 240, align: 'left' },
       { id: 'companyType', label: '公司类型', width: 100, align: 'center' },
       { id: 'companyShortName', label: '公司简称', width: 140, align: 'center' },
@@ -365,12 +363,12 @@ const tableConfig = ref<{ data: CleanCompanyDto[]; total: number; columns: Recor
       {
         id: 'updateTime',
         label: '更新时间',
-        width: 170,
+        width: 180,
         align: 'center',
         formatter: (row: CleanCompanyDto) =>
           row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
       },
-      { type: 'action', label: '操作', width: 150, align: 'center', fixed: 'right' },
+      { type: 'action', label: '操作', width: 160, align: 'center', fixed: 'right' },
     ],
   },
 )
@@ -798,7 +796,7 @@ onMounted(() => {
 <style scoped lang="scss">
 // #region 页面样式
 .company-clean-page {
-  padding: 16px;
+  padding: 10px;
 }
 
 // 弹窗内浅蓝提示块
