@@ -11,7 +11,7 @@
     >
       <!-- #region 相关受理号/备案号列 -->
       <template #statisticCount="{ row }">
-        <el-link type="primary" :underline="false" @click="openAccModal(row)">
+        <el-link type="primary" underline="never" @click="openAccModal(row)">
           {{ row.statisticCount || 0 }}
         </el-link>
       </template>

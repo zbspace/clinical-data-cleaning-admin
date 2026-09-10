@@ -11,7 +11,7 @@
     >
       <!-- #region 相关受理号/登记号列 -->
       <template #acceptanceCount="{ row }">
-        <el-link type="primary" :underline="false" @click="openAccModal(row)">
+        <el-link type="primary" underline="never" @click="openAccModal(row)">
           {{ row.acceptanceCount || '-' }}
         </el-link>
       </template>

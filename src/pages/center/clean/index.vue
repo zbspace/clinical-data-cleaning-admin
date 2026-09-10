@@ -11,7 +11,7 @@
     >
       <!-- #region 相关备案/登记号列 -->
       <template #cnt="{ row }">
-        <el-link type="primary" :underline="false" @click="openAccModal(row.id!)">
+        <el-link type="primary" underline="never" @click="openAccModal(row.id!)">
           {{ row.cnt || 0 }}
         </el-link>
       </template>

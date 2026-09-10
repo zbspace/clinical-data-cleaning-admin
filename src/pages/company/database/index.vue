@@ -24,7 +24,7 @@
 
       <!-- #region 源数据公司名(别名)列 -->
       <template #cnt="{ row }">
-        <el-link type="primary" :underline="false" @click="openSourceModal(row.id!)">
+        <el-link type="primary" underline="never" @click="openSourceModal(row.id!)">
           {{ row.cnt || 0 }}
         </el-link>
       </template>

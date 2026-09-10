@@ -17,7 +17,7 @@
 
       <!-- #region 源数据药品名（别名）列 -->
       <template #statisticCount="{ row }">
-        <el-link type="primary" :underline="false" @click="openAliasModal(row.standardId!)">
+        <el-link type="primary" underline="never" @click="openAliasModal(row.standardId!)">
           {{ row.statisticCount || 0 }}
         </el-link>
       </template>

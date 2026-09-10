@@ -17,7 +17,7 @@
 
       <!-- #region 别名列 -->
       <template #cnt="{ row }">
-        <el-link type="primary" :underline="false" @click="openSourceModal(row.id!)">
+        <el-link type="primary" underline="never" @click="openSourceModal(row.id!)">
           {{ row.cnt || 0 }}
         </el-link>
       </template>

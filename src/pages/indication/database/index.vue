@@ -11,7 +11,7 @@
     >
       <!-- #region 源数据适应症（别名）列 -->
       <template #statisticCount="{ row }">
-        <el-link type="primary" :underline="false" @click="openAliasModal(row)">
+        <el-link type="primary" underline="never" @click="openAliasModal(row)">
           {{ row.statisticCount || 0 }}
         </el-link>
       </template>
