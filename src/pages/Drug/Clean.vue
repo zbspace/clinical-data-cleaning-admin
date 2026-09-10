@@ -419,7 +419,7 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
     const res = await drugApi.cleanPageData({
       pageNum: curr,
       pageSize: size,
-      drugStandardName: formData.drugStandardName || undefined,
+      drugComment: formData.drugStandardName || undefined,
       status: formData.status !== undefined ? Number(formData.status) : undefined,
     });
     tableData.value = res.data?.list || [];

@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/pages/Login/index.vue'),
+    component: () => import('@/pages/login/index.vue'),
   },
   {
     path: '/',
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: '/overview',
             name: 'Overview',
-            component: () => import('@/pages/Overview/index.vue'),
+            component: () => import('@/pages/overview/index.vue'),
           },
           {
             path: '/company/clean',
