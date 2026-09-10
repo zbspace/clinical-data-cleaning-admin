@@ -1,113 +1,77 @@
 <template>
   <!--#region 用户管理页面 -->
-  <t-card bordered>
-    <div ref="searchCardRef" style="margin-bottom: 16px" class="search-card">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
-        用户管理
-      </h2>
-
-      <!--#region 搜索表单 -->
-      <div
-        style="
-          background: #f8fafc;
-          padding: 16px;
-          border-radius: 12px;
-          border: 1px solid var(--td-border-level-1-color);
-        "
-      >
-        <t-form
-          ref="formRef"
-          :data="formData"
-          layout="inline"
-          label-width="100"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap"
-          @submit="onSearch"
-        >
-          <t-form-item label="用户名" name="username" style="margin-bottom: 0">
-            <t-input v-model="formData.username" placeholder="请输入用户名" clearable />
-          </t-form-item>
-          <t-form-item label="手机号" name="phone" style="margin-bottom: 0">
-            <t-input v-model="formData.phone" placeholder="请输入手机号" clearable style="width: 200px" />
-          </t-form-item>
-          <t-form-item label="用户类型" name="vipCode" style="margin-bottom: 0">
-            <t-select v-model="formData.vipCode" :options="vipCodeOptions" placeholder="请选择用户类型" clearable />
-          </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
-            <t-button theme="primary" type="submit"> 查询 </t-button>
-          </div>
-        </t-form>
-      </div>
-      <!--#endregion-->
-    </div>
-
-    <!--#region 数据表格 -->
-    <t-table
-      :data="tableData"
-      :columns="columns"
-      row-key="id"
+  <div class="client-user-page">
+    <!--#region 主表格区（MTable：搜索 + 表格 + 分页 + 高度自适应） -->
+    <MTable
+      v-model:tableConfig="tableConfig"
+      :search-config="searchConfig"
       :loading="loading"
-      bordered
-      stripe
-      table-layout="fixed"
-      :max-height="tableMaxHeight"
-      style="white-space: nowrap"
-      :pagination="pagination"
-      @page-change="onPageChange"
+      title="用户管理"
+      @search="onSearch"
     >
-      <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      <!--#region 操作列 -->
+      <template #tableRowOperation="{ row }">
+        <el-button type="primary" @click="openEditModal(row)">编辑</el-button>
       </template>
-    </t-table>
+      <!--#endregion-->
+    </MTable>
     <!--#endregion-->
 
     <!--#region VIP信息编辑弹窗 -->
-    <t-dialog
-      v-model:visible="editModalVisible"
-      header="VIP信息编辑"
-      width="520px"
-      :confirm-btn="{ content: '保存', theme: 'primary', loading: editLoading }"
-      @confirm="submitEdit"
-      @close="onEditModalClose"
-    >
-      <t-form ref="editFormRef" :data="editFormData" label-width="120px" label-align="left" style="padding: 8px 0">
-        <t-form-item label="用户类型" name="vipCode">
-          <t-select v-model="editFormData.vipCode" :options="vipCodeOptions" placeholder="请选择用户类型" />
-        </t-form-item>
-        <t-form-item label="会员开始时间" name="vipBeginTime">
-          <t-date-picker
+    <el-dialog v-model="editModalVisible" title="VIP信息编辑" width="520px">
+      <el-form :model="editFormData" label-width="120px" class="pt-8px">
+        <el-form-item label="用户类型">
+          <el-select v-model="editFormData.vipCode" placeholder="请选择用户类型" class="!w-full">
+            <el-option
+              v-for="opt in vipCodeOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="会员开始时间">
+          <el-date-picker
             v-model="editFormData.vipBeginTime"
+            type="datetime"
             format="YYYY-MM-DD HH:mm:ss"
-            value-type="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择会员开始时间"
             clearable
-            style="width: 100%"
+            class="!w-full"
           />
-        </t-form-item>
-        <t-form-item label="会员结束时间" name="vipEndTime">
-          <t-date-picker
+        </el-form-item>
+        <el-form-item label="会员结束时间">
+          <el-date-picker
             v-model="editFormData.vipEndTime"
+            type="datetime"
             format="YYYY-MM-DD HH:mm:ss"
-            value-type="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择会员结束时间"
             clearable
-            style="width: 100%"
+            class="!w-full"
           />
-        </t-form-item>
-      </t-form>
-    </t-dialog>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editModalVisible = false">取消</el-button>
+        <el-button type="primary" :loading="editLoading" @click="submitEdit">保存</el-button>
+      </template>
+    </el-dialog>
     <!--#endregion-->
-  </t-card>
+  </div>
   <!--#endregion-->
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ClientUser' })
+
 //#region Imports
-import { ref, reactive, onMounted } from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
-import moment from 'moment';
-import { wxUserApi } from '@/api';
-import type { WxUserDto } from '@/api/types/wxUser';
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import moment from 'moment'
+import { wxUserApi } from '@/api'
+import type { WxUserDto } from '@/api/types/wxUser'
 //#endregion
 
 //#region Constants
@@ -116,178 +80,183 @@ const vipCodeOptions = [
   { label: '普通用户', value: 0 },
   { label: 'VIP试用', value: 1 },
   { label: 'VIP用户', value: 100 },
-];
+]
 //#endregion
 
-//#region State
-const formRef = ref();
-const editFormRef = ref();
-const loading = ref(false);
+//#region 搜索配置与状态（page / rows 由 MTable 内部维护）
+const loading = ref(false)
 
-// 表格最大高度，根据 .search-card 动态计算
-const tableMaxHeight = ref('calc(100vh - 320px)');
-const searchCardRef = ref<HTMLElement | null>(null);
+const searchConfig = reactive({
+  form: {
+    username: '',
+    phone: '',
+    // 初值为 undefined（不过滤）；MTable 重置会写入 ''，故类型兼容两种空值
+    vipCode: undefined as number | '' | undefined,
+    page: 1,
+    rows: 20,
+  },
+  items: [
+    {
+      id: 'username',
+      label: '用户名',
+      type: 'input',
+      width: 200,
+      placeholder: '请输入用户名',
+    },
+    {
+      id: 'phone',
+      label: '手机号',
+      type: 'input',
+      width: 200,
+      placeholder: '请输入手机号',
+    },
+    {
+      id: 'vipCode',
+      label: '用户类型',
+      type: 'select',
+      width: 200,
+      placeholder: '请选择用户类型',
+      options: vipCodeOptions,
+    },
+  ],
+})
+//#endregion
 
-const tableData = ref<WxUserDto[]>([]);
-const pagination = reactive({
-  current: 1,
-  pageSize: 20,
+//#region 表格配置
+const tableConfig = ref<{ data: WxUserDto[]; total: number; columns: Record<string, any>[] }>({
+  data: [],
   total: 0,
-  showJumper: true,
-  foldedMaxPageBtn: 3,
-});
+  columns: [
+    {
+      id: 'rowIndex',
+      type: 'index',
+      label: '序号',
+      width: 80,
+      index: (idx: number) =>
+        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+    },
+    { id: 'username', label: '用户名', width: 160 },
+    {
+      id: 'phone',
+      label: '手机号',
+      width: 140,
+      formatter: (row: WxUserDto) => row.phone || '-',
+    },
+    {
+      id: 'createTime',
+      label: '首次登录时间',
+      width: 170,
+      formatter: (row: WxUserDto) =>
+        row.createTime ? moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    },
+    {
+      id: 'vipDesc',
+      label: '用户类型',
+      width: 120,
+      formatter: (row: WxUserDto) => row.vipDesc || '-',
+    },
+    {
+      id: 'vipEndTime',
+      label: '到期时间',
+      width: 170,
+      formatter: (row: WxUserDto) =>
+        row.vipEndTime ? moment(row.vipEndTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    },
+    {
+      id: 'operation',
+      type: 'action',
+      label: '操作',
+      width: 100,
+      fixed: 'right',
+    },
+  ],
+})
+//#endregion
 
-const formData = reactive<Record<string, any>>({
-  username: '',
-  phone: '',
-  vipCode: undefined,
-});
-
-// 编辑弹窗
-const editModalVisible = ref(false);
-const editLoading = ref(false);
-const currentEditRecord = ref<WxUserDto | null>(null);
+//#region 编辑弹窗状态
+const editModalVisible = ref(false)
+const editLoading = ref(false)
 
 const editFormData = reactive<Record<string, any>>({
   id: undefined,
   vipCode: 0,
   vipBeginTime: '',
   vipEndTime: '',
-});
+})
 //#endregion
 
-//#region Columns Definition
-const columns = [
-  {
-    colKey: 'rowIndex',
-    title: '序号',
-    width: 80,
-    cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
-  },
-  { colKey: 'username', title: '用户名', width: 160, ellipsis: true },
-  { colKey: 'phone', title: '手机号', width: 140, cell: (h: any, { row }: any) => row.phone || '-' },
-  {
-    colKey: 'createTime',
-    title: '首次登录时间',
-    width: 170,
-    cell: (h: any, { row }: any) => (row.createTime ? moment(row.createTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
-  },
-  {
-    colKey: 'vipDesc',
-    title: '用户类型',
-    width: 120,
-    cell: (h: any, { row }: any) => row.vipDesc || '-',
-  },
-  {
-    colKey: 'vipEndTime',
-    title: '到期时间',
-    width: 170,
-    cell: (h: any, { row }: any) => (row.vipEndTime ? moment(row.vipEndTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
-  },
-  {
-    colKey: 'operation',
-    title: '操作',
-    width: 100,
-    fixed: 'right' as const,
-  },
-];
-//#endregion
-
-//#region 动态表格高度
-const updateTableHeight = () => {
-  const card = searchCardRef.value;
-  if (!card) return;
-  const rect = card.getBoundingClientRect();
-  // 剩余高度 = 视口高度 - search-card 底部位置 - 固定偏移（card 内边距 + 表格头部 + 分页 + 留白）
-  const availableHeight = window.innerHeight - rect.bottom - 106;
-  tableMaxHeight.value = `${Math.max(200, Math.floor(availableHeight))}px`;
-};
-//#endregion
-
-//#region Data Fetching
-const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
-  loading.value = true;
+//#region 数据加载（MTable 搜索/重置/翻页统一入口）
+const loadList = async () => {
+  loading.value = true
   try {
+    const { username, phone, vipCode, page = 1, rows = 20 } = searchConfig.form
     const res = await wxUserApi.pageData({
-      username: formData.username || undefined,
-      phone: formData.phone || undefined,
-      vipCode: formData.vipCode !== undefined ? Number(formData.vipCode) : undefined,
-      pageNum: curr,
-      pageSize: size,
-    });
-    tableData.value = res.data?.list || [];
-    pagination.current = curr;
-    pagination.pageSize = size;
-    pagination.total = res.data?.total || 0;
+      username: username || undefined,
+      phone: phone || undefined,
+      // 清空/重置后为 ''，需归一化为 undefined，避免 Number('') === 0 的误传
+      vipCode: vipCode === '' || vipCode == null ? undefined : Number(vipCode),
+      pageNum: page,
+      pageSize: rows,
+    })
+    tableConfig.value.data = res.data?.list || []
+    tableConfig.value.total = res.data?.total || 0
   } catch (e) {
-    console.error('Fetch data failed:', e);
+    console.error('Fetch data failed:', e)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-const onSearch = () => fetchData(1);
-
-const onReset = () => {
-  formData.username = '';
-  formData.phone = '';
-  formData.vipCode = undefined;
-  fetchData(1);
-};
-
-const onPageChange = (pageInfo: any) => {
-  fetchData(pageInfo.current, pageInfo.pageSize);
-};
+const onSearch = () => {
+  loadList()
+}
 //#endregion
 
-//#region Edit Modal
+//#region 编辑弹窗
 const openEditModal = (record: WxUserDto) => {
-  currentEditRecord.value = record;
-  editFormData.id = record.id;
+  editFormData.id = record.id
   // 响应无 vipCode 字段，根据是否存在到期时间推断用户类型
-  editFormData.vipCode = record.vipCode;
-  editFormData.vipBeginTime = record.vipBeginTime ? moment(record.vipBeginTime).format('YYYY-MM-DD HH:mm:ss') : '';
-  editFormData.vipEndTime = record.vipEndTime ? moment(record.vipEndTime).format('YYYY-MM-DD HH:mm:ss') : '';
-  editModalVisible.value = true;
-};
+  editFormData.vipCode = record.vipCode
+  editFormData.vipBeginTime = record.vipBeginTime
+    ? moment(record.vipBeginTime).format('YYYY-MM-DD HH:mm:ss')
+    : ''
+  editFormData.vipEndTime = record.vipEndTime
+    ? moment(record.vipEndTime).format('YYYY-MM-DD HH:mm:ss')
+    : ''
+  editModalVisible.value = true
+}
 
 const submitEdit = async () => {
-  editLoading.value = true;
+  editLoading.value = true
   try {
     await wxUserApi.editUserVIP({
       id: editFormData.id,
       vipCode: Number(editFormData.vipCode),
       vipBeginTime: editFormData.vipBeginTime || undefined,
       vipEndTime: editFormData.vipEndTime || undefined,
-    });
-    MessagePlugin.success('保存成功');
-    editModalVisible.value = false;
-    fetchData();
+    })
+    ElMessage.success('保存成功')
+    editModalVisible.value = false
+    loadList()
   } catch (e) {
-    console.error(e);
+    console.error(e)
   } finally {
-    editLoading.value = false;
+    editLoading.value = false
   }
-};
-
-const onEditModalClose = () => {
-  editModalVisible.value = false;
-  currentEditRecord.value = null;
-};
+}
 //#endregion
 
 //#region Lifecycle
 onMounted(() => {
-  fetchData();
-
-  // 初始化表格高度 + 监听 resize + 监听 search-card 尺寸变化
-  updateTableHeight();
-  window.addEventListener('resize', updateTableHeight);
-  const card = searchCardRef.value;
-  if (card) {
-    const observer = new ResizeObserver(updateTableHeight);
-    observer.observe(card);
-  }
-});
+  loadList()
+})
 //#endregion
 </script>
+
+<style scoped lang="scss">
+//#region 页面样式
+.client-user-page {
+  padding: 10px;
+}
+//#endregion
+</style>

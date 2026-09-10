@@ -1,34 +1,38 @@
 <template>
   <!--#region 总览页面 -->
   <div>
-    <h2 style="margin: 0 0 24px 0; font-size: 20px; font-weight: 600; color: var(--td-text-color-primary)">总览</h2>
-    <t-row :gutter="[16, 16]">
-      <t-col :span="3">
-        <t-card bordered header-bordered>
-          <t-statistic title="待清洗公司" :value="statData.company.pendingTotal ?? 0" />
-        </t-card>
-      </t-col>
-      <t-col :span="3">
-        <t-card bordered header-bordered>
-          <t-statistic title="待清洗药品" :value="statData.drug.pendingTotal ?? 0" />
-        </t-card>
-      </t-col>
-      <t-col :span="3">
-        <t-card bordered header-bordered>
-          <t-statistic title="待清洗适应症" :value="statData.indication.pendingTotal ?? 0" />
-        </t-card>
-      </t-col>
-      <t-col :span="3">
-        <t-card bordered header-bordered>
-          <t-statistic title="待清洗研究中心" :value="statData.hospital.pendingTotal ?? 0" />
-        </t-card>
-      </t-col>
-    </t-row>
+    <h2 style="margin: 0 0 24px 0; font-size: 20px; font-weight: 600; color: var(--el-text-color-primary)">
+      总览
+    </h2>
+    <el-row :gutter="16">
+      <el-col :span="3">
+        <el-card shadow="never">
+          <el-statistic title="待清洗公司" :value="statData.company.pendingTotal ?? 0" />
+        </el-card>
+      </el-col>
+      <el-col :span="3">
+        <el-card shadow="never">
+          <el-statistic title="待清洗药品" :value="statData.drug.pendingTotal ?? 0" />
+        </el-card>
+      </el-col>
+      <el-col :span="3">
+        <el-card shadow="never">
+          <el-statistic title="待清洗适应症" :value="statData.indication.pendingTotal ?? 0" />
+        </el-card>
+      </el-col>
+      <el-col :span="3">
+        <el-card shadow="never">
+          <el-statistic title="待清洗研究中心" :value="statData.hospital.pendingTotal ?? 0" />
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
   <!--#endregion-->
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'Overview' });
+
 //#region Imports
 import { reactive, onMounted } from 'vue';
 import { companyApi, drugApi, hospitalApi, indicationApi } from '@/api';

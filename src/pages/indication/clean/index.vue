@@ -1,149 +1,120 @@
 <template>
-  <!--#region 适应症名称清洗页面 -->
-  <t-card bordered>
-    <div style="margin-bottom: 16px">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
-        适应症名称清洗
-      </h2>
-
-      <!--#region 搜索表单 -->
-      <div
-        style="
-          background: #f8fafc;
-          padding: 16px;
-          border-radius: 12px;
-          border: 1px solid var(--td-border-level-1-color);
-        "
-      >
-        <t-form
-          ref="formRef"
-          :data="formData"
-          layout="inline"
-          label-width="140"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap"
-          @submit="onSearch"
-        >
-          <t-form-item label="适应症(源数据)" name="indicationComment" style="margin-bottom: 0">
-            <t-input v-model="formData.indicationComment" placeholder="请输入关键字" clearable style="width: 220px" />
-          </t-form-item>
-          <t-form-item label="清洗状态" name="status" style="margin-bottom: 0">
-            <t-select
-              v-model="formData.status"
-              :options="statusOptions"
-              placeholder="请选择"
-              clearable
-              style="width: 220px"
-            />
-          </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
-            <t-button theme="primary" type="submit"> 查询 </t-button>
-          </div>
-        </t-form>
-      </div>
-      <!--#endregion-->
-    </div>
-
-    <!--#region 数据表格 -->
-    <t-table
-      :data="tableData"
-      :columns="columns"
-      row-key="indicationCommentId"
+  <!-- #region 适应症名称清洗页面 -->
+  <div class="indication-clean-page">
+    <!-- #region 主表格区（MTable：搜索 + 表格 + 分页 + 高度自适应） -->
+    <MTable
+      v-model:tableConfig="tableConfig"
+      :search-config="searchConfig"
       :loading="loading"
-      bordered
-      stripe
-      table-layout="fixed"
-      max-height="calc(100vh - 290px)"
-      :pagination="pagination"
-      @page-change="onPageChange"
+      title="适应症名称清洗"
+      @search="onSearch"
     >
-      <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+      <!-- #region 相关受理号/备案号列 -->
+      <template #statisticCount="{ row }">
+        <el-link type="primary" :underline="false" @click="openAccModal(row)">
+          {{ row.statisticCount || 0 }}
+        </el-link>
       </template>
+      <!-- #endregion -->
 
+      <!-- #region 状态列（行内切换） -->
       <template #status="{ row }">
-        <t-select
-          :value="row.status"
-          :options="statusOptions"
-          style="width: 100px"
+        <el-select
+          :model-value="row.status"
+          style="width: 110px"
           @change="(val: number) => onCleanStatusChange(row, val)"
-        />
+        >
+          <el-option
+            v-for="opt in statusOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </el-select>
       </template>
-    </t-table>
-    <!--#endregion-->
+      <!-- #endregion -->
 
-    <!--#region 相关受理号/备案号弹窗 -->
-    <t-dialog
-      v-model:visible="accModalVisible"
-      header="相关受理号/备案号"
-      :footer="false"
+      <!-- #region 操作列 -->
+      <template #tableRowOperation="{ row }">
+        <el-button type="primary" @click="openEditModal(row)">编辑</el-button>
+      </template>
+      <!-- #endregion -->
+    </MTable>
+    <!-- #endregion -->
+
+    <!-- #region 相关受理号/备案号弹窗 -->
+    <el-dialog
+      v-model="accModalVisible"
+      title="相关受理号/备案号"
       width="600px"
-      @close="onAccModalClose"
+      @closed="onAccModalClose"
     >
-      <t-table
-        :data="accData"
-        :columns="accColumns"
-        row-key="acceptanceNo"
-        :loading="accLoading"
-        bordered
-        stripe
-        :pagination="accPagination"
-        @page-change="onAccPageChange"
-      />
-    </t-dialog>
-    <!--#endregion-->
+      <el-table :data="accData" v-loading="accLoading" border stripe :max-height="420">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center"
+          :index="(idx: number) => idx + 1"
+        />
+        <el-table-column prop="acceptanceNo" label="相关受理号/备案号" align="center" />
+        <el-table-column prop="sourceRef" label="来源" width="100" align="center" />
+        <template #empty>
+          <el-empty :image-size="80" description="暂无数据" />
+        </template>
+      </el-table>
+      <div class="flex justify-end mt-16px">
+        <el-pagination
+          v-model:current-page="accPagination.current"
+          v-model:page-size="accPagination.pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="accPagination.total"
+          @size-change="onAccSizeChange"
+          @current-change="onAccCurrentChange"
+        />
+      </div>
+    </el-dialog>
+    <!-- #endregion -->
 
-    <!--#region 编辑弹窗 -->
-    <t-dialog
-      v-model:visible="editModalVisible"
-      header="编辑"
+    <!-- #region 编辑弹窗 -->
+    <el-dialog
+      v-model="editModalVisible"
+      title="编辑"
       width="800px"
-      :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
-      @confirm="submitEdit"
-      @close="onEditModalClose"
+      @closed="onEditModalClose"
     >
-      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
-        <div style="display: flex; gap: 8px; margin-bottom: 8px">
-          <div
-            style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px"
-          ></div>
-          <div style="font-weight: bold">适应症（源数据）：</div>
+      <!-- #region 适应症（源数据） -->
+      <div class="edit-source-block">
+        <div class="flex gap-8px mb-8px">
+          <div class="edit-source-bar"></div>
+          <div class="font-bold">适应症（源数据）：</div>
         </div>
-        <t-input
+        <el-input
           :model-value="currentEditRecord?.indicationComment ?? ''"
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 6 }"
+          placeholder="请输入适应症（源数据）"
           @update:model-value="
             (val: string) => {
               if (currentEditRecord) currentEditRecord.indicationComment = val;
             }
           "
-          placeholder="请输入适应症（源数据）"
-          :autosize="{ minRows: 2, maxRows: 6 }"
-          style="background: #fff; border-radius: 4px; font-size: 13px; line-height: 1.6"
         />
       </div>
+      <!-- #endregion -->
 
-      <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px">
-          <div
-            style="width: 4px; height: 16px; background: var(--td-brand-color); border-radius: 2px; margin-top: 4px"
-          ></div>
-          <div style="font-weight: bold">适应症（清洗后）：</div>
+      <!-- #region 适应症（清洗后） -->
+      <div class="edit-source-block mt-16px">
+        <div class="flex gap-8px mb-16px">
+          <div class="edit-source-bar"></div>
+          <div class="font-bold">适应症（清洗后）：</div>
         </div>
-        <!--#region 编辑列表 -->
-        <div style="margin-bottom: 8px">
-          <t-button theme="primary" variant="outline" @click="addEditRow">+ 新增</t-button>
+        <!-- #region 编辑列表 -->
+        <div class="mb-8px">
+          <el-button type="primary" plain @click="addEditRow">+ 新增</el-button>
         </div>
-        <div
-          style="
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 4px;
-            padding: 4px 12px;
-            font-size: 12px;
-            color: #999;
-          "
-        >
+        <div class="edit-row edit-row-header">
           <div style="width: 40px; text-align: center; flex-shrink: 0">序号</div>
           <div style="flex: 1; min-width: 0">适应症归类</div>
           <div style="flex: 2; min-width: 0">人工审核清洗后数据</div>
@@ -152,264 +123,276 @@
         <div
           v-for="(item, index) in currentEditRecord?.indicationTagDtoList || []"
           :key="index"
-          style="
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-            background: #fff;
-            padding: 8px 12px;
-            border-radius: 4px;
-          "
+          class="edit-row"
         >
-          <div style="width: 40px; text-align: center; font-weight: 500; flex-shrink: 0">{{ index + 1 }}</div>
+          <div style="width: 40px; text-align: center; font-weight: 500; flex-shrink: 0">
+            {{ index + 1 }}
+          </div>
           <div style="flex: 1; min-width: 0">
-            <t-select
+            <el-select
               v-model="item.indicationCategoryId"
-              :options="categoryOptions"
               placeholder="请选择适应症归类"
               clearable
               style="width: 100%"
-              value-key="id"
-              :keys="{ label: 'categoryName', value: 'id' }"
-            />
+            >
+              <el-option
+                v-for="opt in categoryOptions"
+                :key="opt.id"
+                :label="opt.categoryName"
+                :value="opt.id"
+              />
+            </el-select>
           </div>
           <div style="flex: 2; min-width: 0">
-            <t-select
+            <el-select
               v-model="item.indicationTagId"
-              :options="dictOptions"
               placeholder="请选择清洗后数据"
               clearable
               filterable
               style="width: 100%"
-              :keys="{ label: 'indicationStandard', value: 'indicationTagId' }"
-            />
+            >
+              <el-option
+                v-for="opt in dictOptions"
+                :key="opt.indicationTagId"
+                :label="opt.indicationStandard"
+                :value="opt.indicationTagId"
+              />
+            </el-select>
           </div>
-          <t-button theme="danger" variant="text" style="flex-shrink: 0" @click="removeEditRow(index)">删除</t-button>
+          <el-button type="danger" link style="flex-shrink: 0" @click="removeEditRow(index)">
+            删除
+          </el-button>
         </div>
-        <!--#endregion-->
+        <!-- #endregion -->
       </div>
-    </t-dialog>
-    <!--#endregion-->
-  </t-card>
-  <!--#endregion-->
+      <!-- #endregion -->
+
+      <template #footer>
+        <el-button @click="editModalVisible = false">取消</el-button>
+        <el-button type="primary" :loading="editLoading" @click="submitEdit">提交</el-button>
+      </template>
+    </el-dialog>
+    <!-- #endregion -->
+  </div>
+  <!-- #endregion -->
 </template>
 
 <script setup lang="ts">
-//#region Imports
-import { ref, reactive, h, onMounted } from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
-import moment from 'moment';
-import { indicationApi } from '@/api';
+defineOptions({ name: 'IndicationClean' })
+
+// #region Imports
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import moment from 'moment'
+import { indicationApi } from '@/api'
 import type {
   IndicationDto,
   IndicationDetailDto,
-  IndicationTagDto,
   IndicationCategory,
   IndicationDictDto,
   IndicationRelDto,
-} from '@/api/types/indication';
-//#endregion
+} from '@/api/types/indication'
+// #endregion
 
-//#region Constants
+// #region Constants
 const statusOptions = [
   { label: '未清洗', value: 0 },
   { label: '已清洗', value: 1 },
   { label: '不用清洗', value: 2 },
-];
-//#endregion
+]
+// #endregion
 
-//#region State
-const formRef = ref();
-const loading = ref(false);
-const tableData = ref<IndicationDto[]>([]);
-const pagination = reactive({
-  current: 1,
-  pageSize: 20,
+// #region 搜索配置与状态
+const loading = ref(false)
+
+const searchConfig = reactive({
+  form: {
+    indicationComment: '',
+    // 默认按“未清洗(0)”查询；MTable 重置会写入 ''，故类型兼容两种空值
+    status: 0 as number | '',
+    page: 1,
+    rows: 20,
+  },
+  items: [
+    {
+      id: 'indicationComment',
+      label: '适应症(源数据)',
+      type: 'input',
+      width: 220,
+      placeholder: '请输入关键字',
+    },
+    {
+      id: 'status',
+      label: '清洗状态',
+      type: 'select',
+      width: 220,
+      placeholder: '请选择',
+      options: statusOptions,
+    },
+  ],
+})
+// #endregion
+
+// #region 表格列配置
+const tableConfig = ref<{
+  data: IndicationDto[]
+  total: number
+  columns: Record<string, any>[]
+}>({
+  data: [],
   total: 0,
-  showJumper: true,
-  foldedMaxPageBtn: 3,
-});
+  columns: [
+    {
+      id: 'rowIndex',
+      type: 'index',
+      label: '序号',
+      width: 60,
+      index: (idx: number) =>
+        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+    },
+    {
+      id: 'indicationComment',
+      label: '适应症(源数据)',
+      minWidth: 300,
+      align: 'left',
+      formatter: (row: any) => row.indicationComment || '-',
+    },
+    { id: 'statisticCount', label: '相关受理号/备案号', width: 140, align: 'center' },
+    { id: 'status', label: '状态', width: 130, align: 'center' },
+    {
+      id: 'updateUser',
+      label: '操作人',
+      width: 100,
+      align: 'center',
+      formatter: (row: any) => row.updateUser || '-',
+    },
+    {
+      id: 'updateTime',
+      label: '更新时间',
+      width: 170,
+      align: 'center',
+      formatter: (row: any) =>
+        row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
+    },
+    { id: 'operation', type: 'action', label: '操作', width: 80, align: 'center', fixed: 'right' },
+  ],
+})
+// #endregion
 
-const formData = reactive({
-  indicationComment: '',
-  status: 0 as number | undefined,
-});
-
+// #region 弹窗与表单状态
 // 备案号弹窗
-const accModalVisible = ref(false);
-const accLoading = ref(false);
-const accData = ref<IndicationRelDto[]>([]);
+const accModalVisible = ref(false)
+const accLoading = ref(false)
+const accData = ref<IndicationRelDto[]>([])
 const accPagination = reactive({
   current: 1,
   pageSize: 5,
   total: 0,
-  showJumper: true,
-});
-const currentIndicationId = ref<number | null>(null);
+})
+const currentIndicationId = ref<number | null>(null)
 
 // 编辑弹窗
-const editModalVisible = ref(false);
-const editLoading = ref(false);
-const currentEditRecord = ref<IndicationDetailDto | null>(null);
+const editModalVisible = ref(false)
+const editLoading = ref(false)
+const currentEditRecord = ref<IndicationDetailDto | null>(null)
 
 // 编辑弹窗下拉选项
-const categoryOptions = ref<IndicationCategory[]>([]);
-const dictOptions = ref<IndicationDictDto[]>([]);
-//#endregion
+const categoryOptions = ref<IndicationCategory[]>([])
+const dictOptions = ref<IndicationDictDto[]>([])
+// #endregion
 
-//#region Columns Definition
-const columns = [
-  {
-    colKey: 'rowIndex',
-    title: '序号',
-    width: 60,
-    cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
-  },
-  {
-    colKey: 'indicationComment',
-    title: '适应症(源数据)',
-    width: 300,
-    cell: (h: any, { row }: any) => row.indicationComment || '-',
-    ellipsis: true,
-  },
-  {
-    colKey: 'statisticCount',
-    title: '相关受理号/备案号',
-    width: 120,
-    align: 'center' as const,
-    cell: (h: any, { row }: any) =>
-      h(
-        'span',
-        {
-          style: { color: '#0052d9', cursor: 'pointer' },
-          onClick: () => openAccModal(row),
-        },
-        row.statisticCount || 0,
-      ),
-  },
-  {
-    colKey: 'status',
-    title: '状态',
-    width: 110,
-  },
-  { colKey: 'updateUser', title: '操作人', width: 100, cell: (h: any, { row }: any) => row.updateUser || '-' },
-  {
-    colKey: 'updateTime',
-    title: '更新时间',
-    width: 170,
-    cell: (h: any, { row }: any) => (row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'),
-  },
-  {
-    colKey: 'operation',
-    title: '操作',
-    width: 80,
-    fixed: 'right' as const,
-  },
-];
-
-const accColumns = [
-  { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
-  { colKey: 'acceptanceNo', title: '相关受理号/备案号', width: 180 },
-  // { colKey: 'indicationComment', title: '适应症描述', width: 200, ellipsis: true },
-  { colKey: 'sourceRef', title: '来源', width: 100, align: 'center' as const },
-];
-
-//#endregion
-
-//#region Data Fetching
-const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
-  loading.value = true;
+// #region 数据加载
+const loadList = async () => {
+  loading.value = true
   try {
+    const { indicationComment, status, page = 1, rows = 20 } = searchConfig.form
     const params: Record<string, any> = {
-      pageNum: curr,
-      pageSize: size,
-      status: formData.status !== undefined ? Number(formData.status) : undefined,
-      indicationComment: formData.indicationComment,
-    };
-    const res = await indicationApi.pageData(params);
-    tableData.value = res.data?.list || [];
-    pagination.current = curr;
-    pagination.pageSize = size;
-    pagination.total = res.data?.total || 0;
+      indicationComment: indicationComment || '',
+      // 空值按“未清洗(0)”处理，保持默认队列语义
+      status: status === '' || status == null ? 0 : Number(status),
+      pageNum: page,
+      pageSize: rows,
+    }
+    const res = await indicationApi.pageData(params)
+    tableConfig.value.data = res.data?.list || []
+    tableConfig.value.total = res.data?.total || 0
   } catch (e) {
-    console.error(e);
+    console.error(e)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-const onSearch = () => fetchData(1);
+// MTable 搜索/重置/翻页统一触发
+const onSearch = () => {
+  loadList()
+}
+// #endregion
 
-const onReset = () => {
-  formData.indicationComment = '';
-  formData.status = undefined;
-  fetchData(1);
-};
-
-const onPageChange = (pageInfo: any) => {
-  fetchData(pageInfo.current, pageInfo.pageSize);
-};
-//#endregion
-
-//#region 清洗状态 select 切换
+// #region 清洗状态 select 切换
 const onCleanStatusChange = async (row: any, val: number) => {
-  if (val === row.cleanStatus) return;
+  if (val === row.cleanStatus) return
   try {
     await indicationApi.updateCleanStatus({
       id: row.indicationCommentId!,
       cleanStatus: val,
-    } as any);
-    MessagePlugin.success('状态已更新');
-    fetchData();
+    } as any)
+    ElMessage.success('状态已更新')
+    loadList()
   } catch (e) {
-    console.error(e);
-    fetchData();
+    console.error(e)
+    loadList()
   }
-};
-//#endregion
+}
+// #endregion
 
-//#region Acc Modal
+// #region 相关受理号/备案号弹窗
 const fetchAcceptanceNos = async (id: number, curr = 1, size = 5) => {
-  accLoading.value = true;
+  accLoading.value = true
   try {
     const res = await indicationApi.getAcceptanceNos({
       id,
       pageNum: curr,
       pageSize: size,
-    });
-    accData.value = res.data?.list || [];
-    accPagination.current = curr;
-    accPagination.pageSize = size;
-    accPagination.total = res.data?.total || 0;
+    })
+    accData.value = res.data?.list || []
+    accPagination.current = curr
+    accPagination.pageSize = size
+    accPagination.total = res.data?.total || 0
   } catch (e) {
-    console.error(e);
+    console.error(e)
   } finally {
-    accLoading.value = false;
+    accLoading.value = false
   }
-};
+}
 
 const openAccModal = (record: IndicationDto) => {
-  if (!record.indicationCommentId) return;
-  currentIndicationId.value = record.indicationCommentId;
-  fetchAcceptanceNos(record.indicationCommentId, 1, 5);
-  accModalVisible.value = true;
-};
+  if (!record.indicationCommentId) return
+  currentIndicationId.value = record.indicationCommentId
+  fetchAcceptanceNos(record.indicationCommentId, 1, 5)
+  accModalVisible.value = true
+}
 
-const onAccPageChange = (pageInfo: any) => {
+const onAccSizeChange = () => {
+  if (!currentIndicationId.value) return
+  accPagination.current = 1
+  fetchAcceptanceNos(currentIndicationId.value, 1, accPagination.pageSize)
+}
+
+const onAccCurrentChange = () => {
   if (currentIndicationId.value) {
-    fetchAcceptanceNos(currentIndicationId.value, pageInfo.current, pageInfo.pageSize);
+    fetchAcceptanceNos(currentIndicationId.value, accPagination.current, accPagination.pageSize)
   }
-};
+}
 
 const onAccModalClose = () => {
-  accModalVisible.value = false;
-};
-//#endregion
+  accModalVisible.value = false
+}
+// #endregion
 
-//#region Edit Modal
+// #region 编辑弹窗
 const openEditModal = (record: IndicationDto) => {
-  if (!record.indicationCommentId) return;
+  if (!record.indicationCommentId) return
   // 使用表格行数据直接回显，无需调用详情接口
   currentEditRecord.value = {
     indicationComment: record.indicationComment,
@@ -430,73 +413,117 @@ const openEditModal = (record: IndicationDto) => {
     statisticCount: record.statisticCount,
     status: record.status,
     updateUser: record.updateUser,
-  };
-  editModalVisible.value = true;
-};
+  }
+  editModalVisible.value = true
+}
 
 const addEditRow = () => {
-  if (!currentEditRecord.value) return;
+  if (!currentEditRecord.value) return
   if (!currentEditRecord.value.indicationTagDtoList) {
-    currentEditRecord.value.indicationTagDtoList = [];
+    currentEditRecord.value.indicationTagDtoList = []
   }
   currentEditRecord.value.indicationTagDtoList.push({
     id: undefined,
     indicationTagId: undefined,
     indicationCategoryId: undefined,
     indicationStandard: '',
-  });
-};
+  })
+}
 
 const removeEditRow = (index: number) => {
-  if (!currentEditRecord.value?.indicationTagDtoList) return;
-  currentEditRecord.value.indicationTagDtoList.splice(index, 1);
-};
+  if (!currentEditRecord.value?.indicationTagDtoList) return
+  currentEditRecord.value.indicationTagDtoList.splice(index, 1)
+}
 
 const submitEdit = async () => {
-  if (!currentEditRecord.value) return;
-  editLoading.value = true;
+  if (!currentEditRecord.value) return
+  editLoading.value = true
   try {
     // 提交前移除 indicationStandard，后端需要的是 indicationTagId
-    const submitData = JSON.parse(JSON.stringify(currentEditRecord.value));
+    const submitData = JSON.parse(JSON.stringify(currentEditRecord.value))
     if (submitData.indicationTagDtoList) {
       submitData.indicationTagDtoList = submitData.indicationTagDtoList.map(
         ({ indicationStandard, ...rest }: any) => rest,
-      );
+      )
     }
-    const res = await indicationApi.saveIndication(submitData);
-    MessagePlugin.success('保存成功');
-    editModalVisible.value = false;
-    fetchData();
+    await indicationApi.saveIndication(submitData)
+    ElMessage.success('保存成功')
+    editModalVisible.value = false
+    loadList()
   } catch (e) {
-    console.error(e);
+    console.error(e)
   } finally {
-    editLoading.value = false;
+    editLoading.value = false
   }
-};
+}
 
 const onEditModalClose = () => {
-  editModalVisible.value = false;
-  currentEditRecord.value = null;
-};
-//#endregion
+  editModalVisible.value = false
+  currentEditRecord.value = null
+}
+// #endregion
 
-//#region Lifecycle
+// #region 生命周期
 onMounted(async () => {
   // 获取分类下拉选项
   try {
-    const catRes = await indicationApi.categoryPageData({ pageNum: 1, pageSize: 1000 });
-    categoryOptions.value = catRes.data?.list || [];
+    const catRes = await indicationApi.categoryPageData({ pageNum: 1, pageSize: 1000 })
+    categoryOptions.value = catRes.data?.list || []
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
   // 获取清洗后数据字典选项
   try {
-    const dictRes = await indicationApi.dictPageData({ pageNum: 1, pageSize: 1000 });
-    dictOptions.value = dictRes.data?.list || [];
+    const dictRes = await indicationApi.dictPageData({ pageNum: 1, pageSize: 1000 })
+    dictOptions.value = dictRes.data?.list || []
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
-  fetchData();
-});
-//#endregion
+  loadList()
+})
+// #endregion
 </script>
+
+<style scoped lang="scss">
+// #region 页面样式
+.indication-clean-page {
+  padding: 10px;
+}
+
+// 弹窗内的浅蓝色信息块
+.edit-source-block {
+  background-color: #e6f7ff;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+// 信息块标题前的品牌色竖条
+.edit-source-bar {
+  width: 4px;
+  height: 16px;
+  background: var(--el-color-primary);
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+// 编辑列表行
+.edit-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+// 编辑列表表头
+.edit-row-header {
+  margin-bottom: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: #999;
+  background: transparent;
+}
+// #endregion
+</style>

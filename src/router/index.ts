@@ -74,7 +74,7 @@ export const menuRoutes: RouteRecordRaw[] = [
       {
         path: '/center/clean',
         name: 'CenterClean',
-        component: () => import('@/pages/indication/clean/index.vue'),
+        component: () => import('@/pages/center/clean/index.vue'),
         meta: { title: '研究中心清洗' },
       },
       {
