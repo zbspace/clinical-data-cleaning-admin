@@ -34,9 +34,20 @@
     <!-- #endregion -->
 
     <!-- #region 药品别名弹窗 -->
-    <el-dialog v-model="aliasModalVisible" title="药品别名" width="600px" @closed="onAliasModalClose">
+    <el-dialog
+      v-model="aliasModalVisible"
+      title="药品别名"
+      width="600px"
+      @closed="onAliasModalClose"
+    >
       <el-table :data="aliasData" v-loading="aliasLoading" border stripe :max-height="360">
-        <el-table-column type="index" label="序号" width="80" align="center" :index="aliasIndexFn" />
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center"
+          :index="aliasIndexFn"
+        />
         <el-table-column
           prop="aliasName"
           label="源数据药品名（别名）"
@@ -216,8 +227,8 @@ const tableConfig = ref<{
       type: 'index',
       label: '序号',
       width: 60,
-      index: (idx: number) =>
-        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+      index: (idx: number) => idx + 1,
+      fixed: 'left',
     },
     { id: 'drugStandardName', label: '药品名（清洗后）', width: 180, align: 'left' },
     {
@@ -226,6 +237,7 @@ const tableConfig = ref<{
       width: 250,
       align: 'left',
       formatter: (row: DrugStandardDto) => row.genericNameCn || '-',
+      fixed: 'left',
     },
     {
       id: 'genericNameEn',
@@ -248,7 +260,7 @@ const tableConfig = ref<{
       align: 'left',
       formatter: (row: DrugStandardDto) => row.otherInfo || '-',
     },
-    { id: 'dosageForm', label: '剂型', width: 100, align: 'left' },
+    { id: 'dosageForm', label: '剂型', width: 160, align: 'left' },
     { id: 'drugType', label: '药品类型', width: 140, align: 'left' },
     {
       id: 'companyName',

@@ -121,6 +121,7 @@
               :label="col.label || '序号'"
               :width="col.width || 60"
               :align="col.align || 'center'"
+              :fixed="col.fixed"
               v-bind="getColumnAttrs(col)"
             />
             <!-- 多选列 -->

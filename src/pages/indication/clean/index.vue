@@ -78,12 +78,7 @@
     <!-- #endregion -->
 
     <!-- #region 编辑弹窗 -->
-    <el-dialog
-      v-model="editModalVisible"
-      title="编辑"
-      width="800px"
-      @closed="onEditModalClose"
-    >
+    <el-dialog v-model="editModalVisible" title="编辑" width="800px" @closed="onEditModalClose">
       <!-- #region 适应症（源数据） -->
       <div class="edit-source-block">
         <div class="flex gap-8px mb-8px">
@@ -97,7 +92,7 @@
           placeholder="请输入适应症（源数据）"
           @update:model-value="
             (val: string) => {
-              if (currentEditRecord) currentEditRecord.indicationComment = val;
+              if (currentEditRecord) currentEditRecord.indicationComment = val
             }
           "
         />
@@ -247,8 +242,7 @@ const tableConfig = ref<{
       type: 'index',
       label: '序号',
       width: 60,
-      index: (idx: number) =>
-        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+      index: (idx: number) => idx + 1,
     },
     {
       id: 'indicationComment',
@@ -257,8 +251,8 @@ const tableConfig = ref<{
       align: 'left',
       formatter: (row: any) => row.indicationComment || '-',
     },
-    { id: 'statisticCount', label: '相关受理号/备案号', width: 140, align: 'center' },
-    { id: 'status', label: '状态', width: 130, align: 'center' },
+    { id: 'statisticCount', label: '相关受理号/备案号', width: 150, align: 'center' },
+    { id: 'status', label: '状态', width: 140, align: 'center' },
     {
       id: 'updateUser',
       label: '操作人',
@@ -269,7 +263,7 @@ const tableConfig = ref<{
     {
       id: 'updateTime',
       label: '更新时间',
-      width: 170,
+      width: 200,
       align: 'center',
       formatter: (row: any) =>
         row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',

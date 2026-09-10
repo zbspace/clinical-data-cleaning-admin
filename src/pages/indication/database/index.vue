@@ -35,7 +35,13 @@
       @closed="onAliasModalClose"
     >
       <el-table :data="aliasData" v-loading="aliasLoading" border stripe :max-height="360">
-        <el-table-column type="index" label="序号" width="80" align="center" :index="aliasIndexFn" />
+        <el-table-column
+          type="index"
+          label="序号"
+          width="80"
+          align="center"
+          :index="aliasIndexFn"
+        />
         <el-table-column
           prop="aliasName"
           label="源数据适应症（别名）"
@@ -59,7 +65,12 @@
     <!-- #endregion -->
 
     <!-- #region 编辑弹窗 -->
-    <el-dialog v-model="editModalVisible" title="编辑适应症" width="600px" @closed="onEditModalClose">
+    <el-dialog
+      v-model="editModalVisible"
+      title="编辑适应症"
+      width="600px"
+      @closed="onEditModalClose"
+    >
       <el-form :model="editFormData" label-width="100px">
         <el-form-item label="适应症归类">
           <el-select
@@ -174,22 +185,21 @@ const tableConfig = ref<{
       type: 'index',
       label: '序号',
       width: 80,
-      index: (idx: number) =>
-        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+      index: (idx: number) => idx + 1,
     },
     {
       id: 'indicationCategoryName',
       label: '适应症归类',
-      width: 150,
+      minWidth: 150,
       align: 'left',
       formatter: (row: IndicationDictDto) => row.indicationCategoryName || '-',
     },
-    { id: 'indicationStandard', label: '适应症', width: 220, align: 'left' },
-    { id: 'statisticCount', label: '源数据适应症（别名）', width: 180, align: 'center' },
+    { id: 'indicationStandard', label: '适应症', minWidth: 220, align: 'left' },
+    { id: 'statisticCount', label: '源数据适应症（别名）', minWidth: 180, align: 'center' },
     {
       id: 'updateTime',
       label: '更新时间',
-      width: 170,
+      minWidth: 170,
       align: 'center',
       formatter: (row: IndicationDictDto) =>
         row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
@@ -197,7 +207,7 @@ const tableConfig = ref<{
     {
       id: 'updateUser',
       label: '操作人',
-      width: 120,
+      minWidth: 120,
       align: 'left',
       formatter: (row: IndicationDictDto) => row.updateUser || '-',
     },
@@ -216,7 +226,9 @@ const loadList = async () => {
       pageSize: rows,
       // 重置后 select 为空字符串，归一化为 undefined，保持原有请求语义
       indicationCategoryId:
-        indicationCategoryId === '' || indicationCategoryId == null ? undefined : indicationCategoryId,
+        indicationCategoryId === '' || indicationCategoryId == null
+          ? undefined
+          : indicationCategoryId,
       indicationStandard: indicationStandard || undefined,
     }
     const res = await indicationApi.dictPageData(params)

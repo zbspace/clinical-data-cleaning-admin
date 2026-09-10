@@ -100,22 +100,22 @@ const searchConfig = reactive({
       id: 'username',
       label: '用户名',
       type: 'input',
-      width: 200,
-      placeholder: '请输入用户名',
+      width: 140,
+      placeholder: '请输入',
     },
     {
       id: 'phone',
       label: '手机号',
       type: 'input',
-      width: 200,
-      placeholder: '请输入手机号',
+      width: 140,
+      placeholder: '请输入',
     },
     {
       id: 'vipCode',
       label: '用户类型',
       type: 'select',
-      width: 200,
-      placeholder: '请选择用户类型',
+      width: 140,
+      placeholder: '请选择',
       options: vipCodeOptions,
     },
   ],
@@ -135,11 +135,11 @@ const tableConfig = ref<{ data: WxUserDto[]; total: number; columns: Record<stri
       index: (idx: number) =>
         idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
     },
-    { id: 'username', label: '用户名', width: 160 },
+    { id: 'username', label: '用户名', minWidth: 260 },
     {
       id: 'phone',
       label: '手机号',
-      width: 140,
+      minWidth: 140,
       formatter: (row: WxUserDto) => row.phone || '-',
     },
     {
@@ -152,13 +152,13 @@ const tableConfig = ref<{ data: WxUserDto[]; total: number; columns: Record<stri
     {
       id: 'vipDesc',
       label: '用户类型',
-      width: 120,
+      minWidth: 120,
       formatter: (row: WxUserDto) => row.vipDesc || '-',
     },
     {
       id: 'vipEndTime',
       label: '到期时间',
-      width: 170,
+      minWidth: 170,
       formatter: (row: WxUserDto) =>
         row.vipEndTime ? moment(row.vipEndTime).format('YYYY-MM-DD HH:mm:ss') : '-',
     },

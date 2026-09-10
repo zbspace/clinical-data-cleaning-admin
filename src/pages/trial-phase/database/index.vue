@@ -109,14 +109,14 @@ const tableConfig = ref<{
     {
       id: 'cleanedTrialStages',
       label: '试验分期（清洗后）',
-      width: 160,
+      minWidth: 160,
       align: 'center',
       formatter: (row: CdeTrialStagesMapping) => row.cleanedTrialStages || '-',
     },
     {
       id: 'updateTime',
       label: '更新时间',
-      width: 170,
+      minWidth: 170,
       align: 'center',
       formatter: (row: CdeTrialStagesMapping) =>
         row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
@@ -124,11 +124,11 @@ const tableConfig = ref<{
     {
       id: 'updateUser',
       label: '操作人',
-      width: 100,
+      minWidth: 100,
       align: 'center',
       formatter: (row: CdeTrialStagesMapping) => row.updateUser || '-',
     },
-    { id: 'operation', type: 'action', label: '操作', width: 80, align: 'center', fixed: 'right' },
+    { id: 'operation', type: 'action', label: '操作', width: 100, align: 'center', fixed: 'right' },
   ],
 })
 // #endregion
