@@ -118,7 +118,7 @@
         </p>
         <p style="margin: 0">
           <strong>药品类型：</strong>
-          {{ currentEditRecord?.drugType || '-' }}
+          {{ currentEditRecord?.drugTypeOrigin || '-' }}
         </p>
       </div>
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
@@ -370,7 +370,7 @@ const columns = [
 
   { colKey: 'dosageForm', title: '剂型', width: 100, cell: (h: any, { row }: any) => row.dosageForm || '-' },
   {
-    colKey: 'drugType',
+    colKey: 'drugTypeOrigin',
     title: '药品类型',
     width: 150,
     cell: (h: any, { row }: any) => row.drugType || row.drugTypeOrigin || '-',
