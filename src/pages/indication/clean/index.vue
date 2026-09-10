@@ -268,7 +268,7 @@ const tableConfig = ref<{
       formatter: (row: any) =>
         row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
     },
-    { id: 'operation', type: 'action', label: '操作', width: 80, align: 'center', fixed: 'right' },
+    { id: 'operation', type: 'action', label: '操作', width: 100, align: 'center', fixed: 'right' },
   ],
 })
 // #endregion
