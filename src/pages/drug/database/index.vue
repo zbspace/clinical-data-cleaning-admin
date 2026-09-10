@@ -77,7 +77,7 @@
       width="600px"
       @closed="onEditModalClose"
     >
-      <el-form :model="editFormData" label-width="180px">
+      <el-form :model="editFormData" label-width="160px">
         <div class="form-tip-block">
           <el-form-item label="药品名（清洗后）">
             <el-input v-model="editFormData.cleanedDrugName" />
@@ -453,7 +453,7 @@ onMounted(() => {
   padding: 10px;
 
   .form-tip-block {
-    background-color: #e6f7ff;
+    // background-color: var(--el-color-primary-light-9);
     padding: 16px;
     border-radius: 4px;
   }

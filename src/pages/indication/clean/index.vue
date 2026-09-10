@@ -486,7 +486,7 @@ onMounted(async () => {
 
 // 弹窗内的浅蓝色信息块
 .edit-source-block {
-  background-color: #e6f7ff;
+  // background-color: var(--el-color-primary-light-9);
   padding: 16px;
   border-radius: 4px;
 }

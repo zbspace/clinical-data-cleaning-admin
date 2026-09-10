@@ -239,10 +239,16 @@ const tableConfig = ref<Record<string, any>>({
       type: 'index',
       label: '序号',
       width: 80,
-      index: (idx: number) =>
-        idx + 1 + (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+      index: (idx: number) => idx + 1,
+      fixed: 'left',
     },
-    { id: 'hosStandardName', label: '中心名称（标准名）', minWidth: 300, align: 'left' },
+    {
+      id: 'hosStandardName',
+      label: '中心名称（标准名）',
+      minWidth: 300,
+      align: 'left',
+      fixed: 'left',
+    },
     { id: 'country', label: '国家', width: 100, align: 'center' },
     { id: 'province', label: '省份', width: 150, align: 'center' },
     { id: 'city', label: '城市', width: 150, align: 'center' },
@@ -257,7 +263,7 @@ const tableConfig = ref<Record<string, any>>({
       formatter: (row: any) =>
         row.updateTime ? moment(row.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-',
     },
-    { id: 'operation', type: 'action', label: '操作', width: 170, align: 'center', fixed: 'right' },
+    { id: 'operation', type: 'action', label: '操作', width: 160, align: 'center', fixed: 'right' },
   ],
 })
 //#endregion

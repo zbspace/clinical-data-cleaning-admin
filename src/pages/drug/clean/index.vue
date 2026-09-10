@@ -192,7 +192,7 @@
     <!-- #region 新增标准名弹窗 -->
     <el-dialog v-model="addModalVisible" title="新增标准名" width="600px">
       <el-form :model="addFormData" label-width="180px" label-position="left">
-        <div class="form-info-block">
+        <div class="">
           <el-form-item label="药品名（清洗后）">
             <el-input v-model="addFormData.cleanedDrugName" />
           </el-form-item>
@@ -704,7 +704,7 @@ onMounted(async () => {
 
 // 弹窗内浅蓝色信息块
 .form-info-block {
-  background-color: #e6f7ff;
+  background-color: var(--el-color-primary-light-9);
   padding: 16px;
   border-radius: 4px;
   margin-bottom: 16px;
@@ -712,7 +712,7 @@ onMounted(async () => {
 
 // 弹窗顶部源数据信息块
 .form-source-block {
-  background-color: #f3f4f6;
+  background-color: var(--el-color-primary-light-9);
   padding: 16px;
   border-radius: 4px;
   margin-bottom: 16px;
