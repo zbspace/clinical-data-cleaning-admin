@@ -1,316 +1,293 @@
 <template>
   <!--#region 试用申请页面 -->
-  <t-card bordered>
-    <div ref="searchCardRef" style="margin-bottom: 16px" class="search-card">
-      <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
-        试用申请
-      </h2>
-
-      <!--#region 搜索表单 -->
-      <div
-        style="
-          background: #f8fafc;
-          padding: 16px;
-          border-radius: 12px;
-          border: 1px solid var(--td-border-level-1-color);
-        "
-      >
-        <t-form
-          ref="formRef"
-          :data="formData"
-          layout="inline"
-          label-width="100"
-          style="display: flex; gap: 16px 0; flex-wrap: wrap"
-          @submit="onSearch"
-        >
-          <t-form-item label="用户名" name="userName" style="margin-bottom: 0">
-            <t-input v-model="formData.userName" placeholder="请输入用户名" clearable style="width: 200px" />
-          </t-form-item>
-          <t-form-item label="手机号" name="userPhone" style="margin-bottom: 0">
-            <t-input v-model="formData.userPhone" placeholder="请输入手机号" clearable style="width: 200px" />
-          </t-form-item>
-          <t-form-item label="公司" name="userCompany" style="margin-bottom: 0">
-            <t-input v-model="formData.userCompany" placeholder="请输入公司" clearable style="width: 200px" />
-          </t-form-item>
-          <t-form-item label="状态" name="approvalStatus" style="margin-bottom: 0">
-            <t-select
-              v-model="formData.approvalStatus"
-              :options="approvalStatusOptions"
-              placeholder="请选择状态"
-              clearable
-              style="width: 200px"
-            />
-          </t-form-item>
-          <div style="display: flex; align-items: center; margin-left: auto">
-            <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
-            <t-button theme="primary" type="submit"> 查询 </t-button>
-          </div>
-        </t-form>
-      </div>
-      <!--#endregion-->
-    </div>
-
-    <!--#region 数据表格 -->
-    <t-table
-      :data="tableData"
-      :columns="columns"
-      row-key="id"
+  <div class="client-trial-apply-page">
+    <!-- #region 主表格区（MTable：搜索 + 表格 + 分页 + 高度自适应） -->
+    <MTable
+      v-model:tableConfig="tableConfig"
+      :search-config="searchConfig"
       :loading="loading"
-      bordered
-      stripe
-      table-layout="fixed"
-      :max-height="tableMaxHeight"
-      style="white-space: nowrap"
-      :pagination="pagination"
-      @page-change="onPageChange"
+      title="试用申请"
+      @search="onSearch"
     >
+      <!-- #region 审批状态列 -->
       <template #approvalStatus="{ row }">
-        <t-tag :theme="approvalStatusTheme(row.approvalStatus)" variant="light">
+        <el-tag :type="approvalStatusTagType(row.approvalStatus)" effect="light">
           {{ approvalStatusLabel(row.approvalStatus) }}
-        </t-tag>
+        </el-tag>
       </template>
-      <template #operation="{ row }">
-        <t-button theme="primary" :disabled="row.approvalStatus !== 1" @click="openApprovalModal(row)"> 审核 </t-button>
-      </template>
-    </t-table>
-    <!--#endregion-->
+      <!-- #endregion -->
 
-    <!--#region 审批弹窗 -->
-    <t-dialog
-      v-model:visible="approvalModalVisible"
-      header="申请审批"
-      width="480px"
-      :confirm-btn="{ content: '提交', theme: 'primary', loading: approvalLoading }"
-      @confirm="submitApproval"
-    >
-      <t-form
-        ref="approvalFormRef"
-        :data="approvalFormData"
-        label-width="100px"
-        label-align="left"
-        style="padding: 8px 0"
-      >
-        <t-form-item label="用户姓名" name="userName">
-          <t-input :value="approvalFormData.userName" disabled />
-        </t-form-item>
-        <t-form-item label="审批状态" name="approvalStatus">
-          <t-select
+      <!-- #region 操作列 -->
+      <template #tableRowOperation="{ row }">
+        <el-button
+          type="primary"
+          :disabled="row.approvalStatus !== 1"
+          @click="openApprovalModal(row)"
+        >
+          审核
+        </el-button>
+      </template>
+      <!-- #endregion -->
+    </MTable>
+    <!-- #endregion -->
+
+    <!-- #region 审批弹窗 -->
+    <el-dialog v-model="approvalModalVisible" title="申请审批" width="480px">
+      <el-form :model="approvalFormData" label-width="100px" class="pt-8px">
+        <el-form-item label="用户姓名">
+          <el-input :model-value="approvalFormData.userName" disabled />
+        </el-form-item>
+        <el-form-item label="审批状态">
+          <el-select
             v-model="approvalFormData.approvalStatus"
-            :options="approvalStatusOptions.filter((o) => o.value !== 1)"
             placeholder="请选择审批状态"
+            class="!w-full"
+          >
+            <el-option
+              v-for="opt in approvalSelectOptions"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="审批备注">
+          <el-input
+            v-model="approvalFormData.approvalRemark"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入审批备注"
+            :maxlength="200"
+            show-word-limit
           />
-        </t-form-item>
-        <t-form-item label="审批备注" name="approvalRemark">
-          <t-textarea v-model="approvalFormData.approvalRemark" placeholder="请输入审批备注" :maxlength="200" />
-        </t-form-item>
-      </t-form>
-    </t-dialog>
-    <!--#endregion-->
-  </t-card>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="approvalModalVisible = false">取消</el-button>
+        <el-button type="primary" :loading="approvalLoading" @click="submitApproval">
+          提交
+        </el-button>
+      </template>
+    </el-dialog>
+    <!-- #endregion -->
+  </div>
   <!--#endregion-->
 </template>
 
 <script setup lang="ts">
-//#region Imports
-import { ref, reactive, onMounted } from 'vue';
-import { MessagePlugin } from 'tdesign-vue-next';
-import moment from 'moment';
-import { vipApplicationApi } from '@/api';
-import type { VipApplication } from '@/api/types/vipApplication';
-//#endregion
+defineOptions({ name: 'ClientTrialApply' })
 
-//#region Constants
+// #region 依赖导入
+import { ref, reactive, computed, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import moment from 'moment'
+import { vipApplicationApi } from '@/api'
+import type { VipApplication } from '@/api/types/vipApplication'
+// #endregion
+
+// #region 常量配置
 // 审批状态：1-待审批 2-审批通过 3-审批不通过
 const approvalStatusOptions = [
   { label: '待审批', value: 1 },
   { label: '审批通过', value: 2 },
   { label: '审批不通过', value: 3 },
-];
+]
 
-const approvalStatusLabel = (status?: number) => {
-  return approvalStatusOptions.find((o) => o.value === status)?.label || '-';
-};
+const approvalStatusLabel = (status?: number) =>
+  approvalStatusOptions.find((o) => o.value === status)?.label || '-'
 
-const approvalStatusTheme = (status?: number) => {
-  if (status === 1) return 'warning' as const;
-  if (status === 2) return 'success' as const;
-  if (status === 3) return 'danger' as const;
-  return 'default' as const;
-};
-//#endregion
+const approvalStatusTagType = (
+  status?: number,
+): 'primary' | 'success' | 'info' | 'warning' | 'danger' => {
+  if (status === 1) return 'warning'
+  if (status === 2) return 'success'
+  if (status === 3) return 'danger'
+  return 'info'
+}
 
-//#region State
-const formRef = ref();
-const approvalFormRef = ref();
-const loading = ref(false);
+// 审批弹窗可选状态（排除“待审批”）
+const approvalSelectOptions = computed(() => approvalStatusOptions.filter((o) => o.value !== 1))
+// #endregion
 
-// 表格最大高度，根据 .search-card 动态计算
-const tableMaxHeight = ref('calc(100vh - 320px)');
-const searchCardRef = ref<HTMLElement | null>(null);
+// #region 搜索配置与状态
+const loading = ref(false)
 
-const tableData = ref<VipApplication[]>([]);
-const pagination = reactive({
-  current: 1,
-  pageSize: 20,
+const searchConfig = reactive({
+  form: {
+    userName: '',
+    userPhone: '',
+    userCompany: '',
+    // 初值为 undefined（不过滤）；MTable 重置会写入 ''，故类型兼容两种空值
+    approvalStatus: undefined as number | '' | undefined,
+    page: 1,
+    rows: 20,
+  },
+  items: [
+    {
+      id: 'userName',
+      label: '用户名',
+      type: 'input',
+      width: 200,
+      placeholder: '请输入用户名',
+    },
+    {
+      id: 'userPhone',
+      label: '手机号',
+      type: 'input',
+      width: 200,
+      placeholder: '请输入手机号',
+    },
+    {
+      id: 'userCompany',
+      label: '公司',
+      type: 'input',
+      width: 200,
+      placeholder: '请输入公司',
+    },
+    {
+      id: 'approvalStatus',
+      label: '状态',
+      type: 'select',
+      width: 200,
+      placeholder: '请选择状态',
+      options: approvalStatusOptions,
+    },
+  ],
+})
+// #endregion
+
+// #region 表格列配置
+const tableConfig = ref<{ data: VipApplication[]; total: number; columns: Record<string, any>[] }>({
+  data: [],
   total: 0,
-  showJumper: true,
-  foldedMaxPageBtn: 3,
-});
+  columns: [
+    {
+      type: 'index',
+      label: '序号',
+      width: 80,
+      index: (index: number) =>
+        index +
+        1 +
+        (Number(searchConfig.form.page || 1) - 1) * Number(searchConfig.form.rows || 20),
+    },
+    { id: 'userName', label: '姓名', width: 120 },
+    {
+      id: 'userPhone',
+      label: '电话',
+      width: 140,
+      formatter: (row: VipApplication) => row.userPhone || '-',
+    },
+    {
+      id: 'userCompany',
+      label: '公司',
+      width: 180,
+      formatter: (row: VipApplication) => row.userCompany || '-',
+    },
+    {
+      id: 'userPosition',
+      label: '职位',
+      width: 120,
+      formatter: (row: VipApplication) => row.userPosition || '-',
+    },
+    {
+      id: 'applicateDate',
+      label: '申请日期',
+      width: 170,
+      formatter: (row: VipApplication) =>
+        row.applicateDate ? moment(row.applicateDate).format('YYYY-MM-DD HH:mm:ss') : '-',
+    },
+    { id: 'approvalStatus', label: '状态', width: 120 },
+    { type: 'action', label: '操作', width: 100, fixed: 'right' },
+  ],
+})
+// #endregion
 
-const formData = reactive<Record<string, any>>({
-  userName: '',
-  userPhone: '',
-  userCompany: '',
-  approvalStatus: undefined,
-});
+// #region 数据加载
+const loadList = async () => {
+  loading.value = true
+  try {
+    const {
+      userName,
+      userPhone,
+      userCompany,
+      approvalStatus,
+      page = 1,
+      rows = 20,
+    } = searchConfig.form
+    const res = await vipApplicationApi.getVipApplicationList({
+      userName: userName || undefined,
+      userPhone: userPhone || undefined,
+      userCompany: userCompany || undefined,
+      // 清空/重置后为 ''，需归一化为 undefined，避免 Number('') === 0 的误传
+      approvalStatus:
+        approvalStatus === '' || approvalStatus == null ? undefined : Number(approvalStatus),
+      pageNum: page,
+      pageSize: rows,
+    })
+    tableConfig.value.data = res.data?.list || []
+    tableConfig.value.total = res.data?.total || 0
+  } catch (e) {
+    console.error('Fetch data failed:', e)
+  } finally {
+    loading.value = false
+  }
+}
 
-// 审批弹窗
-const approvalModalVisible = ref(false);
-const approvalLoading = ref(false);
-const currentApprovalRecord = ref<VipApplication | null>(null);
+// MTable 搜索/重置/翻页统一触发
+const onSearch = () => {
+  loadList()
+}
+// #endregion
+
+// #region 审批弹窗
+const approvalModalVisible = ref(false)
+const approvalLoading = ref(false)
 
 const approvalFormData = reactive<Record<string, any>>({
   id: undefined,
   userName: '',
   approvalStatus: 2,
   approvalRemark: '',
-});
-//#endregion
+})
 
-//#region Columns Definition
-const columns = [
-  {
-    colKey: 'rowIndex',
-    title: '序号',
-    width: 80,
-    cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
-  },
-  { colKey: 'userName', title: '姓名', width: 120, ellipsis: true },
-  { colKey: 'userPhone', title: '电话', width: 140, cell: (h: any, { row }: any) => row.userPhone || '-' },
-  {
-    colKey: 'userCompany',
-    title: '公司',
-    width: 180,
-    ellipsis: true,
-    cell: (h: any, { row }: any) => row.userCompany || '-',
-  },
-  {
-    colKey: 'userPosition',
-    title: '职位',
-    width: 120,
-    ellipsis: true,
-    cell: (h: any, { row }: any) => row.userPosition || '-',
-  },
-  {
-    colKey: 'applicateDate',
-    title: '申请日期',
-    width: 170,
-    cell: (h: any, { row }: any) => (row.applicateDate ? moment(row.applicateDate).format('YYYY-MM-DD HH:mm:ss') : '-'),
-  },
-  {
-    colKey: 'approvalStatus',
-    title: '状态',
-    width: 120,
-  },
-  {
-    colKey: 'operation',
-    title: '操作',
-    width: 100,
-    fixed: 'right' as const,
-  },
-];
-//#endregion
-
-//#region 动态表格高度
-const updateTableHeight = () => {
-  const card = searchCardRef.value;
-  if (!card) return;
-  const rect = card.getBoundingClientRect();
-  // 剩余高度 = 视口高度 - search-card 底部位置 - 固定偏移（card 内边距 + 表格头部 + 分页 + 留白）
-  const availableHeight = window.innerHeight - rect.bottom - 106;
-  tableMaxHeight.value = `${Math.max(200, Math.floor(availableHeight))}px`;
-};
-//#endregion
-
-//#region Data Fetching
-const fetchData = async (curr = pagination.current, size = pagination.pageSize) => {
-  loading.value = true;
-  try {
-    const res = await vipApplicationApi.getVipApplicationList({
-      userName: formData.userName || undefined,
-      userPhone: formData.userPhone || undefined,
-      userCompany: formData.userCompany || undefined,
-      approvalStatus: formData.approvalStatus !== undefined ? Number(formData.approvalStatus) : undefined,
-      pageNum: curr,
-      pageSize: size,
-    });
-    tableData.value = res.data?.list || [];
-    pagination.current = curr;
-    pagination.pageSize = size;
-    pagination.total = res.data?.total || 0;
-  } catch (e) {
-    console.error('Fetch data failed:', e);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const onSearch = () => fetchData(1);
-
-const onReset = () => {
-  formData.userName = '';
-  formData.userPhone = '';
-  formData.userCompany = '';
-  formData.approvalStatus = undefined;
-  fetchData(1);
-};
-
-const onPageChange = (pageInfo: any) => {
-  fetchData(pageInfo.current, pageInfo.pageSize);
-};
-//#endregion
-
-//#region Approval Modal
 const openApprovalModal = (record: VipApplication) => {
-  currentApprovalRecord.value = record;
-  approvalFormData.id = record.id;
-  approvalFormData.userName = record.userName || '';
-  approvalFormData.approvalStatus = 2;
-  approvalFormData.approvalRemark = '';
-  approvalModalVisible.value = true;
-};
+  approvalFormData.id = record.id
+  approvalFormData.userName = record.userName || ''
+  approvalFormData.approvalStatus = 2
+  approvalFormData.approvalRemark = ''
+  approvalModalVisible.value = true
+}
 
 const submitApproval = async () => {
-  approvalLoading.value = true;
+  approvalLoading.value = true
   try {
     await vipApplicationApi.approval({
       id: approvalFormData.id,
       approvalStatus: Number(approvalFormData.approvalStatus),
       approvalRemark: approvalFormData.approvalRemark || undefined,
-    });
-    MessagePlugin.success('审批成功');
-    approvalModalVisible.value = false;
-    fetchData();
+    })
+    ElMessage.success('审批成功')
+    approvalModalVisible.value = false
+    loadList()
   } catch (e) {
-    console.error(e);
+    console.error(e)
   } finally {
-    approvalLoading.value = false;
+    approvalLoading.value = false
   }
-};
-//#endregion
+}
+// #endregion
 
-//#region Lifecycle
+// #region 生命周期
 onMounted(() => {
-  fetchData();
-
-  // 初始化表格高度 + 监听 resize + 监听 search-card 尺寸变化
-  updateTableHeight();
-  window.addEventListener('resize', updateTableHeight);
-  const card = searchCardRef.value;
-  if (card) {
-    const observer = new ResizeObserver(updateTableHeight);
-    observer.observe(card);
-  }
-});
-//#endregion
+  loadList()
+})
+// #endregion
 </script>
+
+<style scoped lang="scss">
+// #region 页面样式
+.client-trial-apply-page {
+  padding: 10px;
+}
+// #endregion
+</style>
