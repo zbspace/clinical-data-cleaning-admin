@@ -1,5 +1,4 @@
 <template>
-  <!--#region 登录页面 -->
   <div
     class="auth-page-wrapper"
     style="
