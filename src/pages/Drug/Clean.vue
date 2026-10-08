@@ -89,7 +89,16 @@
         bordered
         :pagination="accPagination"
         @page-change="onAccPageChange"
-      />
+      >
+        <template #developmentCode="{ row }">
+          <div style="display: flex; gap: 8px; align-items: center">
+            <t-input style="width: 120px" v-model="devCodeDraft[row.acceptanceNo]" placeholder="请输入" />
+            <t-button v-if="isDevCodeChanged(row)" theme="primary" size="small" @click="onSaveDevelopmentCode(row)">
+              保存
+            </t-button>
+          </div>
+        </template>
+      </t-table>
     </t-dialog>
     <!--#endregion-->
 
@@ -261,6 +270,8 @@ const companyOptions = ref<{ id?: number; companyStandardName?: string }[]>([]);
 const accModalVisible = ref(false);
 const accData = ref<any[]>([]);
 const accLoading = ref(false);
+// 研发代码编辑草稿，key 为 acceptanceNo
+const devCodeDraft = reactive<Record<string, string>>({});
 const currentAccDrugId = ref<number | undefined>(undefined);
 const accPagination = reactive({ current: 1, pageSize: 20, total: 0 });
 
@@ -395,6 +406,7 @@ const columns = [
 const accColumns = [
   { colKey: 'rowIndex', title: '序号', width: 80, cell: (h: any, { rowIndex }: any) => rowIndex + 1 },
   { colKey: 'acceptanceNo', title: '相关登记号/备案号', width: 160 },
+  { colKey: 'developmentCode', title: '研发代码', width: 200 },
   { colKey: 'companyNameOrigin', title: '相关公司（源数据）', width: 180, ellipsis: true },
   { colKey: 'registrationCategoryOrigin', title: '注册分类（源数据）', width: 160 },
   { colKey: 'registrationCategoryCleaned', title: '注册分类（清洗后）', width: 160 },
@@ -626,6 +638,9 @@ const fetchAccData = async (curr = accPagination.current, size = accPagination.p
       pageSize: size,
     });
     accData.value = res.data?.list || [];
+    accData.value.forEach((row: any) => {
+      if (row.acceptanceNo) devCodeDraft[row.acceptanceNo] = row.developmentCode ?? '';
+    });
     accPagination.current = curr;
     accPagination.pageSize = size;
     accPagination.total = res.data?.total || 0;
@@ -639,6 +654,31 @@ const fetchAccData = async (curr = accPagination.current, size = accPagination.p
 
 const onAccPageChange = (pageInfo: any) => {
   fetchAccData(pageInfo.current, pageInfo.pageSize);
+};
+
+// 研发代码是否发生变动
+const isDevCodeChanged = (row: any) => {
+  const draft = devCodeDraft[row.acceptanceNo] ?? '';
+  return draft.trim() !== (row.developmentCode ?? '');
+};
+
+// 保存研发代码
+const onSaveDevelopmentCode = async (row: any) => {
+  const key = row.acceptanceNo;
+  const newVal = (devCodeDraft[key] ?? '').trim();
+  if (newVal === (row.developmentCode ?? '')) return;
+  try {
+    await drugApi.editDevelopmentCode({
+      id: row.id,
+      developmentCode: newVal,
+    });
+    row.developmentCode = newVal;
+    devCodeDraft[key] = newVal;
+    MessagePlugin.success('保存成功');
+  } catch (e) {
+    console.error(e);
+    fetchAccData();
+  }
 };
 
 const onAccModalClose = () => {

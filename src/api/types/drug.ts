@@ -102,6 +102,8 @@ export interface DrugStandardInfo {
 export interface DrugAcceptanceDto {
   acceptanceNo?: string;
   companyNameOrigin?: string;
+  developmentCode?: string;
+  id?: number;
   registrationCategoryCleaned?: string;
   registrationCategoryOrigin?: string;
 }

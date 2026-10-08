@@ -2774,8 +2774,10 @@
 | code                                                |                    | integer(int32)                | integer(int32)                |
 | data                                                |                    | BasePageVo«DrugAcceptanceDto» | BasePageVo«DrugAcceptanceDto» |
 | &emsp;&emsp;list                                    |                    | array                         | DrugAcceptanceDto             |
-| &emsp;&emsp;&emsp;&emsp;acceptanceNo                | 先关登记号/备案号  | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;acceptanceNo                | 相关登记号/备案号  | string                        |                               |
 | &emsp;&emsp;&emsp;&emsp;companyNameOrigin           | 相关公司（源数据） | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;developmentCode             | 研发代码           | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;id                          | 主键               | integer                       |                               |
 | &emsp;&emsp;&emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后） | string                        |                               |
 | &emsp;&emsp;&emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据） | string                        |                               |
 | &emsp;&emsp;pages                                   |                    | integer(int32)                |                               |
@@ -2792,6 +2794,8 @@
 			{
 				"acceptanceNo": "",
 				"companyNameOrigin": "",
+				"developmentCode": "",
+				"id": 0,
 				"registrationCategoryCleaned": "",
 				"registrationCategoryOrigin": ""
 			}
@@ -2803,7 +2807,7 @@
 }
 ```
 
-## 药品清洗列表
+## 药品列表(清洗前)
 
 **接口地址**:`/lyqAdmin/api/admin/drug/cleanPageData`
 
@@ -3181,6 +3185,72 @@
 		"pages": 0,
 		"total": 0
 	},
+	"msg": ""
+}
+```
+
+## 修改研发代码
+
+**接口地址**:`/lyqAdmin/api/admin/drug/editDevelopmentCode`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "acceptanceNo": "",
+  "companyNameOrigin": "",
+  "developmentCode": "",
+  "id": 0,
+  "registrationCategoryCleaned": "",
+  "registrationCategoryOrigin": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称                                | 参数说明           | 请求类型 | 是否必须 | 数据类型          | schema            |
+| --------------------------------------- | ------------------ | -------- | -------- | ----------------- | ----------------- |
+| Authorization                           | 用户登录令牌       | header   | true     |                   |                   |
+| param                                   | param              | body     | true     | DrugAcceptanceDto | DrugAcceptanceDto |
+| &emsp;&emsp;acceptanceNo                | 相关登记号/备案号  |          | false    | string            |                   |
+| &emsp;&emsp;companyNameOrigin           | 相关公司（源数据） |          | false    | string            |                   |
+| &emsp;&emsp;developmentCode             | 研发代码           |          | false    | string            |                   |
+| &emsp;&emsp;id                          | 主键               |          | false    | integer(int32)    |                   |
+| &emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后） |          | false    | string            |                   |
+| &emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据） |          | false    | string            |                   |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
 	"msg": ""
 }
 ```

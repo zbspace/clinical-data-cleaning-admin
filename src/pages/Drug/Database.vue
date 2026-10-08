@@ -105,9 +105,9 @@
           <t-form-item label="通用名（英文）" name="genericNameEn">
             <t-input v-model="editFormData.genericNameEn" />
           </t-form-item>
-          <t-form-item label="研发代号" name="developmentCode">
+          <!-- <t-form-item label="研发代号" name="developmentCode">
             <t-input v-model="editFormData.developmentCode" />
-          </t-form-item>
+          </t-form-item> -->
           <t-form-item label="其他名（例如结构名称）" name="otherInfo">
             <t-input v-model="editFormData.otherInfo" />
           </t-form-item>
@@ -181,7 +181,7 @@ const editFormData = reactive<Record<string, any>>({
   cleanedDrugName: '',
   genericNameCn: '',
   genericNameEn: '',
-  developmentCode: '',
+  // developmentCode: '',
   otherInfo: '',
   dosageForm: '',
   drugType: '',
@@ -216,12 +216,12 @@ const columns = [
     ellipsis: true,
     cell: (h: any, { row }: any) => row.genericNameEn || '-',
   },
-  {
-    colKey: 'developmentCode',
-    title: '研发代码',
-    width: 120,
-    cell: (h: any, { row }: any) => row.developmentCode || '-',
-  },
+  // {
+  //   colKey: 'developmentCode',
+  //   title: '研发代码',
+  //   width: 120,
+  //   cell: (h: any, { row }: any) => row.developmentCode || '-',
+  // },
   {
     colKey: 'otherInfo',
     title: '其他（例如药物结构描述）',
@@ -230,18 +230,18 @@ const columns = [
   },
   { colKey: 'dosageForm', title: '剂型', width: 100 },
   { colKey: 'drugType', title: '药品类型', width: 140 },
-  {
-    colKey: 'companyName',
-    title: '相关公司',
-    width: 200,
-    cell: (h: any, { row }: any) => row.companyName || '-',
-  },
-  {
-    colKey: 'parentCompanyName',
-    title: '相关母公司',
-    width: 200,
-    cell: (h: any, { row }: any) => row.parentCompanyName || '-',
-  },
+  // {
+  //   colKey: 'companyName',
+  //   title: '相关公司',
+  //   width: 200,
+  //   cell: (h: any, { row }: any) => row.companyName || '-',
+  // },
+  // {
+  //   colKey: 'parentCompanyName',
+  //   title: '相关母公司',
+  //   width: 200,
+  //   cell: (h: any, { row }: any) => row.parentCompanyName || '-',
+  // },
   {
     colKey: 'statisticCount',
     title: '源数据药品名（别名）',
@@ -382,7 +382,7 @@ const openEditModal = (record: DrugStandardDto) => {
   editFormData.cleanedDrugName = record.drugStandardName || '';
   editFormData.genericNameCn = record.genericNameCn || '';
   editFormData.genericNameEn = record.genericNameEn || '';
-  editFormData.developmentCode = record.developmentCode || '';
+  // editFormData.developmentCode = record.developmentCode || '';
   editFormData.otherInfo = record.otherInfo || '';
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
@@ -396,7 +396,7 @@ const handleAdd = () => {
   editFormData.cleanedDrugName = '';
   editFormData.genericNameCn = '';
   editFormData.genericNameEn = '';
-  editFormData.developmentCode = '';
+  // editFormData.developmentCode = '';
   editFormData.otherInfo = '';
   editFormData.dosageForm = '';
   editFormData.drugType = '';
@@ -413,7 +413,7 @@ const submitEdit = async () => {
       cleanedDrugName: editFormData.cleanedDrugName,
       genericNameCn: editFormData.genericNameCn,
       genericNameEn: editFormData.genericNameEn,
-      developmentCode: editFormData.developmentCode,
+      // developmentCode: editFormData.developmentCode,
       otherInfo: editFormData.otherInfo,
       dosageForm: editFormData.dosageForm,
       drugType: editFormData.drugType,
