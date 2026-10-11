@@ -186,6 +186,7 @@ const columns = [
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
   { colKey: 'userName', title: '姓名', width: 120, ellipsis: true },
+  { colKey: 'appletUsername', title: '用户名', width: 280, ellipsis: true },
   { colKey: 'userPhone', title: '电话', width: 140, cell: (h: any, { row }: any) => row.userPhone || '-' },
   {
     colKey: 'userCompany',
