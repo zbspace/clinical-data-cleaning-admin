@@ -79,6 +79,15 @@
         <t-button theme="primary" @click="openEditModal(row)" style="margin-right: 8px"> 编辑 </t-button>
         <t-button theme="primary" variant="outline" @click="openMergeModal(row)"> 合并 </t-button>
       </template>
+      <template #followStatus="{ row }">
+        <t-select
+          :value="row.followStatus ?? ''"
+          :options="followStatusOptions"
+          placeholder="请选择"
+          style="width: 100px"
+          @change="(val: any) => onFollowStatusChange(row, val)"
+        />
+      </template>
     </t-table>
     <!--#endregion-->
 
@@ -141,6 +150,12 @@
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
+          </t-form-item>
+          <t-form-item label="靶点" name="drugTarget">
+            <t-input v-model="editFormData.drugTarget" />
+          </t-form-item>
+          <t-form-item label="药物模态" name="drugMode">
+            <t-input v-model="editFormData.drugMode" />
           </t-form-item>
           <!-- <t-form-item label="相关公司" name="companyName">
             <t-input v-model="editFormData.companyName" disabled />
@@ -225,6 +240,12 @@ const followUpOptions = [
   { label: '否', value: 0 },
 ];
 
+// 表格内待跟进状态下拉
+const followStatusOptions = [
+  { label: '是', value: 1 },
+  { label: '否', value: 0 },
+];
+
 // 别名弹窗
 const aliasModalVisible = ref(false);
 const aliasData = ref<{ aliasName: string }[]>([]);
@@ -246,6 +267,8 @@ const editFormData = reactive<Record<string, any>>({
   otherInfo: '',
   dosageForm: '',
   drugType: '',
+  drugTarget: '',
+  drugMode: '',
   companyName: '',
 });
 
@@ -302,6 +325,7 @@ const columns = [
   { colKey: 'drugType', title: '药品类型', width: 140 },
   { colKey: 'drugTarget', title: '靶点', width: 140 },
   { colKey: 'drugMode', title: '药物模态', width: 140 },
+  { colKey: 'followStatus', title: '待跟进状态', width: 140 },
   // {
   //   colKey: 'companyName',
   //   title: '相关公司',
@@ -403,6 +427,31 @@ const onPageChange = (pageInfo: any) => {
 };
 //#endregion
 
+//#region 待跟进状态（人工维护）
+const onFollowStatusChange = async (row: DrugStandardDto, val: number) => {
+  try {
+    await drugApi.standardSave({
+      id: row.standardId,
+      genericNameCn: row.genericNameCn,
+      genericNameEn: row.genericNameEn,
+      otherInfo: row.otherInfo,
+      drugType: row.drugType,
+      drugTarget: row.drugTarget,
+      drugMode: row.drugMode,
+      developmentCode: row.developmentCode,
+      firstTime: row.firstTime,
+      status: row.status,
+      followStatus: val,
+    });
+    row.followStatus = val;
+    MessagePlugin.success('保存成功');
+  } catch (e) {
+    console.error(e);
+    fetchData();
+  }
+};
+//#endregion
+
 //#region 剂型选项查询
 const onSearchDosageForm = async (keyword = '') => {
   dosageFormLoading.value = true;
@@ -463,6 +512,8 @@ const openEditModal = (record: DrugStandardDto) => {
   editFormData.otherInfo = record.otherInfo || '';
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
+  editFormData.drugTarget = record.drugTarget || '';
+  editFormData.drugMode = record.drugMode || '';
   editFormData.companyName = record.companyName || '';
   editFormData.id = record.standardId || '';
   editModalVisible.value = true;
@@ -477,6 +528,8 @@ const handleAdd = () => {
   editFormData.otherInfo = '';
   editFormData.dosageForm = '';
   editFormData.drugType = '';
+  editFormData.drugTarget = '';
+  editFormData.drugMode = '';
   editFormData.companyName = '';
   editFormData.id = undefined;
   editModalVisible.value = true;
@@ -494,6 +547,9 @@ const submitEdit = async () => {
       otherInfo: editFormData.otherInfo,
       dosageForm: editFormData.dosageForm,
       drugType: editFormData.drugType,
+      drugTarget: editFormData.drugTarget,
+      drugMode: editFormData.drugMode,
+      followStatus: currentEditRecord.value?.followStatus,
       status: currentEditRecord.value?.status ?? 0,
     };
     await drugApi.standardSave(submitData);

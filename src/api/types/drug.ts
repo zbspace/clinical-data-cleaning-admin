@@ -73,6 +73,10 @@ export interface DrugStandardDto {
   dosageForm?: string;
   drugStandardName?: string;
   drugType?: string;
+  drugTarget?: string;
+  drugMode?: string;
+  firstTime?: string;
+  followStatus?: number;
   genericNameCn?: string;
   genericNameEn?: string;
   id?: number;
@@ -92,6 +96,10 @@ export interface DrugStandardInfo {
   developmentCode?: string;
   dosageForm?: string;
   drugType?: string;
+  drugTarget?: string;
+  drugMode?: string;
+  firstTime?: string;
+  followStatus?: number;
   genericNameCn?: string;
   genericNameEn?: string;
   id?: number;
