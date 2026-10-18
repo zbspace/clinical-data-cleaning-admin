@@ -1,6 +1,6 @@
 //#region Imports
 import request from '@/utils/request';
-import type { BaseQueryParam, BasePageVo, StatDataDto,UpdateCleanStatusDto, } from './types/company';
+import type { BaseQueryParam, BasePageVo, StatDataDto, UpdateCleanStatusDto } from './types/company';
 import type {
   DrugCleanParam,
   DrugCleanDto,
@@ -9,6 +9,10 @@ import type {
   DrugStandardDto,
   DrugStandardInfo,
   DrugAcceptanceDto,
+  UpdateDrugDto,
+  DrugRelationDto,
+  EditDrugDevelopmentDto,
+  DrugMergeDto,
 } from './types/drug';
 //#endregion
 
@@ -55,7 +59,7 @@ export const drugApi = {
   },
 
   /** 关联药品库信息 */
-  saveRelation(data: DrugCleanDto) {
+  saveRelation(data: DrugRelationDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/saveRelation', data);
   },
 
@@ -74,25 +78,42 @@ export const drugApi = {
 
   /** 获取统计信息 */
   getStatData(data: BaseQueryParam) {
-    return request.post<any, { code: number; data: StatDataDto; msg: string }>(
-      '/admin/drug/getStatData',
-      data,
-    );
+    return request.post<any, { code: number; data: StatDataDto; msg: string }>('/admin/drug/getStatData', data);
   },
   /** 修改清洗状态 */
   updateCleanStatus(data: UpdateCleanStatusDto) {
-    return request.post<any, { code: number; data: boolean; msg: string }>(
-      '/admin/drug/updateCleanStatus',
-      data,
-    );
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/updateCleanStatus', data);
   },
 
   /** 修改研发代码 */
   editDevelopmentCode(data: DrugAcceptanceDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/editDevelopmentCode', data);
+  },
+
+  /** 修改研发代码(通过公司源名称) */
+  editDevelopmentCodeByCompany(data: EditDrugDevelopmentDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>(
-      '/admin/drug/editDevelopmentCode',
+      '/admin/drug/editDevelopmentCodeByCompany',
       data,
     );
+  },
+
+  /** 查询研发代码 */
+  queryDevelopmentCode(data: BaseQueryParam) {
+    return request.post<any, { code: number; data: BasePageVo<string>; msg: string }>(
+      '/admin/drug/queryDevelopmentCode',
+      data,
+    );
+  },
+
+  /** 药品通用名合并 */
+  drugMerge(data: DrugMergeDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/drugMerge', data);
+  },
+
+  /** 修改药品信息(清洗前) */
+  updateDrugInfo(data: UpdateDrugDto) {
+    return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/updateDrugInfo', data);
   },
 };
 //#endregion

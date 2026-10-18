@@ -1,9 +1,9 @@
 <template>
-  <!--#region 药品名库管理页面 -->
+  <!--#region 通用名库管理页面 -->
   <t-card bordered>
     <div style="margin-bottom: 16px">
       <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600; color: var(--td-text-color-primary)">
-        药品名库管理
+        通用名库管理
       </h2>
 
       <!--#region 搜索表单 -->
@@ -23,11 +23,28 @@
           style="display: flex; gap: 16px 0; flex-wrap: wrap"
           @submit="onSearch"
         >
-          <t-form-item label="药品名（清洗后）" name="drugStandardName" style="margin-bottom: 0">
-            <t-input v-model="formData.drugStandardName" placeholder="请输入关键字" clearable style="width: 220px" />
+          <t-form-item label="通用名（中文）" name="genericNameCn" style="margin-bottom: 0">
+            <t-input v-model="formData.genericNameCn" placeholder="请输入关键字" clearable style="width: 220px" />
           </t-form-item>
-          <t-form-item label="公司" name="companyName" style="margin-bottom: 0">
-            <t-input v-model="formData.companyName" placeholder="请输入关键字" clearable style="width: 220px" />
+          <t-form-item label="研发代号" name="developmentCode" style="margin-bottom: 0">
+            <t-input v-model="formData.developmentCode" placeholder="请输入关键字" clearable style="width: 220px" />
+          </t-form-item>
+          <t-form-item label="研发代号首次出现年份" name="year" label-width="170" style="margin-bottom: 0">
+            <t-select
+              v-model="formData.year"
+              :options="yearOptions"
+              placeholder="请选择"
+              clearable
+              style="width: 140px"
+            />
+          </t-form-item>
+          <t-form-item label="待跟进状态" name="followStatus" style="margin-bottom: 0">
+            <t-select
+              v-model="formData.followStatus"
+              :options="followUpOptions"
+              placeholder="请选择"
+              style="width: 140px"
+            />
           </t-form-item>
           <div style="display: flex; align-items: center; margin-left: auto">
             <t-button theme="default" @click="onReset" style="background: #fff; margin-right: 8px"> 重置 </t-button>
@@ -59,7 +76,8 @@
       @page-change="onPageChange"
     >
       <template #operation="{ row }">
-        <t-button theme="primary" @click="openEditModal(row)"> 编辑 </t-button>
+        <t-button theme="primary" @click="openEditModal(row)" style="margin-right: 8px"> 编辑 </t-button>
+        <t-button theme="primary" variant="outline" @click="openMergeModal(row)"> 合并 </t-button>
       </template>
     </t-table>
     <!--#endregion-->
@@ -131,6 +149,33 @@
       </t-form>
     </t-dialog>
     <!--#endregion-->
+
+    <!--#region 合并弹窗 -->
+    <t-dialog
+      v-model:visible="mergeModalVisible"
+      header="合并"
+      width="600px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: mergeLoading }"
+      @confirm="submitMerge"
+      @close="onMergeModalClose"
+    >
+      <t-form label-width="120" label-align="left">
+        <t-form-item label="通用名">
+          <t-input :value="currentMergeRecord?.genericNameCn || '-'" disabled />
+        </t-form-item>
+        <t-form-item label="合并到">
+          <t-select
+            v-model="mergeTargetId"
+            :options="mergeOptions"
+            :loading="mergeOptionsLoading"
+            filterable
+            clearable
+            placeholder="请选择"
+          />
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+    <!--#endregion-->
   </t-card>
   <!--#endregion-->
 </template>
@@ -160,9 +205,25 @@ const pagination = reactive({
 });
 
 const formData = reactive({
-  drugStandardName: '',
-  companyName: '',
+  genericNameCn: '',
+  developmentCode: '',
+  year: '',
+  followStatus: '' as number | '',
 });
+
+// 近10年
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from({ length: 10 }, (_, i) => {
+  const year = String(currentYear - i);
+  return { label: year, value: year };
+});
+
+// 待跟进状态（人工维护）
+const followUpOptions = [
+  { label: '全部', value: '' },
+  { label: '是', value: 1 },
+  { label: '否', value: 0 },
+];
 
 // 别名弹窗
 const aliasModalVisible = ref(false);
@@ -191,6 +252,14 @@ const editFormData = reactive<Record<string, any>>({
 const dosageFormOptions = ref<{ label: string; value: string }[]>([]);
 const dosageFormLoading = ref(false);
 
+// 合并弹窗
+const mergeModalVisible = ref(false);
+const mergeLoading = ref(false);
+const mergeTargetId = ref<number | undefined>(undefined);
+const currentMergeRecord = ref<DrugStandardDto | null>(null);
+const mergeOptions = ref<{ label: string; value: number }[]>([]);
+const mergeOptionsLoading = ref(false);
+
 //#endregion
 
 //#region Columns Definition
@@ -201,7 +270,7 @@ const columns = [
     width: 60,
     cell: (h: any, { rowIndex }: any) => rowIndex + 1 + (pagination.current - 1) * pagination.pageSize,
   },
-  { colKey: 'drugStandardName', title: '药品名（清洗后）', width: 180, ellipsis: true },
+  // { colKey: 'drugStandardName', title: '药品名（清洗后）', width: 180, ellipsis: true },
   {
     colKey: 'genericNameCn',
     title: '通用名（中文）',
@@ -228,8 +297,11 @@ const columns = [
     width: 220,
     cell: (h: any, { row }: any) => row.otherInfo || '-',
   },
-  { colKey: 'dosageForm', title: '剂型', width: 100 },
+  // { colKey: 'dosageForm', title: '剂型', width: 100 },
+  { colKey: 'firstTime', title: '研发代号首次出现时间', width: 180 },
   { colKey: 'drugType', title: '药品类型', width: 140 },
+  { colKey: 'drugTarget', title: '靶点', width: 140 },
+  { colKey: 'drugMode', title: '药物模态', width: 140 },
   // {
   //   colKey: 'companyName',
   //   title: '相关公司',
@@ -276,7 +348,7 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
+    width: 160,
     fixed: 'right' as const,
   },
 ];
@@ -299,7 +371,10 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
     const params: Record<string, any> = {
       pageNum: curr,
       pageSize: size,
-      drugStandardName: formData.drugStandardName || undefined,
+      genericNameCn: formData.genericNameCn || undefined,
+      developmentCode: formData.developmentCode || undefined,
+      year: formData.year || undefined,
+      followStatus: formData.followStatus === '' ? undefined : formData.followStatus,
     };
     const res = await drugApi.standardPageData(params);
     tableData.value = res.data?.list || [];
@@ -316,8 +391,10 @@ const fetchData = async (curr = pagination.current, size = pagination.pageSize) 
 const onSearch = () => fetchData(1);
 
 const onReset = () => {
-  formData.drugStandardName = '';
-  formData.companyName = '';
+  formData.genericNameCn = '';
+  formData.developmentCode = '';
+  formData.year = '';
+  formData.followStatus = '';
   fetchData(1);
 };
 
@@ -433,6 +510,61 @@ const submitEdit = async () => {
 const onEditModalClose = () => {
   editModalVisible.value = false;
   currentEditRecord.value = null;
+};
+//#endregion
+
+//#region 合并弹窗
+// 查询可合并的通用名选项（排除当前记录）
+const fetchMergeOptions = async (excludeId?: number) => {
+  mergeOptionsLoading.value = true;
+  try {
+    const res = await drugApi.standardPageData({ pageNum: 1, pageSize: 1000 });
+    mergeOptions.value = (res.data?.list || [])
+      .filter((item: DrugStandardDto) => item.standardId !== excludeId)
+      .map((item: DrugStandardDto) => ({
+        label: item.genericNameCn || item.drugStandardName || '-',
+        value: item.standardId!,
+      }));
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeOptionsLoading.value = false;
+  }
+};
+
+const openMergeModal = (record: DrugStandardDto) => {
+  currentMergeRecord.value = record;
+  mergeTargetId.value = undefined;
+  mergeOptions.value = [];
+  fetchMergeOptions(record.standardId);
+  mergeModalVisible.value = true;
+};
+
+const submitMerge = async () => {
+  if (!mergeTargetId.value) {
+    MessagePlugin.warning('请选择合并到的通用名');
+    return;
+  }
+  mergeLoading.value = true;
+  try {
+    await drugApi.drugMerge({
+      sourceStandardId: currentMergeRecord.value?.standardId,
+      targetStandardId: mergeTargetId.value,
+    });
+    MessagePlugin.success('合并成功');
+    mergeModalVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    mergeLoading.value = false;
+  }
+};
+
+const onMergeModalClose = () => {
+  mergeModalVisible.value = false;
+  currentMergeRecord.value = null;
+  mergeTargetId.value = undefined;
 };
 //#endregion
 

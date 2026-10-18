@@ -2769,20 +2769,21 @@
 
 **响应参数**:
 
-| 参数名称                                            | 参数说明           | 类型                          | schema                        |
-| --------------------------------------------------- | ------------------ | ----------------------------- | ----------------------------- |
-| code                                                |                    | integer(int32)                | integer(int32)                |
-| data                                                |                    | BasePageVo«DrugAcceptanceDto» | BasePageVo«DrugAcceptanceDto» |
-| &emsp;&emsp;list                                    |                    | array                         | DrugAcceptanceDto             |
-| &emsp;&emsp;&emsp;&emsp;acceptanceNo                | 相关登记号/备案号  | string                        |                               |
-| &emsp;&emsp;&emsp;&emsp;companyNameOrigin           | 相关公司（源数据） | string                        |                               |
-| &emsp;&emsp;&emsp;&emsp;developmentCode             | 研发代码           | string                        |                               |
-| &emsp;&emsp;&emsp;&emsp;id                          | 主键               | integer                       |                               |
-| &emsp;&emsp;&emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后） | string                        |                               |
-| &emsp;&emsp;&emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据） | string                        |                               |
-| &emsp;&emsp;pages                                   |                    | integer(int32)                |                               |
-| &emsp;&emsp;total                                   |                    | integer(int64)                |                               |
-| msg                                                 |                    | string                        |                               |
+| 参数名称                                            | 参数说明             | 类型                          | schema                        |
+| --------------------------------------------------- | -------------------- | ----------------------------- | ----------------------------- |
+| code                                                |                      | integer(int32)                | integer(int32)                |
+| data                                                |                      | BasePageVo«DrugAcceptanceDto» | BasePageVo«DrugAcceptanceDto» |
+| &emsp;&emsp;list                                    |                      | array                         | DrugAcceptanceDto             |
+| &emsp;&emsp;&emsp;&emsp;acceptanceNo                | 相关登记号/备案号    | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;companyNameOrigin           | 相关公司（源数据）   | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;developmentCode             | 研发代码             | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;drugCommentId               | 药品源名称ID         | integer                       |                               |
+| &emsp;&emsp;&emsp;&emsp;indDrugRelId                | 试验号和药品关联主键 | integer                       |                               |
+| &emsp;&emsp;&emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后）   | string                        |                               |
+| &emsp;&emsp;&emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据）   | string                        |                               |
+| &emsp;&emsp;pages                                   |                      | integer(int32)                |                               |
+| &emsp;&emsp;total                                   |                      | integer(int64)                |                               |
+| msg                                                 |                      | string                        |                               |
 
 **响应示例**:
 
@@ -2795,7 +2796,8 @@
 				"acceptanceNo": "",
 				"companyNameOrigin": "",
 				"developmentCode": "",
-				"id": 0,
+				"drugCommentId": 0,
+				"indDrugRelId": 0,
 				"registrationCategoryCleaned": "",
 				"registrationCategoryOrigin": ""
 			}
@@ -2807,7 +2809,7 @@
 }
 ```
 
-## 药品列表(清洗前)
+## 药品名称清洗列表(清洗前)
 
 **接口地址**:`/lyqAdmin/api/admin/drug/cleanPageData`
 
@@ -2823,6 +2825,7 @@
 
 ```javascript
 {
+  "cleanedDrugName": "",
   "drugComment": "",
   "drugCommentId": 0,
   "drugStandardId": 0,
@@ -2841,10 +2844,11 @@
 | ----------------------------- | ---------------------------------- | -------- | -------- | -------------- | -------------- |
 | Authorization                 | 用户登录令牌                       | header   | true     |                |                |
 | param                         | param                              | body     | true     | DrugCleanParam | DrugCleanParam |
-| &emsp;&emsp;drugComment       | 药品源名称                         |          | false    | string         |                |
+| &emsp;&emsp;cleanedDrugName   | 药品名(清洗后)                     |          | false    | string         |                |
+| &emsp;&emsp;drugComment       | 药品名(清洗前)                     |          | false    | string         |                |
 | &emsp;&emsp;drugCommentId     | 药品源数据ID                       |          | false    | integer(int32) |                |
 | &emsp;&emsp;drugStandardId    | 药品标准名ID                       |          | false    | integer(int32) |                |
-| &emsp;&emsp;drugStandardName  | 标准名                             |          | false    | string         |                |
+| &emsp;&emsp;drugStandardName  | 标准名-通用名(中文)                |          | false    | string         |                |
 | &emsp;&emsp;pageNum           | 当前页数                           |          | false    | integer(int32) |                |
 | &emsp;&emsp;pageSize          | 每页条数                           |          | false    | integer(int32) |                |
 | &emsp;&emsp;parentCompanyId   | 父级公司ID                         |          | false    | integer(int32) |                |
@@ -2869,7 +2873,7 @@
 | data                                                       |                                        | BasePageVo«DrugCleanDto» | BasePageVo«DrugCleanDto» |
 | &emsp;&emsp;list                                           |                                        | array                    | DrugCleanDto             |
 | &emsp;&emsp;&emsp;&emsp;acceptanceCount                    | 登记号统计次数                         | integer                  |                          |
-| &emsp;&emsp;&emsp;&emsp;acceptanceNo                       |                                        | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;cleanedDrugName                    | 药品名（清洗后）                       | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;companyDtoList                     |                                        | array                    | CleanCompanyDto          |
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;acceptanceNo           |                                        | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;cleanStatus            | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 | integer                  |                          |
@@ -2886,27 +2890,17 @@
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;standardId             | 标准公司ID                             | integer                  |                          |
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;updateTime             | 操作时间                               | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;updater                | 操作人                                 | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;companyName                        | 公司名称(清洗后)                       | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;companyNameOrigin                  |                                        | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;companyNameParent                  | 母公司名称                             | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;developmentCode                    | 代号                                   | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;dosageForm                         | 剂型                                   | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugCode                           | 代号                                   | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;drugComment                        | 药品源数据                             | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;drugCommentId                      | 药品源数据ID                           | integer                  |                          |
-| &emsp;&emsp;&emsp;&emsp;drugGoodsNameCn                    |                                        | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugGoodsNameEn                    |                                        | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugNickName                       |                                        | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugNormalNameCn                   | 通用名(中文)                           | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugNormalNameEn                   | 通用名(英文)                           | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugSourceStr                      |                                        | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;drugGenericNameCn                  | 通用名(中文)                           | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;drugGenericNameEn                  | 通用名(英文)                           | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;drugStandardId                     | 药品标准名ID                           | integer                  |                          |
-| &emsp;&emsp;&emsp;&emsp;drugStandardName                   | 标准名                                 | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;drugType                           | 药品类型(清洗后)                       | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugTypeOrigin                     |                                        | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;otherComment                       | 其他(例如，药物结构描述)               | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;refId                              |                                        | integer                  |                          |
 | &emsp;&emsp;&emsp;&emsp;registerType                       | 药品注册分类(清洗后)                   | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;registerTypeOrigin                 |                                        | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;remark                             |                                        | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;sourceRef                          |                                        | string                   |                          |
 | &emsp;&emsp;&emsp;&emsp;sourceType                         |                                        | integer                  |                          |
@@ -2926,7 +2920,7 @@
 		"list": [
 			{
 				"acceptanceCount": 0,
-				"acceptanceNo": "",
+				"cleanedDrugName": "",
 				"companyDtoList": [
 					{
 						"acceptanceNo": "",
@@ -2946,27 +2940,17 @@
 						"updater": ""
 					}
 				],
-				"companyName": "",
-				"companyNameOrigin": "",
-				"companyNameParent": "",
+				"developmentCode": "",
 				"dosageForm": "",
-				"drugCode": "",
 				"drugComment": "",
 				"drugCommentId": 0,
-				"drugGoodsNameCn": "",
-				"drugGoodsNameEn": "",
-				"drugNickName": "",
-				"drugNormalNameCn": "",
-				"drugNormalNameEn": "",
-				"drugSourceStr": "",
+				"drugGenericNameCn": "",
+				"drugGenericNameEn": "",
 				"drugStandardId": 0,
-				"drugStandardName": "",
 				"drugType": "",
-				"drugTypeOrigin": "",
 				"otherComment": "",
 				"refId": 0,
 				"registerType": "",
-				"registerTypeOrigin": "",
 				"remark": "",
 				"sourceRef": "",
 				"sourceType": 0,
@@ -3120,6 +3104,64 @@
 }
 ```
 
+## 药品通用名合并
+
+**接口地址**:`/lyqAdmin/api/admin/drug/drugMerge`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "sourceStandardId": 0,
+  "targetStandardId": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                     | 参数说明                   | 请求类型 | 是否必须 | 数据类型       | schema       |
+| ---------------------------- | -------------------------- | -------- | -------- | -------------- | ------------ |
+| Authorization                | 用户登录令牌               | header   | true     |                |              |
+| param                        | param                      | body     | true     | DrugMergeDto   | DrugMergeDto |
+| &emsp;&emsp;sourceStandardId | 药品通用名信息ID(源数据)   |          | false    | integer(int64) |              |
+| &emsp;&emsp;targetStandardId | 药品通用名信息ID(目标数据) |          | false    | integer(int64) |              |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
 ## 药品类型(源数据)
 
 **接口地址**:`/lyqAdmin/api/admin/drug/drugTypeList`
@@ -3205,27 +3247,85 @@
 
 ```javascript
 {
-  "acceptanceNo": "",
-  "companyNameOrigin": "",
+  "companyNameOriginList": [],
   "developmentCode": "",
-  "id": 0,
-  "registrationCategoryCleaned": "",
-  "registrationCategoryOrigin": ""
+  "drugCommentId": 0,
+  "indDrugRelId": 0
 }
 ```
 
 **请求参数**:
 
-| 参数名称                                | 参数说明           | 请求类型 | 是否必须 | 数据类型          | schema            |
-| --------------------------------------- | ------------------ | -------- | -------- | ----------------- | ----------------- |
-| Authorization                           | 用户登录令牌       | header   | true     |                   |                   |
-| param                                   | param              | body     | true     | DrugAcceptanceDto | DrugAcceptanceDto |
-| &emsp;&emsp;acceptanceNo                | 相关登记号/备案号  |          | false    | string            |                   |
-| &emsp;&emsp;companyNameOrigin           | 相关公司（源数据） |          | false    | string            |                   |
-| &emsp;&emsp;developmentCode             | 研发代码           |          | false    | string            |                   |
-| &emsp;&emsp;id                          | 主键               |          | false    | integer(int32)    |                   |
-| &emsp;&emsp;registrationCategoryCleaned | 注册分类（清洗后） |          | false    | string            |                   |
-| &emsp;&emsp;registrationCategoryOrigin  | 注册分类（源数据） |          | false    | string            |                   |
+| 参数名称                          | 参数说明                                 | 请求类型 | 是否必须 | 数据类型               | schema                 |
+| --------------------------------- | ---------------------------------------- | -------- | -------- | ---------------------- | ---------------------- |
+| Authorization                     | 用户登录令牌                             | header   | true     |                        |                        |
+| param                             | param                                    | body     | true     | EditDrugDevelopmentDto | EditDrugDevelopmentDto |
+| &emsp;&emsp;companyNameOriginList | 相关公司(多条数据通过公司修改)           |          | false    | array                  | string                 |
+| &emsp;&emsp;developmentCode       | 研发代码                                 |          | false    | string                 |                        |
+| &emsp;&emsp;drugCommentId         | 药品源名称ID(多条数据通过公司修改)       |          | false    | integer(int64)         |                        |
+| &emsp;&emsp;indDrugRelId          | 试验号和药品关联主键(单条数据通过ID修改) |          | false    | integer(int32)         |                        |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
+## 修改研发代码(通过公司源名称)
+
+**接口地址**:`/lyqAdmin/api/admin/drug/editDevelopmentCodeByCompany`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "companyNameOriginList": [],
+  "developmentCode": "",
+  "drugCommentId": 0,
+  "indDrugRelId": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                          | 参数说明                                 | 请求类型 | 是否必须 | 数据类型               | schema                 |
+| --------------------------------- | ---------------------------------------- | -------- | -------- | ---------------------- | ---------------------- |
+| Authorization                     | 用户登录令牌                             | header   | true     |                        |                        |
+| param                             | param                                    | body     | true     | EditDrugDevelopmentDto | EditDrugDevelopmentDto |
+| &emsp;&emsp;companyNameOriginList | 相关公司(多条数据通过公司修改)           |          | false    | array                  | string                 |
+| &emsp;&emsp;developmentCode       | 研发代码                                 |          | false    | string                 |                        |
+| &emsp;&emsp;drugCommentId         | 药品源名称ID(多条数据通过公司修改)       |          | false    | integer(int64)         |                        |
+| &emsp;&emsp;indDrugRelId          | 试验号和药品关联主键(单条数据通过ID修改) |          | false    | integer(int32)         |                        |
 
 **响应状态**:
 
@@ -3258,6 +3358,75 @@
 ## 登记号名称列表
 
 **接口地址**:`/lyqAdmin/api/admin/drug/getAcceptanceNos`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                     |
+| ------ | ------------ | -------------------------- |
+| 200    | OK           | Result«BasePageVo«string»» |
+| 201    | Created      |                            |
+| 401    | Unauthorized |                            |
+| 403    | Forbidden    |                            |
+| 404    | Not Found    |                            |
+
+**响应参数**:
+
+| 参数名称          | 参数说明 | 类型               | schema             |
+| ----------------- | -------- | ------------------ | ------------------ |
+| code              |          | integer(int32)     | integer(int32)     |
+| data              |          | BasePageVo«string» | BasePageVo«string» |
+| &emsp;&emsp;list  |          | array              | string             |
+| &emsp;&emsp;pages |          | integer(int32)     |                    |
+| &emsp;&emsp;total |          | integer(int64)     |                    |
+| msg               |          | string             |                    |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
+## 获取公司源名称(通过药品源数据ID)
+
+**接口地址**:`/lyqAdmin/api/admin/drug/getCompanyNameOrigin`
 
 **请求方式**:`POST`
 
@@ -3397,7 +3566,7 @@
 }
 ```
 
-## 药品标准简称查询
+## 药品通用名查询
 
 **接口地址**:`/lyqAdmin/api/admin/drug/queryByName`
 
@@ -3443,18 +3612,18 @@
 
 **响应参数**:
 
-| 参数名称                                 | 参数说明   | 类型                     | schema                   |
-| ---------------------------------------- | ---------- | ------------------------ | ------------------------ |
-| code                                     |            | integer(int32)           | integer(int32)           |
-| data                                     |            | BasePageVo«DrugShortDto» | BasePageVo«DrugShortDto» |
-| &emsp;&emsp;list                         |            | array                    | DrugShortDto             |
-| &emsp;&emsp;&emsp;&emsp;drugCd           | 代号编码   | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugStandardName | 标准名     | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;drugType         | 类型       | string                   |                          |
-| &emsp;&emsp;&emsp;&emsp;standardId       | standardId | integer                  |                          |
-| &emsp;&emsp;pages                        |            | integer(int32)           |                          |
-| &emsp;&emsp;total                        |            | integer(int64)           |                          |
-| msg                                      |            | string                   |                          |
+| 参数名称                                | 参数说明            | 类型                     | schema                   |
+| --------------------------------------- | ------------------- | ------------------------ | ------------------------ |
+| code                                    |                     | integer(int32)           | integer(int32)           |
+| data                                    |                     | BasePageVo«DrugShortDto» | BasePageVo«DrugShortDto» |
+| &emsp;&emsp;list                        |                     | array                    | DrugShortDto             |
+| &emsp;&emsp;&emsp;&emsp;developmentCode | 代号编码            | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;drugType        | 类型                | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;genericNameCn   | 标准名-通用名(中文) | string                   |                          |
+| &emsp;&emsp;&emsp;&emsp;standardId      | standardId          | integer                  |                          |
+| &emsp;&emsp;pages                       |                     | integer(int32)           |                          |
+| &emsp;&emsp;total                       |                     | integer(int64)           |                          |
+| msg                                     |                     | string                   |                          |
 
 **响应示例**:
 
@@ -3464,12 +3633,81 @@
 	"data": {
 		"list": [
 			{
-				"drugCd": "",
-				"drugStandardName": "",
+				"developmentCode": "",
 				"drugType": "",
+				"genericNameCn": "",
 				"standardId": 0
 			}
 		],
+		"pages": 0,
+		"total": 0
+	},
+	"msg": ""
+}
+```
+
+## 查询研发代码
+
+**接口地址**:`/lyqAdmin/api/admin/drug/queryDevelopmentCode`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "id": 0,
+  "pageNum": 0,
+  "pageSize": 0,
+  "searchKey": ""
+}
+```
+
+**请求参数**:
+
+| 参数名称              | 参数说明     | 请求类型 | 是否必须 | 数据类型       | schema         |
+| --------------------- | ------------ | -------- | -------- | -------------- | -------------- |
+| Authorization         | 用户登录令牌 | header   | true     |                |                |
+| param                 | param        | body     | true     | BaseQueryParam | BaseQueryParam |
+| &emsp;&emsp;id        | ID           |          | false    | integer(int64) |                |
+| &emsp;&emsp;pageNum   | 当前页数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;pageSize  | 每页条数     |          | false    | integer(int32) |                |
+| &emsp;&emsp;searchKey | 查询字段     |          | false    | string         |                |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema                     |
+| ------ | ------------ | -------------------------- |
+| 200    | OK           | Result«BasePageVo«string»» |
+| 201    | Created      |                            |
+| 401    | Unauthorized |                            |
+| 403    | Forbidden    |                            |
+| 404    | Not Found    |                            |
+
+**响应参数**:
+
+| 参数名称          | 参数说明 | 类型               | schema             |
+| ----------------- | -------- | ------------------ | ------------------ |
+| code              |          | integer(int32)     | integer(int32)     |
+| data              |          | BasePageVo«string» | BasePageVo«string» |
+| &emsp;&emsp;list  |          | array              | string             |
+| &emsp;&emsp;pages |          | integer(int32)     |                    |
+| &emsp;&emsp;total |          | integer(int64)     |                    |
+| msg               |          | string             |                    |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": {
+		"list": [],
 		"pages": 0,
 		"total": 0
 	},
@@ -3493,6 +3731,7 @@
 
 ```javascript
 {
+  "developmentCodeFlag": 0,
   "drugComment": "",
   "drugCommentId": 0,
   "drugStandardId": 0
@@ -3501,13 +3740,14 @@
 
 **请求参数**:
 
-| 参数名称                   | 参数说明     | 请求类型 | 是否必须 | 数据类型        | schema          |
-| -------------------------- | ------------ | -------- | -------- | --------------- | --------------- |
-| Authorization              | 用户登录令牌 | header   | true     |                 |                 |
-| dto                        | dto          | body     | true     | DrugRelationDto | DrugRelationDto |
-| &emsp;&emsp;drugComment    | 药品源数据   |          | false    | string          |                 |
-| &emsp;&emsp;drugCommentId  | 药品源数据ID |          | false    | integer(int64)  |                 |
-| &emsp;&emsp;drugStandardId | 药品标准名ID |          | false    | integer(int32)  |                 |
+| 参数名称                        | 参数说明                                | 请求类型 | 是否必须 | 数据类型        | schema          |
+| ------------------------------- | --------------------------------------- | -------- | -------- | --------------- | --------------- |
+| Authorization                   | 用户登录令牌                            | header   | true     |                 |                 |
+| dto                             | dto                                     | body     | true     | DrugRelationDto | DrugRelationDto |
+| &emsp;&emsp;developmentCodeFlag | 同步研发代码标记 1-同步全部，2-取消全部 |          | false    | integer(int32)  |                 |
+| &emsp;&emsp;drugComment         | 药品源数据                              |          | false    | string          |                 |
+| &emsp;&emsp;drugCommentId       | 药品源数据ID                            |          | false    | integer(int64)  |                 |
+| &emsp;&emsp;drugStandardId      | 药品标准名ID                            |          | false    | integer(int32)  |                 |
 
 **响应状态**:
 
@@ -3553,25 +3793,29 @@
 
 ```javascript
 {
-  "drugComment": "",
-  "drugStandardName": "",
+  "developmentCode": "",
+  "genericNameCn": "",
+  "genericNameEn": "",
   "pageNum": 0,
   "pageSize": 0,
-  "standardId": 0
+  "standardId": 0,
+  "year": ""
 }
 ```
 
 **请求参数**:
 
-| 参数名称                     | 参数说明     | 请求类型 | 是否必须 | 数据类型          | schema            |
-| ---------------------------- | ------------ | -------- | -------- | ----------------- | ----------------- |
-| Authorization                | 用户登录令牌 | header   | true     |                   |                   |
-| param                        | param        | body     | true     | DrugStandardParam | DrugStandardParam |
-| &emsp;&emsp;drugComment      | 药品源名称   |          | false    | string            |                   |
-| &emsp;&emsp;drugStandardName | 标准名       |          | false    | string            |                   |
-| &emsp;&emsp;pageNum          | 当前页数     |          | false    | integer(int32)    |                   |
-| &emsp;&emsp;pageSize         | 每页条数     |          | false    | integer(int32)    |                   |
-| &emsp;&emsp;standardId       | 标准ID       |          | false    | integer(int32)    |                   |
+| 参数名称                    | 参数说明     | 请求类型 | 是否必须 | 数据类型          | schema            |
+| --------------------------- | ------------ | -------- | -------- | ----------------- | ----------------- |
+| Authorization               | 用户登录令牌 | header   | true     |                   |                   |
+| param                       | param        | body     | true     | DrugStandardParam | DrugStandardParam |
+| &emsp;&emsp;developmentCode | 研发代号     |          | false    | string            |                   |
+| &emsp;&emsp;genericNameCn   | 通用名(中文) |          | false    | string            |                   |
+| &emsp;&emsp;genericNameEn   | 通用名(英文) |          | false    | string            |                   |
+| &emsp;&emsp;pageNum         | 当前页数     |          | false    | integer(int32)    |                   |
+| &emsp;&emsp;pageSize        | 每页条数     |          | false    | integer(int32)    |                   |
+| &emsp;&emsp;standardId      | 标准ID       |          | false    | integer(int32)    |                   |
+| &emsp;&emsp;year            | 年份         |          | false    | string            |                   |
 
 **响应状态**:
 
@@ -3591,10 +3835,11 @@
 | data                                      |                                  | BasePageVo«DrugStandardDto» | BasePageVo«DrugStandardDto» |
 | &emsp;&emsp;list                          |                                  | array                       | DrugStandardDto             |
 | &emsp;&emsp;&emsp;&emsp;companyName       | 公司名称                         | string                      |                             |
-| &emsp;&emsp;&emsp;&emsp;developmentCode   | 代号编码                         | string                      |                             |
-| &emsp;&emsp;&emsp;&emsp;dosageForm        | 剂型                             | string                      |                             |
-| &emsp;&emsp;&emsp;&emsp;drugStandardName  | 标准名                           | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;developmentCode   | 研发代号                         | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;drugMode          | 药物模态                         | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;drugTarget        | 靶点                             | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;drugType          | 类型                             | string                      |                             |
+| &emsp;&emsp;&emsp;&emsp;firstTime         | 研发代号首次出现时间             | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;genericNameCn     | 通用名(中文)                     | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;genericNameEn     | 通用名(英文)                     | string                      |                             |
 | &emsp;&emsp;&emsp;&emsp;otherInfo         | 其他信息                         | string                      |                             |
@@ -3618,9 +3863,10 @@
 			{
 				"companyName": "",
 				"developmentCode": "",
-				"dosageForm": "",
-				"drugStandardName": "",
+				"drugMode": "",
+				"drugTarget": "",
 				"drugType": "",
+				"firstTime": "",
 				"genericNameCn": "",
 				"genericNameEn": "",
 				"otherInfo": "",
@@ -3655,17 +3901,19 @@
 
 ```javascript
 {
-  "cleanedDrugName": "",
   "createTime": "",
   "createUser": "",
   "developmentCode": "",
-  "dosageForm": "",
+  "drugMode": "",
+  "drugTarget": "",
   "drugType": "",
+  "firstTime": "",
   "genericNameCn": "",
   "genericNameEn": "",
   "id": 0,
   "isDeleted": 0,
   "otherInfo": "",
+  "remark": "",
   "status": 0,
   "updateTime": "",
   "updateUser": ""
@@ -3678,17 +3926,19 @@
 | --------------------------- | ---------------- | -------- | -------- | ----------------- | ---------------- |
 | Authorization               | 用户登录令牌     | header   | true     |                   |                  |
 | drugStandardInfo            | drugStandardInfo | body     | true     | DrugStandardInfo  | DrugStandardInfo |
-| &emsp;&emsp;cleanedDrugName |                  |          | false    | string            |                  |
 | &emsp;&emsp;createTime      |                  |          | false    | string(date-time) |                  |
 | &emsp;&emsp;createUser      |                  |          | false    | string            |                  |
 | &emsp;&emsp;developmentCode |                  |          | false    | string            |                  |
-| &emsp;&emsp;dosageForm      |                  |          | false    | string            |                  |
+| &emsp;&emsp;drugMode        |                  |          | false    | string            |                  |
+| &emsp;&emsp;drugTarget      |                  |          | false    | string            |                  |
 | &emsp;&emsp;drugType        |                  |          | false    | string            |                  |
+| &emsp;&emsp;firstTime       |                  |          | false    | string(date-time) |                  |
 | &emsp;&emsp;genericNameCn   |                  |          | false    | string            |                  |
 | &emsp;&emsp;genericNameEn   |                  |          | false    | string            |                  |
 | &emsp;&emsp;id              |                  |          | false    | integer(int32)    |                  |
 | &emsp;&emsp;isDeleted       |                  |          | false    | integer(int32)    |                  |
 | &emsp;&emsp;otherInfo       |                  |          | false    | string            |                  |
+| &emsp;&emsp;remark          |                  |          | false    | string            |                  |
 | &emsp;&emsp;status          |                  |          | false    | integer(int32)    |                  |
 | &emsp;&emsp;updateTime      |                  |          | false    | string(date-time) |                  |
 | &emsp;&emsp;updateUser      |                  |          | false    | string            |                  |
@@ -3750,6 +4000,68 @@
 | updateCleanStatusDto    | updateCleanStatusDto                   | body     | true     | UpdateCleanStatusDto | UpdateCleanStatusDto |
 | &emsp;&emsp;cleanStatus | 清洗状态 0-未清洗，1-已清洗,2-不用清洗 |          | false    | integer(int32)       |                      |
 | &emsp;&emsp;id          | id                                     |          | false    | integer(int64)       |                      |
+
+**响应状态**:
+
+| 状态码 | 说明         | schema          |
+| ------ | ------------ | --------------- |
+| 200    | OK           | Result«boolean» |
+| 201    | Created      |                 |
+| 401    | Unauthorized |                 |
+| 403    | Forbidden    |                 |
+| 404    | Not Found    |                 |
+
+**响应参数**:
+
+| 参数名称 | 参数说明 | 类型           | schema         |
+| -------- | -------- | -------------- | -------------- |
+| code     |          | integer(int32) | integer(int32) |
+| data     |          | boolean        |                |
+| msg      |          | string         |                |
+
+**响应示例**:
+
+```javascript
+{
+	"code": 0,
+	"data": true,
+	"msg": ""
+}
+```
+
+## 修改药品信息(清洗前)
+
+**接口地址**:`/lyqAdmin/api/admin/drug/updateDrugInfo`
+
+**请求方式**:`POST`
+
+**请求数据类型**:`application/json`
+
+**响应数据类型**:`*/*`
+
+**接口描述**:
+
+**请求示例**:
+
+```javascript
+{
+  "cleanedDrugName": "",
+  "dosageForm": "",
+  "drugComment": "",
+  "drugCommentId": 0
+}
+```
+
+**请求参数**:
+
+| 参数名称                    | 参数说明         | 请求类型 | 是否必须 | 数据类型       | schema        |
+| --------------------------- | ---------------- | -------- | -------- | -------------- | ------------- |
+| Authorization               | 用户登录令牌     | header   | true     |                |               |
+| dto                         | dto              | body     | true     | UpdateDrugDto  | UpdateDrugDto |
+| &emsp;&emsp;cleanedDrugName | 药品名称(清洗后) |          | false    | string         |               |
+| &emsp;&emsp;dosageForm      | 剂型             |          | false    | string         |               |
+| &emsp;&emsp;drugComment     | 药品名称(清洗前) |          | false    | string         |               |
+| &emsp;&emsp;drugCommentId   | 药品源名称ID     |          | false    | integer(int64) |               |
 
 **响应状态**:
 

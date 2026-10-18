@@ -59,6 +59,7 @@
       @page-change="onPageChange"
     >
       <template #operation="{ row }">
+        <t-button theme="primary" @click="openEdit(row)" style="margin-right: 8px"> 编辑 </t-button>
         <t-button theme="primary" @click="openEditModal(row)"> 关联 </t-button>
       </template>
 
@@ -77,10 +78,39 @@
     <t-dialog
       v-model:visible="accModalVisible"
       header="相关备案/登记号"
-      :footer="false"
       width="880px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: batchSubmitting }"
+      @confirm="submitBatchDevelopmentCode"
       @close="onAccModalClose"
     >
+      <!--#region 批量修改研发代码表单 -->
+      <div style="display: flex; align-items: center; gap: 40px; margin-bottom: 16px">
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="white-space: nowrap">选择相关公司：</span>
+          <t-select
+            v-model="batchCompanyNames"
+            :options="companyOriginOptions"
+            multiple
+            filterable
+            clearable
+            placeholder="请选择相关公司"
+            style="width: 260px"
+          />
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span style="white-space: nowrap">关联研发代号：</span>
+          <t-select
+            v-model="batchDevelopmentCode"
+            :options="developmentCodeOptions"
+            filterable
+            clearable
+            placeholder="请选择研发代号"
+            style="width: 220px"
+          />
+        </div>
+      </div>
+      <!--#endregion-->
+
       <t-table
         :data="accData"
         :columns="accColumns"
@@ -99,6 +129,58 @@
           </div>
         </template>
       </t-table>
+    </t-dialog>
+    <!--#endregion-->
+
+    <!--#region 编辑弹窗 -->
+    <t-dialog
+      v-model:visible="basicEditVisible"
+      header="编辑"
+      width="600px"
+      :confirm-btn="{ content: '提交', theme: 'primary', loading: basicEditLoading }"
+      @confirm="submitBasicEdit"
+      @close="onBasicEditClose"
+    >
+      <!-- 源数据信息 -->
+      <div
+        style="
+          background-color: #f3f4f6;
+          padding: 16px;
+          margin-bottom: 20px;
+          border-radius: 8px;
+          display: flex;
+          gap: 40px;
+        "
+      >
+        <p style="margin: 0">
+          <strong>药品名（源数据）：</strong>
+          {{
+            currentBasicEditRow?.drugNickName ||
+            currentBasicEditRow?.drugComment ||
+            currentBasicEditRow?.drugStandardName ||
+            '-'
+          }}
+        </p>
+        <p style="margin: 0">
+          <strong>药品类型：</strong>
+          {{ currentBasicEditRow?.drugTypeOrigin || currentBasicEditRow?.drugType || '-' }}
+        </p>
+      </div>
+
+      <t-form :data="basicEditFormData" label-width="140" label-align="left">
+        <t-form-item label="药品名（清洗后）" name="cleanedName">
+          <t-input v-model="basicEditFormData.cleanedName" placeholder="请输入药品名" />
+        </t-form-item>
+        <t-form-item label="剂型" name="dosageForm" style="margin-bottom: 0">
+          <t-select
+            v-model="basicEditFormData.dosageForm"
+            :options="dosageFormOptions"
+            :loading="dosageFormLoading"
+            filterable
+            placeholder="请选择"
+          />
+        </t-form-item>
+      </t-form>
     </t-dialog>
     <!--#endregion-->
 
@@ -158,6 +240,16 @@
         </t-form-item>
         <t-form-item label="研发代号" name="rdCode">
           <t-input v-model="editFormData.rdCode" disabled />
+        </t-form-item>
+        <t-form-item
+          label="研发代号，同步到此条数据所有“相关受理号/登记号”"
+          name="developmentCodeFlag"
+          label-width="360"
+        >
+          <t-radio-group v-model="editFormData.developmentCodeFlag">
+            <t-radio :value="true">是</t-radio>
+            <t-radio :value="false">否</t-radio>
+          </t-radio-group>
         </t-form-item>
         <t-form-item label="其他名（例如结构名称）" name="otherNames">
           <t-input v-model="editFormData.otherNames" disabled />
@@ -275,6 +367,13 @@ const devCodeDraft = reactive<Record<string, string>>({});
 const currentAccDrugId = ref<number | undefined>(undefined);
 const accPagination = reactive({ current: 1, pageSize: 20, total: 0 });
 
+// 批量修改研发代码
+const batchCompanyNames = ref<string[]>([]);
+const batchDevelopmentCode = ref('');
+const companyOriginOptions = ref<{ label: string; value: string }[]>([]);
+const developmentCodeOptions = ref<{ label: string; value: string }[]>([]);
+const batchSubmitting = ref(false);
+
 // 编辑弹窗
 const editModalVisible = ref(false);
 const addModalVisible = ref(false);
@@ -295,6 +394,8 @@ const editFormData = reactive<Record<string, any>>({
   otherNames: '',
   dosageForm: '',
   drugType: '',
+  // 研发代号是否同步到此条数据所有“相关受理号/登记号”
+  developmentCodeFlag: false,
 });
 
 const addFormData = reactive<Record<string, any>>({
@@ -306,6 +407,15 @@ const addFormData = reactive<Record<string, any>>({
   otherNames: '',
   dosageForm: '',
   drugType: '',
+});
+
+// 编辑（基础信息）弹窗
+const basicEditVisible = ref(false);
+const basicEditLoading = ref(false);
+const currentBasicEditRow = ref<any>(null);
+const basicEditFormData = reactive({
+  cleanedName: '',
+  dosageForm: '',
 });
 //#endregion
 
@@ -338,6 +448,11 @@ const columns = [
           onClick: () => {
             currentAccDrugId.value = row.drugCommentId;
             accPagination.current = 1;
+            // 重置批量修改表单
+            batchCompanyNames.value = [];
+            batchDevelopmentCode.value = '';
+            companyOriginOptions.value = [];
+            fetchDevelopmentCodeOptions();
             fetchAccData();
             accModalVisible.value = true;
           },
@@ -370,7 +485,7 @@ const columns = [
     width: 150,
     cell: (h: any, { row }: any) => row.drugGoodsNameEn || row.genericNameEn || '-',
   },
-  { colKey: 'drugCode', title: '研发代号', width: 100, cell: (h: any, { row }: any) => row.drugCode || '-' },
+  // { colKey: 'drugCode', title: '研发代号', width: 100, cell: (h: any, { row }: any) => row.drugCode || '-' },
   {
     colKey: 'otherComment',
     title: '其他名（如结构描述）',
@@ -398,8 +513,8 @@ const columns = [
   {
     colKey: 'operation',
     title: '操作',
-    width: 100,
-    fixed: 'right' as const,
+    width: 170,
+    fixed: 'center' as const,
   },
 ];
 
@@ -488,6 +603,45 @@ const onCleanStatusChange = async (row: any, val: number) => {
 };
 //#endregion
 
+//#region 编辑弹窗（基础信息）
+const openEdit = (record: any) => {
+  currentBasicEditRow.value = record;
+  basicEditFormData.cleanedName = record.drugStandardName || record.cleanedName || '';
+  basicEditFormData.dosageForm = record.dosageForm || '';
+  basicEditVisible.value = true;
+};
+
+const onBasicEditClose = () => {
+  basicEditVisible.value = false;
+  currentBasicEditRow.value = null;
+};
+
+// 提交编辑
+const submitBasicEdit = async () => {
+  if (!currentBasicEditRow.value) return;
+  basicEditLoading.value = true;
+  try {
+    await drugApi.updateDrugInfo({
+      drugCommentId: currentBasicEditRow.value.drugCommentId,
+      cleanedDrugName: basicEditFormData.cleanedName,
+      dosageForm: basicEditFormData.dosageForm,
+      drugComment:
+        currentBasicEditRow.value.drugNickName ||
+        currentBasicEditRow.value.drugComment ||
+        currentBasicEditRow.value.drugStandardName ||
+        '',
+    });
+    MessagePlugin.success('保存成功');
+    basicEditVisible.value = false;
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    basicEditLoading.value = false;
+  }
+};
+//#endregion
+
 //#region Edit Modal
 const onSearchRelation = async (keyword = '', id?: number) => {
   searchLoading.value = true;
@@ -501,7 +655,8 @@ const onSearchRelation = async (keyword = '', id?: number) => {
     const opts = (res.data?.list || [])
       .filter((item: DrugStandardDto) => item.standardId != null)
       .map((item: DrugStandardDto) => ({
-        label: item.drugStandardName || '',
+        // 下拉列表及选中后均展示：通用名（中文） （研发代号），研发代号为空时展示“无”
+        label: `${item.genericNameCn || item.drugStandardName || ''} （${item.developmentCode || '无'}）`,
         value: item.standardId as number,
         item,
       }));
@@ -523,6 +678,7 @@ const openEditModal = (record: any) => {
   editFormData.otherNames = record.otherComment || record.otherNames || '';
   editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
+  editFormData.developmentCodeFlag = false;
   editModalVisible.value = true;
 
   nextTick(() => {
@@ -556,6 +712,8 @@ const submitEdit = async () => {
       const submitData = {
         drugCommentId: currentEditRecord.value.drugCommentId!,
         drugStandardId: editFormData.drugStandardId,
+        // 1-同步全部，2-取消全部
+        developmentCodeFlag: editFormData.developmentCodeFlag ? 1 : 2,
       };
       await drugApi.saveRelation(submitData);
       MessagePlugin.success('保存成功');
@@ -640,6 +798,10 @@ const fetchAccData = async (curr = accPagination.current, size = accPagination.p
     accData.value = res.data?.list || [];
     accData.value.forEach((row: any) => {
       if (row.acceptanceNo) devCodeDraft[row.acceptanceNo] = row.developmentCode ?? '';
+      // 收集相关公司（源数据）选项
+      if (row.companyNameOrigin && !companyOriginOptions.value.some((o) => o.value === row.companyNameOrigin)) {
+        companyOriginOptions.value.push({ label: row.companyNameOrigin, value: row.companyNameOrigin });
+      }
     });
     accPagination.current = curr;
     accPagination.pageSize = size;
@@ -683,6 +845,45 @@ const onSaveDevelopmentCode = async (row: any) => {
 
 const onAccModalClose = () => {
   accModalVisible.value = false;
+};
+
+// 查询研发代号选项
+const fetchDevelopmentCodeOptions = async () => {
+  try {
+    const res = await drugApi.queryDevelopmentCode({ pageNum: 1, pageSize: 1000 });
+    developmentCodeOptions.value = (res.data?.list || []).map((code: string) => ({ label: code, value: code }));
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// 批量修改研发代码（按公司）
+const submitBatchDevelopmentCode = async () => {
+  if (!batchCompanyNames.value.length) {
+    MessagePlugin.warning('请选择相关公司');
+    return;
+  }
+  if (!batchDevelopmentCode.value) {
+    MessagePlugin.warning('请选择关联研发代号');
+    return;
+  }
+  batchSubmitting.value = true;
+  try {
+    await drugApi.editDevelopmentCodeByCompany({
+      companyNameOriginList: batchCompanyNames.value,
+      developmentCode: batchDevelopmentCode.value,
+      drugCommentId: currentAccDrugId.value,
+    });
+    MessagePlugin.success('修改成功');
+    batchCompanyNames.value = [];
+    batchDevelopmentCode.value = '';
+    fetchAccData();
+    fetchData();
+  } catch (e) {
+    console.error(e);
+  } finally {
+    batchSubmitting.value = false;
+  }
 };
 
 //#endregion

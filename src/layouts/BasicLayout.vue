@@ -83,7 +83,7 @@
         <t-submenu value="/drug" title="药品">
           <template #icon><help-circle-icon /></template>
           <t-menu-item value="/drug/clean">药品名称清洗</t-menu-item>
-          <t-menu-item value="/drug/database">药品名库管理</t-menu-item>
+          <t-menu-item value="/drug/database">通用名库管理</t-menu-item>
         </t-submenu>
 
         <t-submenu value="/indication" title="适应症">

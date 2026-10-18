@@ -57,11 +57,14 @@ export interface DrugShortDto {
 }
 
 export interface DrugStandardParam {
-  drugComment?: string;
+  developmentCode?: string;
+  genericNameCn?: string;
   drugStandardName?: string;
+  followStatus?: number;
   pageNum?: number;
   pageSize?: number;
   standardId?: number;
+  year?: string;
 }
 
 export interface DrugStandardDto {
@@ -97,6 +100,32 @@ export interface DrugStandardInfo {
   status?: number;
   updateTime?: string;
   updateUser?: string;
+}
+
+export interface DrugMergeDto {
+  sourceStandardId?: number;
+  targetStandardId?: number;
+}
+
+export interface EditDrugDevelopmentDto {
+  companyNameOriginList?: string[];
+  developmentCode?: string;
+  drugCommentId?: number;
+  indDrugRelId?: number;
+}
+
+export interface DrugRelationDto {
+  developmentCodeFlag?: number;
+  drugComment?: string;
+  drugCommentId?: number;
+  drugStandardId?: number;
+}
+
+export interface UpdateDrugDto {
+  cleanedDrugName?: string;
+  dosageForm?: string;
+  drugComment?: string;
+  drugCommentId?: number;
 }
 
 export interface DrugAcceptanceDto {
