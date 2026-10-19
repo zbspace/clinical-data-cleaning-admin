@@ -165,8 +165,10 @@
             :options="mergeOptions"
             :loading="mergeOptionsLoading"
             filterable
+            remote
             clearable
-            placeholder="请选择"
+            placeholder="请输入关键字搜索"
+            @search="onMergeSearch"
           />
         </t-form-item>
       </t-form>
@@ -528,17 +530,24 @@ const onEditModalClose = () => {
 //#endregion
 
 //#region 合并弹窗
-// 查询可合并的通用名选项（排除当前记录）
-const fetchMergeOptions = async (excludeId?: number) => {
+// 查询可合并的通用名选项（按关键字实时查询，排除当前记录）
+const fetchMergeOptions = async (keyword = '', excludeId?: number) => {
   mergeOptionsLoading.value = true;
   try {
-    const res = await drugApi.standardPageData({ pageNum: 1, pageSize: 1000 });
+    const res = await drugApi.standardPageData({
+      pageNum: 1,
+      pageSize: 50,
+      genericNameCn: keyword || undefined,
+    });
     mergeOptions.value = (res.data?.list || [])
       .filter((item: DrugStandardDto) => item.standardId !== excludeId)
-      .map((item: DrugStandardDto) => ({
-        label: item.genericNameCn || item.drugStandardName || '-',
-        value: item.standardId!,
-      }));
+      .map((item: DrugStandardDto) => {
+        const name = item.genericNameCn || item.drugStandardName || '-';
+        return {
+          label: item.developmentCode ? `${name}（${item.developmentCode}）` : name,
+          value: item.standardId!,
+        };
+      });
   } catch (e) {
     console.error(e);
   } finally {
@@ -546,11 +555,19 @@ const fetchMergeOptions = async (excludeId?: number) => {
   }
 };
 
+let mergeSearchTimer: ReturnType<typeof setTimeout> | null = null;
+const onMergeSearch = (keyword: string) => {
+  if (mergeSearchTimer) clearTimeout(mergeSearchTimer);
+  mergeSearchTimer = setTimeout(() => {
+    fetchMergeOptions(keyword.trim(), currentMergeRecord.value?.standardId);
+  }, 300);
+};
+
 const openMergeModal = (record: DrugStandardDto) => {
   currentMergeRecord.value = record;
   mergeTargetId.value = undefined;
   mergeOptions.value = [];
-  fetchMergeOptions(record.standardId);
+  fetchMergeOptions('', record.standardId);
   mergeModalVisible.value = true;
 };
 
