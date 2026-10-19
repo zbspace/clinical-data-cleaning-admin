@@ -123,30 +123,14 @@
     >
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
-          <t-form-item label="药品名（清洗后）" name="cleanedDrugName">
-            <t-input v-model="editFormData.cleanedDrugName" />
-          </t-form-item>
           <t-form-item label="通用名（中文）" name="genericNameCn">
             <t-input v-model="editFormData.genericNameCn" />
           </t-form-item>
           <t-form-item label="通用名（英文）" name="genericNameEn">
             <t-input v-model="editFormData.genericNameEn" />
           </t-form-item>
-          <!-- <t-form-item label="研发代号" name="developmentCode">
-            <t-input v-model="editFormData.developmentCode" />
-          </t-form-item> -->
           <t-form-item label="其他名（例如结构名称）" name="otherInfo">
             <t-input v-model="editFormData.otherInfo" />
-          </t-form-item>
-          <t-form-item label="剂型" name="dosageForm">
-            <t-select
-              v-model="editFormData.dosageForm"
-              :options="dosageFormOptions"
-              placeholder="请选择"
-              filterable
-              @search="(val: string) => onSearchDosageForm(val)"
-              :loading="dosageFormLoading"
-            />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
@@ -157,9 +141,6 @@
           <t-form-item label="药物模态" name="drugMode">
             <t-input v-model="editFormData.drugMode" />
           </t-form-item>
-          <!-- <t-form-item label="相关公司" name="companyName">
-            <t-input v-model="editFormData.companyName" disabled />
-          </t-form-item> -->
         </div>
       </t-form>
     </t-dialog>
@@ -260,20 +241,15 @@ const currentEditRecord = ref<DrugStandardDto | null>(null);
 
 const editFormData = reactive<Record<string, any>>({
   id: undefined,
-  cleanedDrugName: '',
   genericNameCn: '',
   genericNameEn: '',
   // developmentCode: '',
   otherInfo: '',
-  dosageForm: '',
   drugType: '',
   drugTarget: '',
   drugMode: '',
   companyName: '',
 });
-
-const dosageFormOptions = ref<{ label: string; value: string }[]>([]);
-const dosageFormLoading = ref(false);
 
 // 合并弹窗
 const mergeModalVisible = ref(false);
@@ -452,20 +428,6 @@ const onFollowStatusChange = async (row: DrugStandardDto, val: number) => {
 };
 //#endregion
 
-//#region 剂型选项查询
-const onSearchDosageForm = async (keyword = '') => {
-  dosageFormLoading.value = true;
-  try {
-    const res = await drugApi.dosageFormList({ pageNum: 1, pageSize: 1000, searchKey: keyword });
-    dosageFormOptions.value = (res.data?.list || []).map((name: string) => ({ label: name, value: name }));
-  } catch (e) {
-    console.error(e);
-  } finally {
-    dosageFormLoading.value = false;
-  }
-};
-//#endregion
-
 //#region Alias Modal
 const fetchAliasNos = async (drugId: number, curr = 1, size = 5) => {
   aliasLoading.value = true;
@@ -505,12 +467,10 @@ const drugTypeOptions = createEnumsToOptions(DRUG_TYPE);
 
 const openEditModal = (record: DrugStandardDto) => {
   currentEditRecord.value = record;
-  editFormData.cleanedDrugName = record.drugStandardName || '';
   editFormData.genericNameCn = record.genericNameCn || '';
   editFormData.genericNameEn = record.genericNameEn || '';
   // editFormData.developmentCode = record.developmentCode || '';
   editFormData.otherInfo = record.otherInfo || '';
-  editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
   editFormData.drugTarget = record.drugTarget || '';
   editFormData.drugMode = record.drugMode || '';
@@ -521,12 +481,10 @@ const openEditModal = (record: DrugStandardDto) => {
 
 const handleAdd = () => {
   currentEditRecord.value = null;
-  editFormData.cleanedDrugName = '';
   editFormData.genericNameCn = '';
   editFormData.genericNameEn = '';
   // editFormData.developmentCode = '';
   editFormData.otherInfo = '';
-  editFormData.dosageForm = '';
   editFormData.drugType = '';
   editFormData.drugTarget = '';
   editFormData.drugMode = '';
@@ -540,12 +498,11 @@ const submitEdit = async () => {
   try {
     const submitData: DrugStandardInfo = {
       id: editFormData.id || undefined,
-      cleanedDrugName: editFormData.cleanedDrugName,
+      cleanedDrugName: editFormData.genericNameCn,
       genericNameCn: editFormData.genericNameCn,
       genericNameEn: editFormData.genericNameEn,
       // developmentCode: editFormData.developmentCode,
       otherInfo: editFormData.otherInfo,
-      dosageForm: editFormData.dosageForm,
       drugType: editFormData.drugType,
       drugTarget: editFormData.drugTarget,
       drugMode: editFormData.drugMode,
@@ -627,8 +584,6 @@ const onMergeModalClose = () => {
 //#region Lifecycle
 onMounted(() => {
   fetchData();
-  // 获取剂型选项
-  onSearchDosageForm();
 });
 //#endregion
 </script>

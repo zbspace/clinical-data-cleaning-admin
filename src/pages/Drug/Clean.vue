@@ -264,19 +264,16 @@
     </t-dialog>
     <!--#endregion-->
 
-    <!-- 新增标准名弹窗 -->
+    <!-- 新增通用名弹窗 -->
     <t-dialog
       v-model:visible="addModalVisible"
-      header="新增标准名"
+      header="新增通用名"
       width="600px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: addLoading }"
       @confirm="submitAdd"
     >
       <t-form ref="addFormRef" :data="addFormData" label-width="180" label-align="left">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px">
-          <t-form-item label="药品名（清洗后）" name="cleanedDrugName">
-            <t-input v-model="addFormData.cleanedDrugName" />
-          </t-form-item>
           <t-form-item label="通用名（中文）" name="genericNameCn">
             <t-input v-model="addFormData.genericNameCn" />
           </t-form-item>
@@ -288,16 +285,6 @@
           </t-form-item>
           <t-form-item label="其他名（例如结构名称）" name="otherInfo">
             <t-input v-model="addFormData.otherInfo" />
-          </t-form-item>
-          <t-form-item label="剂型" name="dosageForm">
-            <t-select
-              v-model="addFormData.dosageForm"
-              :options="dosageFormOptions"
-              filterable
-              :loading="dosageFormLoading"
-              placeholder="请选择或输入搜索"
-              @search="(val: string) => onSearchDosageForm(val)"
-            />
           </t-form-item>
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="addFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
@@ -405,7 +392,6 @@ const addFormData = reactive<Record<string, any>>({
   genericNameEn: '',
   rdCode: '',
   otherNames: '',
-  dosageForm: '',
   drugType: '',
 });
 
@@ -514,7 +500,7 @@ const columns = [
     colKey: 'operation',
     title: '操作',
     width: 170,
-    fixed: 'center' as const,
+    fixed: 'right' as const,
   },
 ];
 
@@ -734,12 +720,10 @@ const onEditModalClose = () => {
 };
 
 const openAddModal = () => {
-  addFormData.cleanedDrugName = '';
   addFormData.genericNameCn = '';
   addFormData.genericNameEn = '';
   addFormData.developmentCode = '';
   addFormData.otherInfo = '';
-  addFormData.dosageForm = '';
   addFormData.drugType = '';
   addFormData.companyName = '';
   addFormData.id = undefined;
@@ -747,20 +731,19 @@ const openAddModal = () => {
 };
 
 const submitAdd = async () => {
-  if (!addFormData.cleanedDrugName?.trim()) {
-    MessagePlugin.warning('请填写标准名');
+  if (!addFormData.genericNameCn?.trim()) {
+    MessagePlugin.warning('请填写通用名（中文）');
     return;
   }
   addLoading.value = true;
   try {
     const submitData: DrugStandardInfo = {
       id: addFormData.id || undefined,
-      cleanedDrugName: addFormData.cleanedDrugName,
+      cleanedDrugName: addFormData.genericNameCn,
       genericNameCn: addFormData.genericNameCn,
       genericNameEn: addFormData.genericNameEn,
       developmentCode: addFormData.developmentCode,
       otherInfo: addFormData.otherInfo,
-      dosageForm: addFormData.dosageForm,
       drugType: addFormData.drugType,
       status: currentEditRecord.value?.status ?? 0,
     };
@@ -769,9 +752,9 @@ const submitAdd = async () => {
     addModalVisible.value = false;
 
     // 刷新关联下拉选项，命中则自动选中新增的标准公司
-    await onSearchRelation(addFormData.cleanedDrugName);
+    await onSearchRelation(addFormData.genericNameCn);
     const matched = (standardDrugOptions.value as any).find(
-      (o: any) => o.item?.drugStandardName === addFormData.cleanedDrugName,
+      (o: any) => o.item?.genericNameCn === addFormData.genericNameCn,
     );
     if (matched) {
       editFormData.drugStandardId = matched.value;
