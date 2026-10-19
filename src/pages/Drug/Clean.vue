@@ -731,10 +731,6 @@ const openAddModal = () => {
 };
 
 const submitAdd = async () => {
-  if (!addFormData.genericNameCn?.trim()) {
-    MessagePlugin.warning('请填写通用名（中文）');
-    return;
-  }
   addLoading.value = true;
   try {
     const submitData: DrugStandardInfo = {
