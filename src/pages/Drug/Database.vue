@@ -421,6 +421,7 @@ const onFollowStatusChange = async (row: DrugStandardDto, val: number) => {
     });
     row.followStatus = val;
     MessagePlugin.success('保存成功');
+    fetchData();
   } catch (e) {
     console.error(e);
     fetchData();

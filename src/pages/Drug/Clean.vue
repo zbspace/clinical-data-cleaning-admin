@@ -633,7 +633,7 @@ const onSearchRelation = async (keyword = '', id?: number) => {
   searchLoading.value = true;
   try {
     const res = await drugApi.standardPageData({
-      drugStandardName: keyword || '',
+      genericNameCn: keyword || '',
       pageNum: 1,
       pageSize: 50,
       standardId: id || undefined,
