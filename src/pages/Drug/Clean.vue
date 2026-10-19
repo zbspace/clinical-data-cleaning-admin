@@ -453,23 +453,23 @@ const columns = [
   },
 
   {
-    colKey: 'drugStandardName',
+    colKey: 'cleanedDrugName',
     title: '药品名（清洗后）',
     width: 180,
-    cell: (h: any, { row }: any) => row.drugStandardName || row.drugStandardName || '-',
+    cell: (h: any, { row }: any) => row.cleanedDrugName || '-',
     ellipsis: true,
   },
   {
-    colKey: 'genericNameCn',
+    colKey: 'druaGenericNameCn',
     title: '通用名(中)',
     width: 150,
-    cell: (h: any, { row }: any) => row.drugGoodsNameCn || row.genericNameCn || '-',
+    cell: (h: any, { row }: any) => row.druaGenericNameCn || '-',
   },
   {
-    colKey: 'genericNameEn',
+    colKey: 'drugGenericNameEn',
     title: '通用名(英)',
     width: 150,
-    cell: (h: any, { row }: any) => row.drugGoodsNameEn || row.genericNameEn || '-',
+    cell: (h: any, { row }: any) => row.drugGenericNameEn || '-',
   },
   // { colKey: 'drugCode', title: '研发代号', width: 100, cell: (h: any, { row }: any) => row.drugCode || '-' },
   {
