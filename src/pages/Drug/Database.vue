@@ -135,6 +135,9 @@
           <t-form-item label="药品类型" name="drugType">
             <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" />
           </t-form-item>
+          <t-form-item label="研发代码" name="developmentCode">
+            <t-input v-model="editFormData.developmentCode" />
+          </t-form-item>
           <t-form-item label="靶点" name="drugTarget">
             <t-input v-model="editFormData.drugTarget" />
           </t-form-item>
