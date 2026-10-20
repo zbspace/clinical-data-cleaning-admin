@@ -245,7 +245,7 @@ const editFormData = reactive<Record<string, any>>({
   id: undefined,
   genericNameCn: '',
   genericNameEn: '',
-  // developmentCode: '',
+  developmentCode: '',
   otherInfo: '',
   drugType: '',
   drugTarget: '',
@@ -286,12 +286,12 @@ const columns = [
     ellipsis: true,
     cell: (h: any, { row }: any) => row.genericNameEn || '-',
   },
-  // {
-  //   colKey: 'developmentCode',
-  //   title: '研发代码',
-  //   width: 120,
-  //   cell: (h: any, { row }: any) => row.developmentCode || '-',
-  // },
+  {
+    colKey: 'developmentCode',
+    title: '研发代码',
+    width: 120,
+    cell: (h: any, { row }: any) => row.developmentCode || '-',
+  },
   {
     colKey: 'otherInfo',
     title: '其他（例如药物结构描述）',
@@ -472,7 +472,7 @@ const openEditModal = (record: DrugStandardDto) => {
   currentEditRecord.value = record;
   editFormData.genericNameCn = record.genericNameCn || '';
   editFormData.genericNameEn = record.genericNameEn || '';
-  // editFormData.developmentCode = record.developmentCode || '';
+  editFormData.developmentCode = record.developmentCode || '';
   editFormData.otherInfo = record.otherInfo || '';
   editFormData.drugType = record.drugType || '';
   editFormData.drugTarget = record.drugTarget || '';
@@ -486,7 +486,7 @@ const handleAdd = () => {
   currentEditRecord.value = null;
   editFormData.genericNameCn = '';
   editFormData.genericNameEn = '';
-  // editFormData.developmentCode = '';
+  editFormData.developmentCode = '';
   editFormData.otherInfo = '';
   editFormData.drugType = '';
   editFormData.drugTarget = '';
@@ -504,7 +504,7 @@ const submitEdit = async () => {
       cleanedDrugName: editFormData.genericNameCn,
       genericNameCn: editFormData.genericNameCn,
       genericNameEn: editFormData.genericNameEn,
-      // developmentCode: editFormData.developmentCode,
+      developmentCode: editFormData.developmentCode,
       otherInfo: editFormData.otherInfo,
       drugType: editFormData.drugType,
       drugTarget: editFormData.drugTarget,
