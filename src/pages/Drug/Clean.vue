@@ -215,13 +215,13 @@
       </div>
       <t-form ref="editFormRef" :data="editFormData" label-width="180" label-align="left">
         <div style="background-color: #e6f7ff; padding: 16px; border-radius: 4px; margin-bottom: 16px">
-          <t-form-item label="关联标准药品名" name="drugStandardId" style="margin-bottom: 10px">
+          <t-form-item label="关联通用名/研发代号" name="drugStandardId" style="margin-bottom: 10px">
             <t-select
               v-model="editFormData.drugStandardId"
               :options="standardDrugOptions"
               filterable
               :loading="searchLoading"
-              placeholder="请搜索选择标准药品名"
+              placeholder="请搜索选择通用名/研发代号"
               clearable
               @change="onStandardDrugChange"
               @clear="onStandardDrugClear"
