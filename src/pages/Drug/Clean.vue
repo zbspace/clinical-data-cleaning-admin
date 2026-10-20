@@ -168,8 +168,8 @@
       </div>
 
       <t-form :data="basicEditFormData" label-width="140" label-align="left">
-        <t-form-item label="药品名（清洗后）" name="cleanedName">
-          <t-input v-model="basicEditFormData.cleanedName" placeholder="请输入药品名" />
+        <t-form-item label="药品名（清洗后）" name="cleanedDrugName">
+          <t-input v-model="basicEditFormData.cleanedDrugName" placeholder="请输入药品名" />
         </t-form-item>
         <t-form-item label="剂型" name="dosageForm" style="margin-bottom: 0">
           <t-select
@@ -177,6 +177,7 @@
             :options="dosageFormOptions"
             :loading="dosageFormLoading"
             filterable
+            clearable
             placeholder="请选择"
           />
         </t-form-item>
@@ -229,9 +230,6 @@
             <t-button theme="primary" style="margin-left: 20px" @click="openAddModal"> 新增 </t-button>
           </t-form-item>
         </div>
-        <t-form-item label="药品名（清洗后）" name="cleanedName">
-          <t-input v-model="editFormData.cleanedName" disabled />
-        </t-form-item>
         <t-form-item label="通用名（中文）" name="genericNameCn">
           <t-input v-model="editFormData.genericNameCn" disabled />
         </t-form-item>
@@ -374,7 +372,6 @@ const standardDrugOptions = ref<any[]>([]);
 
 const editFormData = reactive<Record<string, any>>({
   drugStandardId: undefined,
-  cleanedName: '',
   genericNameCn: '',
   genericNameEn: '',
   rdCode: '',
@@ -400,7 +397,7 @@ const basicEditVisible = ref(false);
 const basicEditLoading = ref(false);
 const currentBasicEditRow = ref<any>(null);
 const basicEditFormData = reactive({
-  cleanedName: '',
+  cleanedDrugName: '',
   dosageForm: '',
 });
 //#endregion
@@ -460,10 +457,10 @@ const columns = [
     ellipsis: true,
   },
   {
-    colKey: 'druaGenericNameCn',
+    colKey: 'drugGenericNameCn',
     title: '通用名(中)',
     width: 150,
-    cell: (h: any, { row }: any) => row.druaGenericNameCn || '-',
+    cell: (h: any, { row }: any) => row.drugGenericNameCn || '-',
   },
   {
     colKey: 'drugGenericNameEn',
@@ -592,7 +589,7 @@ const onCleanStatusChange = async (row: any, val: number) => {
 //#region 编辑弹窗（基础信息）
 const openEdit = (record: any) => {
   currentBasicEditRow.value = record;
-  basicEditFormData.cleanedName = record.drugStandardName || record.cleanedName || '';
+  basicEditFormData.cleanedDrugName = record.drugStandardName || record.cleanedDrugName || record.cleanedName || '';
   basicEditFormData.dosageForm = record.dosageForm || '';
   basicEditVisible.value = true;
 };
@@ -609,7 +606,7 @@ const submitBasicEdit = async () => {
   try {
     await drugApi.updateDrugInfo({
       drugCommentId: currentBasicEditRow.value.drugCommentId,
-      cleanedDrugName: basicEditFormData.cleanedName,
+      cleanedDrugName: basicEditFormData.cleanedDrugName,
       dosageForm: basicEditFormData.dosageForm,
       drugComment:
         currentBasicEditRow.value.drugNickName ||
@@ -657,7 +654,6 @@ const onSearchRelation = async (keyword = '', id?: number) => {
 const openEditModal = (record: any) => {
   currentEditRecord.value = record;
   editFormData.drugStandardId = record.drugStandardId || record.standardId || undefined;
-  editFormData.cleanedName = record.drugStandardName || record.cleanedName || '';
   editFormData.genericNameCn = record.drugNormalNameCn || record.genericNameCn || '';
   editFormData.genericNameEn = record.drugNormalNameEn || record.genericNameEn || '';
   editFormData.rdCode = record.drugCode || record.rdCode || '';
@@ -678,7 +674,6 @@ const onStandardDrugChange = (val: number | undefined) => {
   if (!val) return;
   const selected = standardDrugOptions.value.find((o) => o.value === val);
   if (!selected) return;
-  editFormData.cleanedName = selected.item.drugStandardName || '';
   editFormData.genericNameCn = selected.item.genericNameCn || '';
   editFormData.genericNameEn = selected.item.genericNameEn || '';
   editFormData.rdCode = selected.item.developmentCode || '';
