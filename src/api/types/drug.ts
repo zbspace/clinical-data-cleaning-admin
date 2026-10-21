@@ -140,8 +140,9 @@ export interface DrugAcceptanceDto {
   acceptanceNo?: string;
   companyNameOrigin?: string;
   developmentCode?: string;
-  id?: number;
+  indDrugRelId?: number;
   registrationCategoryCleaned?: string;
   registrationCategoryOrigin?: string;
+  drugCommentId?: number;
 }
 //#endregion

@@ -805,8 +805,9 @@ const onSaveDevelopmentCode = async (row: any) => {
   if (newVal === (row.developmentCode ?? '')) return;
   try {
     await drugApi.editDevelopmentCode({
-      id: row.id,
+      indDrugRelId: row.indDrugRelId,
       developmentCode: newVal,
+      drugCommentId: currentAccDrugId.value,
     });
     row.developmentCode = newVal;
     devCodeDraft[key] = newVal;
@@ -835,10 +836,6 @@ const fetchDevelopmentCodeOptions = async () => {
 const submitBatchDevelopmentCode = async () => {
   if (!batchCompanyNames.value.length) {
     MessagePlugin.warning('请选择相关公司');
-    return;
-  }
-  if (!batchDevelopmentCode.value) {
-    MessagePlugin.warning('请选择关联研发代号');
     return;
   }
   batchSubmitting.value = true;

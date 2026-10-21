@@ -86,7 +86,7 @@ export const drugApi = {
   },
 
   /** 修改研发代码 */
-  editDevelopmentCode(data: DrugAcceptanceDto) {
+  editDevelopmentCode(data: EditDrugDevelopmentDto) {
     return request.post<any, { code: number; data: boolean; msg: string }>('/admin/drug/editDevelopmentCode', data);
   },
 
