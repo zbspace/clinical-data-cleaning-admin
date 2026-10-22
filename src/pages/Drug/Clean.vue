@@ -102,10 +102,13 @@
           <t-select
             v-model="batchDevelopmentCode"
             :options="developmentCodeOptions"
+            :loading="developmentCodeLoading"
             filterable
+            remote
             clearable
-            placeholder="请选择研发代号"
+            placeholder="请输入关键字搜索"
             style="width: 220px"
+            @search="onDevelopmentCodeSearch"
           />
         </div>
       </div>
@@ -357,6 +360,7 @@ const batchCompanyNames = ref<string[]>([]);
 const batchDevelopmentCode = ref('');
 const companyOriginOptions = ref<{ label: string; value: string }[]>([]);
 const developmentCodeOptions = ref<{ label: string; value: string }[]>([]);
+const developmentCodeLoading = ref(false);
 const batchSubmitting = ref(false);
 
 // 编辑弹窗
@@ -822,14 +826,25 @@ const onAccModalClose = () => {
   accModalVisible.value = false;
 };
 
-// 查询研发代号选项
-const fetchDevelopmentCodeOptions = async () => {
+// 查询研发代号选项（按关键字实时查询）
+const fetchDevelopmentCodeOptions = async (keyword = '') => {
+  developmentCodeLoading.value = true;
   try {
-    const res = await drugApi.queryDevelopmentCode({ pageNum: 1, pageSize: 1000 });
+    const res = await drugApi.queryDevelopmentCode({ pageNum: 1, pageSize: 99, searchKey: keyword || undefined });
     developmentCodeOptions.value = (res.data?.list || []).map((code: string) => ({ label: code, value: code }));
   } catch (e) {
     console.error(e);
+  } finally {
+    developmentCodeLoading.value = false;
   }
+};
+
+let developmentCodeSearchTimer: ReturnType<typeof setTimeout> | null = null;
+const onDevelopmentCodeSearch = (keyword: string) => {
+  if (developmentCodeSearchTimer) clearTimeout(developmentCodeSearchTimer);
+  developmentCodeSearchTimer = setTimeout(() => {
+    fetchDevelopmentCodeOptions(keyword.trim());
+  }, 300);
 };
 
 // 批量修改研发代码（按公司）
