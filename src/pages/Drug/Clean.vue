@@ -191,7 +191,7 @@
     <!--#region 关联弹窗 -->
     <t-dialog
       v-model:visible="editModalVisible"
-      header="编辑"
+      header="关联"
       width="800px"
       :confirm-btn="{ content: '提交', theme: 'primary', loading: editLoading }"
       @confirm="submitEdit"
@@ -254,9 +254,6 @@
         </t-form-item>
         <t-form-item label="其他名（例如结构名称）" name="otherNames">
           <t-input v-model="editFormData.otherNames" disabled />
-        </t-form-item>
-        <t-form-item label="剂型" name="dosageForm">
-          <t-select v-model="editFormData.dosageForm" :options="dosageFormOptions" placeholder="请选择" disabled />
         </t-form-item>
         <t-form-item label="药品类型" name="drugType">
           <t-select v-model="editFormData.drugType" :options="drugTypeOptions" placeholder="请选择" disabled />
@@ -380,7 +377,6 @@ const editFormData = reactive<Record<string, any>>({
   genericNameEn: '',
   rdCode: '',
   otherNames: '',
-  dosageForm: '',
   drugType: '',
   // 研发代号是否同步到此条数据所有“相关受理号/登记号”
   developmentCodeFlag: false,
@@ -662,7 +658,6 @@ const openEditModal = (record: any) => {
   editFormData.genericNameEn = record.drugNormalNameEn || record.genericNameEn || '';
   editFormData.rdCode = record.drugCode || record.rdCode || '';
   editFormData.otherNames = record.otherComment || record.otherNames || '';
-  editFormData.dosageForm = record.dosageForm || '';
   editFormData.drugType = record.drugType || '';
   editFormData.developmentCodeFlag = false;
   editModalVisible.value = true;
@@ -682,7 +677,6 @@ const onStandardDrugChange = (val: number | undefined) => {
   editFormData.genericNameEn = selected.item.genericNameEn || '';
   editFormData.rdCode = selected.item.developmentCode || '';
   editFormData.otherNames = selected.item.otherInfo || '';
-  editFormData.dosageForm = selected.item.dosageForm || '';
   editFormData.drugType = selected.item.drugType || '';
 };
 
